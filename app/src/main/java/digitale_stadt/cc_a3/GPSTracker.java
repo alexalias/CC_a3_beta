@@ -36,6 +36,7 @@ public class GPSTracker extends Service implements LocationListener {
     Location location;
     double latitude;
     double longitude;
+    double altitude;
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
@@ -105,6 +106,7 @@ public class GPSTracker extends Service implements LocationListener {
      * Function to get latitude
      * */
     public double getLatitude() {
+        Log.i("GPSTracker", "getLatitude");
         if (location != null) {
             latitude = location.getLatitude();
         }
@@ -117,12 +119,26 @@ public class GPSTracker extends Service implements LocationListener {
      * Function to get longitude
      * */
     public double getLongitude() {
+        Log.i("GPSTracker", "getLongitude");
         if (location != null) {
             longitude = location.getLongitude();
         }
 
         // return longitude
         return longitude;
+    }
+
+    /**
+     * Function to get longitude
+     * */
+    public double getAltitude() {
+        Log.i("GPSTracker", "getAltitude");
+        if (location != null) {
+            altitude = location.getAltitude();
+        }
+
+        // return longitude
+        return altitude;
     }
 
     /**
@@ -171,9 +187,15 @@ public class GPSTracker extends Service implements LocationListener {
         alertDialog.show();
     }
 
+    public void OnCreated()
+    {
+        Log.i("GPSTracker", "GPSTracker created");
+    }
+
     @Override
     public void onLocationChanged(Location location) {
-       // getLocation();
+        getLocation();
+        Log.i("GPSTracker", "LocationChanged");
     }
 
     @Override

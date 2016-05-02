@@ -3,21 +3,30 @@ package digitale_stadt.cc_a3;
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 public class MainActivity extends Activity {
 
     Button btnShowLocation;
 
     // GPSTracker class
-    GPSTracker gps;
+    private GPSTracker gps;
+    private Sender sender;
+    private Tour tour;
+    private int id = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sender = new Sender(this);
+        tour = new Tour("ralf", "TestPassword123!", 111);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -31,10 +40,23 @@ public class MainActivity extends Activity {
 
                 // check if GPS enabled
                 if(gps.canGetLocation()){
-                    double latitude = gps.getLatitude();
-                    double longitude = gps.getLongitude();
+                    Position position = new Position();
+                    position.setLatitude(gps.getLatitude());
+                    position.setLongitude(gps.getLongitude());
+                    position.setAltitude(gps.getAltitude());
+                    position.setId(id);
+                    id += 1;
 
-                    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+                    tour.getWayPoints().clear();
+                    tour.AddWayPoint(position);
+
+                    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + position.getLatitude() + "\nLong: " + position.getLongitude(), Toast.LENGTH_LONG).show();
+                    String url = "https://preview.api.cycleyourcity.jmakro.de:4040/log_coordinates.php";
+                    HashMap<String,String> map = new HashMap<>();
+                    map.put("data", tour.getJSONString() );
+
+                    Log.i("JSON", tour.getJSONString());
+                    sender.SendPostRequest(url, map);
                 }else{
                     // can't get location
                     // GPS or Network is not enabled
