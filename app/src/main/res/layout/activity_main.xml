@@ -9,6 +9,34 @@
                 tools:context=".MainActivity"
                 style="@android:style/Theme.Light">
 
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/playButton"
+        android:layout_centerVertical="true"
+        android:layout_cente<ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/playButton"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentRight="false"
+        android:layout_alignParentLeft="false"
+        android:background="@android:color/transparent"
+        android:textOn=""
+        android:textOff=""
+        android:button="@drawable/button_selector"
+        android:onClick="startTracking"/> rHorizontal="true"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentRight="false"
+        android:layout_alignParentLeft="false"
+        android:background="@android:color/transparent"
+        android:textOn=""
+        android:textOff=""
+        android:button="@drawable/button_selector"
+        android:onClick="startTracking"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
