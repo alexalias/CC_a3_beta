@@ -12,8 +12,7 @@ import java.util.Date;
  */
 public class Position {
     private long id;
-    private int trackId;
-    private String deviceId;
+    private int tourID;
     private Date time;
     private double latitude;
     private double longitude;
@@ -25,9 +24,8 @@ public class Position {
     }
 
     //Konstruktor
-    public Position(int trackId, String deviceId, Location location){
-        this.trackId = trackId;
-        this.deviceId = deviceId;
+    public Position(Tour tour, Location location){
+        this.tourID = tour.getTourID();
         time = new Date(location.getTime());
         latitude = location.getLatitude();
         longitude = location.getLongitude();
@@ -42,11 +40,8 @@ public class Position {
     public long getId() {return id;}
     public void setId(long id) {this.id = id;}
 
-    public int getTrackId() {return trackId;}
-    public void setTrackId(int trackId) {this.trackId = trackId;}
-
-    public String getDeviceId() {return deviceId;}
-    public void setDeviceId(String deviceId) {this.deviceId = deviceId;}
+    public int getTourID() {return tourID;}
+    public void setTourID(int tourID) {this.tourID = tourID;}
 
     public Date getTime() {return time;}
     public void setTime(Date time) {this.time = time;}
