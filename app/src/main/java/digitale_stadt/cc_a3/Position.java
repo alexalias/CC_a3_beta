@@ -21,12 +21,10 @@ public class Position {
     private int sent;
 
     //Standardkonstruktor
-
     public Position() {
     }
 
     //Konstruktor
-
     public Position(int trackId, String deviceId, Location location){
         this.trackId = trackId;
         this.deviceId = deviceId;

@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sender = new Sender(this);
-        tour = new Tour("ralf", "TestPassword123!", 111);
+        tour = new Tour();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -48,16 +48,6 @@ public class MainActivity extends Activity {
                         SendJSONString(s);
                     }
                 };
-//                TextView tv = (TextView) this.findViewById(R.id.hello_world);
-//                //Anonymous Class
-//                tv.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        // TODO Auto-generated method stub
-//
-//                    }
-//                });
-
 
                 // check if GPS enabled
                 if(gps.canGetLocation()){

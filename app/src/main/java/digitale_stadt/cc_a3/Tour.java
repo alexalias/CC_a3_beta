@@ -4,35 +4,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Ralf Engelken on 02.05.16.
  */
 public class Tour {
-    private String user;
-    private String pw;
     private int tourid;
     private List<Position> WayPoints;
 
-    public Tour(String user, String pw, int tourid)
+    public Tour()
     {
-        this.user = user;
-        this.pw= pw;
-        this.tourid = tourid;
+        tourid = new Date().hashCode();
         WayPoints = new ArrayList<>();
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public String getPw() {
-        return pw;
-    }
-
-    public int getTourid() {
+    public int getTourID() {
         return tourid;
     }
 
@@ -46,6 +36,7 @@ public class Tour {
             WayPoints.add(position);
     }
 
+    //return the JSON-Stringfo the tour
     public String getJSONString()
     {
         String json;
@@ -55,8 +46,6 @@ public class Tour {
         JSONArray jsonArray = new JSONArray();
 
         try {
-            jsonObject.put("user", user);
-            jsonObject.put("pw", pw);
             jsonObject.put("tourid", tourid);
             //jsonObject.put("WayPoints", WayPoints);
             for (Position pos : WayPoints)
