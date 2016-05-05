@@ -93,7 +93,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put("trackId", position2.getTourID());
-        values.put("deviceId", position2.getDeviceId());
         values.put("time", position2.getTime().getTime());
         values.put("latitude", position2.getLatitude());
         values.put("longitude", position2.getLongitude());
@@ -126,7 +125,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 cursor.moveToFirst();
                 position2.setId(cursor.getLong(cursor.getColumnIndex("id")));
                 position2.setTourID(cursor.getInt(cursor.getColumnIndex("trackId")));
-                position2.setDeviceId(cursor.getString(cursor.getColumnIndex("deviceId")));
                 position2.setTime(new Date(cursor.getLong(cursor.getColumnIndex("time"))));
                 position2.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
                 position2.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
@@ -165,7 +163,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 cursor.moveToFirst();
                 pos.setId(cursor.getLong(cursor.getColumnIndex("id")));
                 pos.setTourID(cursor.getInt(cursor.getColumnIndex("trackId")));
-                pos.setDeviceId(cursor.getString(cursor.getColumnIndex("deviceId")));
                 pos.setTime(new Date(cursor.getLong(cursor.getColumnIndex("time"))));
                 pos.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
                 pos.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
