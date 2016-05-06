@@ -43,7 +43,8 @@ public class Sender {
         queue = Volley.newRequestQueue(context);
     }
 
-    public void SendPostRequest(String url, final Map<String, String> params) {
+    public void SendPostRequest(String url, final Map<String, String> params)
+    {
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override

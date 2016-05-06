@@ -74,10 +74,10 @@ public class GPSTracker extends Service implements LocationListener {
                             longitude = location.getLongitude();
                         }
                     }
-                    if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                             PackageManager.PERMISSION_GRANTED &&
                             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                            PackageManager.PERMISSION_GRANTED){
+                                    PackageManager.PERMISSION_GRANTED) {
                         return location;
                     }
                 }
@@ -145,6 +145,22 @@ public class GPSTracker extends Service implements LocationListener {
      * Stop using GPS listener
      * Calling this function will stop using GPS in your app
      * */
+    @SuppressWarnings("MissingPermission")
+    public void stopUsingGPS() {
+        try {
+            if (locationManager != null) {
+//                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+//                        PackageManager.PERMISSION_GRANTED &&
+//                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+//                                PackageManager.PERMISSION_GRANTED) {
+//                }
+//                else{showSettingsAlert();}
+                locationManager.removeUpdates(GPSTracker.this);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
 
     /**
@@ -163,7 +179,7 @@ public class GPSTracker extends Service implements LocationListener {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
         // Setting Dialog Title
-        alertDialog.setTitle("GPS is settings");
+        alertDialog.setTitle("GPS muss aktiviert sein");
 
         // Setting Dialog Message
         alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");

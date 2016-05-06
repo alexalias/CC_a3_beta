@@ -9,36 +9,49 @@
                 tools:context=".MainActivity"
                 style="@android:style/Theme.Light">
 
-    <ToggleButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/playButton"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentRight="false"
-        android:layout_alignParentLeft="false"
-        android:background="@android:color/transparent"
-        android:textOn=""
-        android:textOff=""
-        android:button="@drawable/button_selector"
-        android:onClick="startTracking"/> rHorizontal="true"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentRight="false"
-        android:layout_alignParentLeft="false"
-        android:background="@android:color/transparent"
-        android:textOn=""
-        android:textOff=""
-        android:button="@drawable/button_selector"
-        android:onClick="startTracking"/>
+    <!--<ToggleButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/playButton"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_alignParentEnd="false"-->
+        <!--android:layout_alignParentRight="false"-->
+        <!--android:layout_alignParentLeft="false"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:textOn=""-->
+        <!--android:textOff=""-->
+        <!--android:button="@drawable/button_selector"-->
+        <!--android:onClick="startTracking"/> rHorizontal="true"-->
+        <!--android:layout_alignParentEnd="false"-->
+        <!--android:layout_alignParentRight="false"-->
+        <!--android:layout_alignParentLeft="false"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:textOn=""-->
+        <!--android:textOff=""-->
+        <!--android:button="@drawable/button_selector"-->
+        <!--android:onClick="startTracking"/>-->
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Wo bin ich?"
-        android:id="@+id/btnShowLocation"
+        android:text="Stop Tracking"
+        android:id="@+id/btnStopTracking"
 
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="137dp"/>
+        android:layout_alignTop="@+id/btnStartTracking"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Tracking"
+        android:id="@+id/btnStartTracking"
+
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
 
 </RelativeLayout>
