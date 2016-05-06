@@ -57,7 +57,6 @@ public class Sender {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
-                        //Log.d("Error.Response", response);
                         Log.d("Error.Response", error.toString());
                     }
                 }

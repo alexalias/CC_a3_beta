@@ -30,8 +30,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sender = new Sender(this);
-        String user = "";
-        String password = "";
+  //      String user = "";
+  //     String password = "";
         tour = new Tour();
         dbHelper = new DBHelper(this);
 
@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
                     tour.getWayPoints().clear();
                     tour.AddWayPoint(position);
 
-                    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + position.getLatitude() + "\nLong: " + position.getLongitude(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Ihre Position ist - \nLat: " + position.getLatitude() + "\nLong: " + position.getLongitude(), Toast.LENGTH_LONG).show();
                     //SendJSONString(tour.getJSONString());
                 }else{
                     // can't get location
