@@ -93,7 +93,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put("trackId", position2.getTourID());
-        values.put("time", position2.getTime().getTime());
+        values.put("timestamp", position2.getTime().getTime());
         values.put("latitude", position2.getLatitude());
         values.put("longitude", position2.getLongitude());
         values.put("altitude", position2.getAltitude());
@@ -125,7 +125,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 cursor.moveToFirst();
                 position2.setId(cursor.getLong(cursor.getColumnIndex("id")));
                 position2.setTourID(cursor.getInt(cursor.getColumnIndex("trackId")));
-                position2.setTime(new Date(cursor.getLong(cursor.getColumnIndex("time"))));
+                position2.setTime(new Date(cursor.getLong(cursor.getColumnIndex("timestamp"))));
                 position2.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
                 position2.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
                 position2.setAltitude(cursor.getDouble(cursor.getColumnIndex("altitude")));
@@ -152,8 +152,8 @@ public class DBHelper extends SQLiteOpenHelper {
     // die noch nicht an den Server verschickt worden sind.
 
     public ArrayList<Position> selectAllPositionsNotSent() {
-        ArrayList<Position> position2s = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT * FROM position2s WHERE sent = 0 ORDER BY id", null);
+        ArrayList<Position> positions = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM positions WHERE sent = 0 ORDER BY id", null);
 
         try {
             if (cursor.getCount() > 0) {
@@ -163,19 +163,19 @@ public class DBHelper extends SQLiteOpenHelper {
                 cursor.moveToFirst();
                 pos.setId(cursor.getLong(cursor.getColumnIndex("id")));
                 pos.setTourID(cursor.getInt(cursor.getColumnIndex("trackId")));
-                pos.setTime(new Date(cursor.getLong(cursor.getColumnIndex("time"))));
+                pos.setTime(new Date(cursor.getLong(cursor.getColumnIndex("timestamp"))));
                 pos.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
                 pos.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
                 pos.setAltitude(cursor.getDouble(cursor.getColumnIndex("altitude")));
 
-                position2s.add(pos);
+                positions.add(pos);
             } else {
                 return null;
             }
         } finally {
             cursor.close();
         }
-        return position2s;
+        return positions;
     }
 
     public void selectAllPositionsNotSentAsync(DatabaseHandler<Void> handler) {

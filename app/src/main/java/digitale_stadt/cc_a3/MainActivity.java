@@ -3,11 +3,14 @@ package digitale_stadt.cc_a3;
 import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
@@ -19,6 +22,10 @@ public class MainActivity extends Activity {
 
     Button btnStartTracking;
     Button btnStopTracking;
+    Button btnUpdate;
+    Button btnSend;
+    RadioButton radioButton;
+    TextView textView;
 
     // GPSTracker class
     private GPSTracker gps;
@@ -39,113 +46,109 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         btnStartTracking = (Button) findViewById(R.id.btnStartTracking);
-
         // show location button click event
         btnStartTracking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("Main", "Tracking started");
-                tour = new Tour();
-                gps = new GPSTracker(MainActivity.this)
-                {
-                    @Override
-                    public void onLocationChanged(Location location)
-                    {
-                        getLocation(); //is this needed?
-                        //Create and send JSON-String
-                        String s = CreateJSONStringFromLocation(location);
-                        Log.i("GPSTracker", s);
-                        SendJSONString(s);
-
-                        dbHelper.insertPosition(new Position(tour, location));
-                        //ToDo: save location to DB instead of sending
-                    }
-                };
-
-                // check if GPS enabled
-                if(gps.canGetLocation()){
-                    Position position = new Position();
-                    position.setLatitude(gps.getLatitude());
-                    position.setLongitude(gps.getLongitude());
-                    position.setAltitude(gps.getAltitude());
-                    position.setId(id);
-                    id += 1;
-
-                    tour.getWayPoints().clear();
-                    tour.AddWayPoint(position);
-
-                    Toast.makeText(getApplicationContext(), "Ihre Position ist - \nLat: " + position.getLatitude() + "\nLong: " + position.getLongitude(), Toast.LENGTH_LONG).show();
-                    //SendJSONString(tour.getJSONString());
-                }else{
-                    // can't get location
-                    // GPS or Network is not enabled
-                    // Ask user to enable GPS/network in settings
-                    gps.showSettingsAlert();
-                }
+                StartTrackingClicked();
             }
         });
 
         btnStopTracking = (Button) findViewById(R.id.btnStopTracking);
-
         // show location button click event
         btnStopTracking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gps.stopUsingGPS();
-                Log.i("Main", "Tracking stopped");
+                StopTrackingClicked();
             }
         });
+
+        btnUpdate = (Button) findViewById(R.id.btnUpdate);
+        // show location button click event
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UpdateClicked();
+            }
+        });
+
+        btnSend = (Button) findViewById(R.id.btnSend);
+        // show location button click event
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SendClicked();
+            }
+        });
+
+        textView = (TextView) findViewById(R.id.textView);
+        radioButton = (RadioButton) findViewById(R.id.radioButton);
     }
 
-//    //Specifies actions to be performed when the play/stop button is clicked
-//    //Our play/stop button is a toggle button!
-//    public void startTracking(View view){
-//        boolean on = ((ToggleButton) view).isChecked();
-//        if (on) {
-//            Log.i("info", "Tacking started");
-//            Toast.makeText(MainActivity.this, "Tacking started", Toast.LENGTH_SHORT).show();
-//            //trackerService = new Intent(this, DummyService.class);
-//            //this.startService(trackerService);
-//            gps = new GPSTracker(MainActivity.this)
-//            {
-//                @Override
-//                public void onLocationChanged(Location location)
-//                {
-//                    getLocation();
-//                    String s = CreateJSONStringFromLocation(location);
-//                    Log.i("GPSTracker", s);
-//                    SendJSONString(s);
-//                }
-//            };
-//
-//            // check if GPS enabled
-//            if(gps.canGetLocation()){
-//                Position position = new Position();
-//                position.setLatitude(gps.getLatitude());
-//                position.setLongitude(gps.getLongitude());
-//                position.setAltitude(gps.getAltitude());
-//                position.setId(id);
-//                id += 1;
-//
-//                tour.getWayPoints().clear();
-//                tour.AddWayPoint(position);
-//
-//                Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + position.getLatitude() + "\nLong: " + position.getLongitude(), Toast.LENGTH_LONG).show();
-//                SendJSONString(tour.getJSONString());
-//            }else{
-//                // can't get location
-//                // GPS or Network is not enabled
-//                // Ask user to enable GPS/network in settings
-//                gps.showSettingsAlert();
-//            }
-//        }
-//        else {
-//            Log.i("info", "Tacking stopped");
-//            Toast.makeText(MainActivity.this, "Tacking stopped", Toast.LENGTH_SHORT).show();
-//            //this.stopService(trackerService);
-//            gps.stopUsingGPS();
-//        }
-//    }
+    private void SendClicked()
+    {
+        Log.i("Main", "Send");
+        if (gps != null)
+            dbHelper.insertPosition(new Position(tour, gps.getLocation()));
+    }
+
+    private void UpdateClicked()
+    {
+        Log.i("Main", "Update");
+        if (gps != null)
+        {
+            String text = Integer.toString(dbHelper.selectAllPositionsNotSent().size());
+            textView.setText(text);
+        }
+    }
+
+    private void StartTrackingClicked()
+    {
+        Log.i("Main", "Tracking started");
+        tour = new Tour();
+        gps = new GPSTracker(MainActivity.this)
+        {
+            @Override
+            public void onLocationChanged(Location location)
+            {
+                getLocation(); //is this needed?
+                //Create and send JSON-String
+                String s = CreateJSONStringFromLocation(location);
+                Log.i("GPSTracker", s);
+                SendJSONString(s);
+
+                dbHelper.insertPosition(new Position(tour, location));
+                //ToDo: save location to DB instead of sending
+            }
+        };
+
+        // check if GPS enabled
+        if(gps.canGetLocation()){
+            Position position = new Position();
+            position.setLatitude(gps.getLatitude());
+            position.setLongitude(gps.getLongitude());
+            position.setAltitude(gps.getAltitude());
+            position.setId(id);
+            id += 1;
+
+            tour.getWayPoints().clear();
+            tour.AddWayPoint(position);
+
+            Toast.makeText(getApplicationContext(), "Ihre Position ist - \nLat: " + position.getLatitude() + "\nLong: " + position.getLongitude(), Toast.LENGTH_LONG).show();
+            //SendJSONString(tour.getJSONString());
+        }else{
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
+        }
+    }
+
+    private void StopTrackingClicked()
+    {
+        Log.i("Main", "Tracking stopped");
+        gps.stopUsingGPS();
+    }
 
     private void SendJSONString (String s)
     {
