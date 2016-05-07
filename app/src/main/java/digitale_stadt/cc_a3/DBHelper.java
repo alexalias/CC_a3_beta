@@ -187,20 +187,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Gibt eine Liste aller Positionsobjekte der gegebenen Tour zurück,
     public ArrayList<Position> selectAllPositionsFromTour(int tourID) {
-        ArrayList<Position> positions = new ArrayList<>();
-        Position pos;
 
         Cursor cursor = db.rawQuery("SELECT * FROM positions WHERE trackID = " + tourID + " ORDER BY id", null);
 
         return EvaluateCursor(cursor);
     }
 
-    public void selectAllPositionsFromTourAsync(final int tourID, DatabaseHandler<Void> handler) {
-        new DatabaseAsyncTask<Void>(handler) {
+    public void selectAllPositionsFromTourAsync(final int tourID, DatabaseHandler<ArrayList<Position>> handler) {
+        new DatabaseAsyncTask<ArrayList<Position>>(handler) {
             @Override
-            protected Void executeMethod() {
-                selectAllPositionsFromTour(tourID);
-                return null;
+            protected ArrayList<Position> executeMethod() {
+                return selectAllPositionsFromTour(tourID);
+                //return null;
             }
         }.execute();
     }

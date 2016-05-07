@@ -139,6 +139,7 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
     }
 
 
@@ -146,7 +147,27 @@ public class MainActivity extends Activity {
     {
         Log.i("Main", "Update");
         Toast.makeText(getApplicationContext(), "DB wird ausgelesen", Toast.LENGTH_SHORT).show();
-        ArrayList<Position> l = dbHelper.selectAllPositionsFromTour(tour.getTourID());
+//        ArrayList<Position> l = dbHelper.selectAllPositionsFromTourAsync(tour.getTourID(), new DBHelper.DatabaseHandler<Void>() {
+//
+//            @Override
+//            public void onComplete(boolean success, Void result) {
+//
+//            }
+//
+//        });
+       ArrayList<Position> l;
+        dbHelper.selectAllPositionsFromTourAsync(tour.getTourID(), new DBHelper.DatabaseHandler<ArrayList<Position>>() {
+            @Override
+            public void onComplete(boolean success, ArrayList<Position> result) {
+                l = result;
+                if (success) {
+                    if ((gps.canGetLocation() && isGPSEnabled)||(gps.canGetLocation() && isNetworkEnabled)){
+                        //   read();
+                        gps.canGetLocation = false;
+                    }
+                }
+            }
+        });
         String s;
 
         list.clear();
