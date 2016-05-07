@@ -13,11 +13,11 @@ android {
     }
 
     //for ArcGIS
-    //packagingOptions{
-    //    exclude 'META-INF/LGPL2.1'
-    //    exclude 'META-INF/LICENSE'
-    //    exclude 'META-INF/NOTICE'
-    //}
+    packagingOptions{
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
 
     buildTypes {
         release {
@@ -35,5 +35,6 @@ dependencies {
     compile project(path: ':volley')
 
     //ArcGIS
-    //compile 'com.esri.arcgis.android:arcgis-android:10.2.7'
+    compile 'com.esri.arcgis.android:arcgis-android:10.2.7'
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }
