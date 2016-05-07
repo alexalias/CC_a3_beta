@@ -1,7 +1,9 @@
 package digitale_stadt.cc_a3;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -14,6 +16,11 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.esri.android.map.MapView;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +38,7 @@ public class MainActivity extends Activity {
     TextView textView;
     ListView listView;
     ArrayList<String> list;
+    MapView mapView;
 
     // GPSTracker class
     private GPSTracker gps;
@@ -38,12 +46,17 @@ public class MainActivity extends Activity {
     private Sender sender; //ToDo: replace with DBReader-Service
     private Tour tour;
     private int id = 0;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sender = new Sender(this);
-  //      String user = "";
-  //     String password = "";
+        //      String user = "";
+        //     String password = "";
         tour = new Tour();
         dbHelper = new DBHelper(this);
 
@@ -94,16 +107,17 @@ public class MainActivity extends Activity {
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(itemsAdapter);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    private void SendClicked()
-    {
+    private void SendClicked() {
         Log.i("Main", "Insert");
         Location location;
         if (gps != null)
             location = gps.getLocation();
-        else
-        {
+        else {
             location = new Location("");
             location.setLatitude(10.11);
             location.setLongitude(50.3);
@@ -115,8 +129,7 @@ public class MainActivity extends Activity {
         dbHelper.insertPosition(new Position(tour, location));
     }
 
-    private void UpdateClicked()
-    {
+    private void UpdateClicked() {
         Log.i("Main", "Update");
         Toast.makeText(getApplicationContext(), "DB wird ausgelesen", Toast.LENGTH_SHORT).show();
         ArrayList<Position> l = dbHelper.selectAllPositionsFromTour(tour.getTourID());
@@ -128,25 +141,24 @@ public class MainActivity extends Activity {
             textView.setText(text);
 
             for (Position pos : l) {
-                s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude() + "\nTS: " + pos.getTime() ;
+                s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude() + "\nTS: " + pos.getTime();
                 list.add(s);
             }
         }
     }
 
-    private void StartTrackingClicked()
-    {
+    private void StartTrackingClicked() {
         Log.i("Main", "Tracking started");
         radioButton.setChecked(true);
         tour = new Tour();
-        gps = new GPSTracker(MainActivity.this)
-        {
+        gps = new GPSTracker(MainActivity.this) {
             @Override
-            public void onLocationChanged(Location location)
-            {
+            public void onLocationChanged(Location location) {
                 getLocation(); //is this needed?
                 //Create and send JSON-String
                 String s = CreateJSONStringFromLocation(location);
+                Position pos = dbHelper.selectPosition();
+                mapView.centerAt (pos.getLatitude(), pos.getLongitude(), false);
                 Log.i("GPSTracker", s);
                 //SendJSONString(s);
 
@@ -156,7 +168,7 @@ public class MainActivity extends Activity {
         };
 
         // check if GPS enabled
-        if(gps.canGetLocation()){
+        if (gps.canGetLocation()) {
             Position position = new Position();
             position.setLatitude(gps.getLatitude());
             position.setLongitude(gps.getLongitude());
@@ -169,7 +181,7 @@ public class MainActivity extends Activity {
 
             Toast.makeText(getApplicationContext(), "Ihre Position ist - \nLat: " + position.getLatitude() + "\nLong: " + position.getLongitude(), Toast.LENGTH_LONG).show();
             //SendJSONString(tour.getJSONString());
-        }else{
+        } else {
             // can't get location
             // GPS or Network is not enabled
             // Ask user to enable GPS/network in settings
@@ -177,8 +189,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void StopTrackingClicked()
-    {
+    private void StopTrackingClicked() {
         Log.i("Main", "Tracking stopped");
         Toast.makeText(getApplicationContext(), "Tracking wird deaktiviert", Toast.LENGTH_SHORT).show();
         radioButton.setChecked(false);
@@ -186,18 +197,16 @@ public class MainActivity extends Activity {
             gps.stopUsingGPS();
     }
 
-    private void SendJSONString (String s)
-    {
+    private void SendJSONString(String s) {
         String url = "https://preview.api.cycleyourcity.jmakro.de:4040/log_coordinates.php";
-        HashMap<String,String> map = new HashMap<>();
-        map.put("data", s );
+        HashMap<String, String> map = new HashMap<>();
+        map.put("data", s);
 
         Log.i("MAIN", "Sending " + s);
         sender.SendPostRequest(url, map);
     }
 
-    private String CreateJSONStringFromLocation(Location loc)
-    {
+    private String CreateJSONStringFromLocation(Location loc) {
         Position position = new Position();
         position.setLatitude(loc.getLatitude());
         position.setLongitude(loc.getLongitude());
@@ -232,5 +241,45 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://digitale_stadt.cc_a3/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://digitale_stadt.cc_a3/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 }
