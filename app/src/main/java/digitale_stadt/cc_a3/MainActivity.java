@@ -2,6 +2,7 @@ package digitale_stadt.cc_a3;
 
 import android.app.Activity;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -32,6 +33,14 @@ public class MainActivity extends Activity {
     ListView listView;
     ArrayList<String> list;
 
+    // flag for GPS status
+    boolean isGPSEnabled = false;
+
+    // flag for network status
+    boolean isNetworkEnabled = false;
+
+    protected LocationManager locationManager;
+
     // GPSTracker class
     private GPSTracker gps;
     private DBHelper dbHelper;
@@ -46,6 +55,8 @@ public class MainActivity extends Activity {
   //     String password = "";
         tour = new Tour();
         dbHelper = new DBHelper(this);
+
+        locationManager = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -94,6 +105,11 @@ public class MainActivity extends Activity {
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(itemsAdapter);
+
+        isGPSEnabled = locationManager
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+        isNetworkEnabled = locationManager
+                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     private void SendClicked()
@@ -112,8 +128,19 @@ public class MainActivity extends Activity {
         }
 
         Toast.makeText(getApplicationContext(), "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-        dbHelper.insertPosition(new Position(tour, location));
+        dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
+            @Override
+            public void onComplete(boolean success, Void result) {
+                if (success) {
+                    if ((gps.canGetLocation() && isGPSEnabled)||(gps.canGetLocation() && isNetworkEnabled)){
+                     //   read();
+                        gps.canGetLocation = false;
+                    }
+                }
+            }
+        });
     }
+
 
     private void UpdateClicked()
     {
