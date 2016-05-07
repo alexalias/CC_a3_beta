@@ -18,6 +18,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import digitale_stadt.cc_a3.DBHelper.DatabaseHandler;
+
 /**
  * Created by alexutza_a on 02.05.2016.
  */
@@ -33,6 +35,7 @@ public class GPSTracker extends Service implements LocationListener {
 
     boolean canGetLocation = false;
 
+
     Location location;
     double latitude;
     double longitude;
@@ -45,6 +48,7 @@ public class GPSTracker extends Service implements LocationListener {
     public GPSTracker(Context context) {
         this.mContext = context;
         getLocation();
+
     }
 
     public Location getLocation() {
@@ -100,6 +104,9 @@ public class GPSTracker extends Service implements LocationListener {
         }
         return location;
     }
+
+
+
 
     /**
      * Function to get latitude

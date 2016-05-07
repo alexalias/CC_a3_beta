@@ -117,7 +117,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Position selectPosition() {
         Position position2 = new Position();
-        Cursor cursor = db.rawQuery("SELECT * FROM positions ORDER BY id LIMIT 1", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM positions ORDER BY id DESC LIMIT 1", null);
 
         try {
             if (cursor.getCount() > 0) {
