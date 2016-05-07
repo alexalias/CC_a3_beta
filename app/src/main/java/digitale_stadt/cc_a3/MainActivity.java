@@ -116,27 +116,16 @@ public class MainActivity extends Activity {
     {
         Log.i("Main", "Insert");
         Location location;
-        if (gps != null)
-            location = gps.getLocation();
-        else
-        {
-            location = new Location("");
-            location.setLatitude(10.11);
-            location.setLongitude(50.3);
-            location.setAltitude(5.5);
-            location.setTime(123456);
-        }
+        location = new Location("");
+        location.setLatitude(10.11);
+        location.setLongitude(50.3);
+        location.setAltitude(5.5);
+        location.setTime(123456);
 
-        Toast.makeText(getApplicationContext(), "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
         dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
             @Override
             public void onComplete(boolean success, Void result) {
-                if (success) {
-                    if ((gps.canGetLocation() && isGPSEnabled)||(gps.canGetLocation() && isNetworkEnabled)){
-                     //   read();
-                        gps.canGetLocation = false;
-                    }
-                }
             }
         });
     }
@@ -177,8 +166,12 @@ public class MainActivity extends Activity {
                 Log.i("GPSTracker", s);
                 //SendJSONString(s);
 
-                dbHelper.insertPosition(new Position(tour, location));
-                //ToDo: save location to DB instead of sending
+                Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
+                    @Override
+                    public void onComplete(boolean success, Void result) {
+                    }
+                });
             }
         };
 
