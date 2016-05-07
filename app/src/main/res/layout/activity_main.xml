@@ -89,5 +89,15 @@
         android:clickable="false"
         android:singleLine="true" />
 
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/listView"
+        android:layout_below="@+id/btnSend"
+        android:layout_toStartOf="@+id/radioButton"
+        android:layout_above="@+id/radioButton"
+        android:layout_alignRight="@+id/btnStopTracking"
+        android:layout_alignEnd="@+id/btnStopTracking" />
+
 
 </RelativeLayout>

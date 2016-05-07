@@ -8,11 +8,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 //ToDo: create loop that checks DB for new positions and sends them using the Sender
@@ -26,6 +29,8 @@ public class MainActivity extends Activity {
     Button btnSend;
     RadioButton radioButton;
     TextView textView;
+    ListView listView;
+    ArrayList<String> list;
 
     // GPSTracker class
     private GPSTracker gps;
@@ -83,6 +88,12 @@ public class MainActivity extends Activity {
 
         textView = (TextView) findViewById(R.id.textView);
         radioButton = (RadioButton) findViewById(R.id.radioButton);
+        listView = (ListView) findViewById(R.id.listView);
+
+        list = new ArrayList<>();
+        ArrayAdapter<String> itemsAdapter =
+                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
+        listView.setAdapter(itemsAdapter);
     }
 
     private void SendClicked()
@@ -100,14 +111,26 @@ public class MainActivity extends Activity {
             location.setTime(123456);
         }
 
+        Toast.makeText(getApplicationContext(), "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
         dbHelper.insertPosition(new Position(tour, location));
     }
 
     private void UpdateClicked()
     {
         Log.i("Main", "Update");
-        String text = "DB-Entries: " + Integer.toString(dbHelper.selectAllPositions().size());
+        Toast.makeText(getApplicationContext(), "DB wird ausgelesen", Toast.LENGTH_SHORT).show();
+        ArrayList<Position> l = dbHelper.selectAllPositions();
+        String s;
+
+        String text = "DB-Entries: " + Integer.toString(l.size());
         textView.setText(text);
+
+        list.clear();
+        for (Position pos : l)
+        {
+            s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude();
+            list.add(s);
+        }
     }
 
     private void StartTrackingClicked()
@@ -156,6 +179,7 @@ public class MainActivity extends Activity {
     private void StopTrackingClicked()
     {
         Log.i("Main", "Tracking stopped");
+        Toast.makeText(getApplicationContext(), "Tracking wird deaktiviert", Toast.LENGTH_SHORT).show();
         radioButton.setChecked(false);
         if (gps != null)
             gps.stopUsingGPS();
