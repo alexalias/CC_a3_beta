@@ -75,10 +75,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/textView"
         android:layout_alignBottom="@+id/btnSend"
-        android:layout_toLeftOf="@+id/btnStopTracking"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/btnSend"
-        android:layout_toEndOf="@+id/btnSend" />
+        android:layout_toLeftOf="@+id/btnUpdate"
+        android:layout_toStartOf="@+id/btnUpdate"/>
 
     <RadioButton
         android:layout_width="wrap_content"
@@ -86,6 +86,7 @@
         android:id="@+id/radioButton"
         android:layout_alignBottom="@+id/btnStopTracking"
         android:layout_centerHorizontal="true"
+        android:clickable="false"
         android:singleLine="true" />
 
 

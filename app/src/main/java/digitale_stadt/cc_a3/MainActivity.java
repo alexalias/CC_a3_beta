@@ -106,16 +106,14 @@ public class MainActivity extends Activity {
     private void UpdateClicked()
     {
         Log.i("Main", "Update");
-        if (gps != null)
-        {
-            String text = Integer.toString(dbHelper.selectAllPositionsNotSent().size());
-            textView.setText(text);
-        }
+        String text = "DB-Entries: " + Integer.toString(dbHelper.selectAllPositions().size());
+        textView.setText(text);
     }
 
     private void StartTrackingClicked()
     {
         Log.i("Main", "Tracking started");
+        radioButton.setChecked(true);
         tour = new Tour();
         gps = new GPSTracker(MainActivity.this)
         {
@@ -158,6 +156,7 @@ public class MainActivity extends Activity {
     private void StopTrackingClicked()
     {
         Log.i("Main", "Tracking stopped");
+        radioButton.setChecked(false);
         if (gps != null)
             gps.stopUsingGPS();
     }

@@ -150,7 +150,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Gibt eine Liste aller Positionsobjekte zurück,
     // die noch nicht an den Server verschickt worden sind.
-
     public ArrayList<Position> selectAllPositionsNotSent() {
         ArrayList<Position> positions = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT * FROM positions WHERE sent = 0 ORDER BY id", null);
@@ -183,6 +182,44 @@ public class DBHelper extends SQLiteOpenHelper {
             @Override
             protected Void executeMethod() {
                 selectAllPositionsNotSent();
+                return null;
+            }
+        }.execute();
+    }
+
+    // Gibt eine Liste aller Positionsobjekte zurück,
+    public ArrayList<Position> selectAllPositions() {
+        ArrayList<Position> positions = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM positions ORDER BY id", null);
+
+        try {
+            if (cursor.getCount() > 0) {
+
+                Position pos = new Position();
+
+                cursor.moveToFirst();
+                pos.setId(cursor.getLong(cursor.getColumnIndex("id")));
+                pos.setTourID(cursor.getInt(cursor.getColumnIndex("trackId")));
+                pos.setTime(new Date(cursor.getLong(cursor.getColumnIndex("timestamp"))));
+                pos.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
+                pos.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
+                pos.setAltitude(cursor.getDouble(cursor.getColumnIndex("altitude")));
+
+                positions.add(pos);
+            } else {
+                return null;
+            }
+        } finally {
+            cursor.close();
+        }
+        return positions;
+    }
+
+    public void selectAllPositionsAsync(DatabaseHandler<Void> handler) {
+        new DatabaseAsyncTask<Void>(handler) {
+            @Override
+            protected Void executeMethod() {
+                selectAllPositions();
                 return null;
             }
         }.execute();
