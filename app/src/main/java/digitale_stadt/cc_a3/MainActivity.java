@@ -119,17 +119,18 @@ public class MainActivity extends Activity {
     {
         Log.i("Main", "Update");
         Toast.makeText(getApplicationContext(), "DB wird ausgelesen", Toast.LENGTH_SHORT).show();
-        ArrayList<Position> l = dbHelper.selectAllPositions();
+        ArrayList<Position> l = dbHelper.selectAllPositionsFromTour(tour.getTourID());
         String s;
 
-        String text = "DB-Entries: " + Integer.toString(l.size());
-        textView.setText(text);
-
         list.clear();
-        for (Position pos : l)
-        {
-            s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude();
-            list.add(s);
+        if (l != null) {
+            String text = "DB-Entries: " + Integer.toString(l.size());
+            textView.setText(text);
+
+            for (Position pos : l) {
+                s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude() + "\nTS: " + pos.getTime() ;
+                list.add(s);
+            }
         }
     }
 
@@ -147,7 +148,7 @@ public class MainActivity extends Activity {
                 //Create and send JSON-String
                 String s = CreateJSONStringFromLocation(location);
                 Log.i("GPSTracker", s);
-                SendJSONString(s);
+                //SendJSONString(s);
 
                 dbHelper.insertPosition(new Position(tour, location));
                 //ToDo: save location to DB instead of sending

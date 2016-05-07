@@ -154,27 +154,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<Position> positions = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT * FROM positions WHERE sent = 0 ORDER BY id", null);
 
-        try {
-            if (cursor.getCount() > 0) {
-
-                Position pos = new Position();
-
-                cursor.moveToFirst();
-                pos.setId(cursor.getLong(cursor.getColumnIndex("id")));
-                pos.setTourID(cursor.getInt(cursor.getColumnIndex("trackId")));
-                pos.setTime(new Date(cursor.getLong(cursor.getColumnIndex("timestamp"))));
-                pos.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
-                pos.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
-                pos.setAltitude(cursor.getDouble(cursor.getColumnIndex("altitude")));
-
-                positions.add(pos);
-            } else {
-                return null;
-            }
-        } finally {
-            cursor.close();
-        }
-        return positions;
+        return EvaluateCursor(cursor);
     }
 
     public void selectAllPositionsNotSentAsync(DatabaseHandler<Void> handler) {
@@ -192,27 +172,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<Position> positions = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT * FROM positions ORDER BY id", null);
 
-        try {
-            if (cursor.getCount() > 0) {
-
-                Position pos = new Position();
-
-                cursor.moveToFirst();
-                pos.setId(cursor.getLong(cursor.getColumnIndex("id")));
-                pos.setTourID(cursor.getInt(cursor.getColumnIndex("trackId")));
-                pos.setTime(new Date(cursor.getLong(cursor.getColumnIndex("timestamp"))));
-                pos.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
-                pos.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
-                pos.setAltitude(cursor.getDouble(cursor.getColumnIndex("altitude")));
-
-                positions.add(pos);
-            } else {
-                return null;
-            }
-        } finally {
-            cursor.close();
-        }
-        return positions;
+        return EvaluateCursor(cursor);
     }
 
     public void selectAllPositionsAsync(DatabaseHandler<Void> handler) {
@@ -220,6 +180,26 @@ public class DBHelper extends SQLiteOpenHelper {
             @Override
             protected Void executeMethod() {
                 selectAllPositions();
+                return null;
+            }
+        }.execute();
+    }
+
+    // Gibt eine Liste aller Positionsobjekte der gegebenen Tour zurück,
+    public ArrayList<Position> selectAllPositionsFromTour(int tourID) {
+        ArrayList<Position> positions = new ArrayList<>();
+        Position pos;
+
+        Cursor cursor = db.rawQuery("SELECT * FROM positions WHERE trackID = " + tourID + " ORDER BY id", null);
+
+        return EvaluateCursor(cursor);
+    }
+
+    public void selectAllPositionsFromTourAsync(final int tourID, DatabaseHandler<Void> handler) {
+        new DatabaseAsyncTask<Void>(handler) {
+            @Override
+            protected Void executeMethod() {
+                selectAllPositionsFromTour(tourID);
                 return null;
             }
         }.execute();
@@ -239,5 +219,36 @@ public class DBHelper extends SQLiteOpenHelper {
                 return null;
             }
         }.execute();
+    }
+
+    private ArrayList<Position> EvaluateCursor(Cursor cursor)
+    {
+        ArrayList<Position> positions = new ArrayList<>();
+        Position pos;
+
+        try {
+            if (cursor.getCount() > 0)
+            {
+                cursor.moveToFirst();
+
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    pos = new Position();
+                    pos.setId(cursor.getLong(cursor.getColumnIndex("id")));
+                    pos.setTourID(cursor.getInt(cursor.getColumnIndex("trackId")));
+                    pos.setTime(new Date(cursor.getLong(cursor.getColumnIndex("timestamp"))));
+                    pos.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
+                    pos.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
+                    pos.setAltitude(cursor.getDouble(cursor.getColumnIndex("altitude")));
+
+                    positions.add(pos);
+                    cursor.moveToNext();
+                }
+            } else {
+                return null;
+            }
+        } finally {
+            cursor.close();
+        }
+        return positions;
     }
 }
