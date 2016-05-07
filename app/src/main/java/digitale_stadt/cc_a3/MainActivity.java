@@ -87,9 +87,20 @@ public class MainActivity extends Activity {
 
     private void SendClicked()
     {
-        Log.i("Main", "Send");
+        Log.i("Main", "Insert");
+        Location location;
         if (gps != null)
-            dbHelper.insertPosition(new Position(tour, gps.getLocation()));
+            location = gps.getLocation();
+        else
+        {
+            location = new Location("");
+            location.setLatitude(10.11);
+            location.setLongitude(50.3);
+            location.setAltitude(5.5);
+            location.setTime(123456);
+        }
+
+        dbHelper.insertPosition(new Position(tour, location));
     }
 
     private void UpdateClicked()
@@ -147,7 +158,8 @@ public class MainActivity extends Activity {
     private void StopTrackingClicked()
     {
         Log.i("Main", "Tracking stopped");
-        gps.stopUsingGPS();
+        if (gps != null)
+            gps.stopUsingGPS();
     }
 
     private void SendJSONString (String s)
