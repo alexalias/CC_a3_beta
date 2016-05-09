@@ -90,12 +90,12 @@ public class MainActivity extends Activity {
 
         btnSend = (Button) findViewById(R.id.btnSend);
         // show location button click event
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SendClicked();
-            }
-        });
+//        btnSend.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                SendClicked();
+//            }
+//        });
 
         textView = (TextView) findViewById(R.id.textView);
         radioButton = (RadioButton) findViewById(R.id.radioButton);
@@ -112,63 +112,51 @@ public class MainActivity extends Activity {
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
-    private void SendClicked()
-    {
-        Log.i("Main", "Insert");
-        Location location;
-        location = new Location("");
-        location.setLatitude(10.11);
-        location.setLongitude(50.3);
-        location.setAltitude(5.5);
-        location.setTime(123456);
-
-        Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-        dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
-            @Override
-            public void onComplete(boolean success, Void result) {
-            }
-        });
-
-    }
+//    private void SendClicked()
+//    {
+//        Log.i("Main", "Insert");
+//        Location location;
+//        location = new Location("");
+//        location.setLatitude(10.11);
+//        location.setLongitude(50.3);
+//        location.setAltitude(5.5);
+//        location.setTime(123456);
+//
+//        Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+//        dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
+//            @Override
+//            public void onComplete(boolean success, Void result) {
+//            }
+//        });
+//
+//    }
 
 
     private void UpdateClicked()
     {
         Log.i("Main", "Update");
         Toast.makeText(getApplicationContext(), "DB wird ausgelesen", Toast.LENGTH_SHORT).show();
-//        ArrayList<Position> l = dbHelper.selectAllPositionsFromTourAsync(tour.getTourID(), new DBHelper.DatabaseHandler<Void>() {
-//
-//            @Override
-//            public void onComplete(boolean success, Void result) {
-//
-//            }
-//
-//        });
-       ArrayList<Position> l;
-        dbHelper.selectAllPositionsFromTourAsync(tour.getTourID(), new DBHelper.DatabaseHandler<ArrayList<Position>>() {
-            @Override
-            public void onComplete(boolean success, ArrayList<Position> result) {
-                l = result;
-                if (success) {
-                    if ((gps.canGetLocation() && isGPSEnabled)||(gps.canGetLocation() && isNetworkEnabled)){
-                        //   read();
-                        gps.canGetLocation = false;
-                    }
-                }
-            }
+
+       dbHelper.selectAllPositionsFromTourAsync(tour.getTourID(), new DBHelper.DatabaseHandler<ArrayList<Position>>() {
+           @Override
+           public void onComplete(boolean success, ArrayList<Position> result) {
+               if (success) {
+                   list.clear();
+                   if (result != null) {
+                       String text = "DB-Entries: " + Integer.toString(result.size());
+                       textView.setText(text);
+
+                       String s;
+                       for (Position pos : result) {
+                           s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude() + "\nTS: " + pos.getTime();
+                           list.add(s);
+                       }
+                       Log.d("DB Eintrag:", list.toString());
+                   }
+               }
+           }
         });
-        String s;
 
-        list.clear();
-        if (l != null) {
-            String text = "DB-Entries: " + Integer.toString(l.size());
-            textView.setText(text);
-
-            for (Position pos : l) {
-                s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude() + "\nTS: " + pos.getTime() ;
-                list.add(s);
-            }
-        }
     }
 
     private void StartTrackingClicked()
@@ -187,10 +175,14 @@ public class MainActivity extends Activity {
                 Log.i("GPSTracker", s);
                 //SendJSONString(s);
 
-                Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
                 dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
                     @Override
                     public void onComplete(boolean success, Void result) {
+//                        if(success){
+//                            if (canGetLocation()) {
+//
+//                            }
                     }
                 });
             }

@@ -194,6 +194,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void selectAllPositionsFromTourAsync(final int tourID, DatabaseHandler<ArrayList<Position>> handler) {
+
         new DatabaseAsyncTask<ArrayList<Position>>(handler) {
             @Override
             protected ArrayList<Position> executeMethod() {
