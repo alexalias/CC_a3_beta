@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 //ToDo: create loop that checks DB for new positions and sends them using the Sender
 //ToDo: show map
@@ -26,12 +26,13 @@ public class MainActivity extends Activity {
 
     Button btnStartTracking;
     Button btnStopTracking;
-    Button btnUpdate;
-    Button btnSend;
+    Button btnShow;
+    Button btnInsert;
     RadioButton radioButton;
     TextView textView;
     ListView listView;
     ArrayList<String> list;
+    Timer sendTimer;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -52,7 +53,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         sender = new Sender(this);
   //      String user = "";
-  //     String password = "";
+  //      String password = "";
         tour = new Tour();
         dbHelper = new DBHelper(this);
 
@@ -79,21 +80,21 @@ public class MainActivity extends Activity {
             }
         });
 
-        btnUpdate = (Button) findViewById(R.id.btnUpdate);
+        btnShow = (Button) findViewById(R.id.btnShow);
         // show location button click event
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
+        btnShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UpdateClicked();
+                ShowClicked();
             }
         });
 
-        btnSend = (Button) findViewById(R.id.btnSend);
-        // show location button click event
-//        btnSend.setOnClickListener(new View.OnClickListener() {
+//        btnInsert = (Button) findViewById(R.id.btnInsert);
+//        // show location button click event
+//        btnInsert.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                SendClicked();
+//                InsertClicked();
 //            }
 //        });
 
@@ -110,9 +111,13 @@ public class MainActivity extends Activity {
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkEnabled = locationManager
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        //setup a timer to frequently send new DB-entries to server
+        StartTimer(30000);
+
     }
 
-//    private void SendClicked()
+//    private void InsertClicked()
 //    {
 //        Log.i("Main", "Insert");
 //        Location location;
@@ -128,11 +133,62 @@ public class MainActivity extends Activity {
 //            public void onComplete(boolean success, Void result) {
 //            }
 //        });
-//
 //    }
 
+    protected void OnStop()
+    {
+        StopTimer();
+    }
 
-    private void UpdateClicked()
+    protected void StartTimer(int interval_ms)
+    {
+        if (sendTimer == null)
+        {
+            Log.i("Main", "Timer initialized");
+            sendTimer = new Timer("SendTimer", true);
+        }
+
+        Log.i("Main", "Timer started");
+        //schedule sending new GPS entries in DB every 30 seconds
+        sendTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                //ToDo: change db query to selectAllPositionsNotSent
+                ArrayList<Position> result = dbHelper.selectAllPositionsFromTour(tour.getTourID());
+                list.clear();
+
+                if ((result != null) && (result.size() > 0)) {
+                    Log.i("Main", "Sending " + result.size() + " Positions");
+                    //String text = "DB-Entries: " + Integer.toString(result.size());
+                    //textView.setText(text);
+
+                    String s;
+                    for (int i = 0; i < Math.min(result.size(), 10); i++)
+                    {
+                        s = "ID: " + result.get(i).getId() + "   Pos: " + result.get(i).getLatitude() + "/" + result.get(i).getLongitude() + "\nTS: " + result.get(i).getTime();
+                        list.add(s);
+                    }
+
+                    //ToDo: enable sending
+                    //sender.SendTourData(new Tour());
+
+                    //ToDo: update db if positions were sent
+                }
+                else
+                {
+                    Log.i("Main", "Nothing to do");
+                }
+            }
+        }, 0, interval_ms);
+    }
+
+    protected void StopTimer()
+    {
+        Log.i("Main", "Timer stopped");
+        sendTimer.cancel();
+    }
+
+    private void ShowClicked()
     {
         Log.i("Main", "Update");
         Toast.makeText(getApplicationContext(), "DB wird ausgelesen", Toast.LENGTH_SHORT).show();
@@ -151,14 +207,18 @@ public class MainActivity extends Activity {
                            s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude() + "\nTS: " + pos.getTime();
                            list.add(s);
                        }
-                       Log.d("DB Eintrag:", list.toString());
+                       Log.i("DB Eintrag:", list.toString());
                    }
+               }
+               else
+               {
+                   Log.i("Main", "Error");
                }
            }
         });
-
     }
 
+    //Enables GPS Tracking and Saving of new Positions in the DB
     private void StartTrackingClicked()
     {
         Log.i("Main", "Tracking started");
@@ -170,19 +230,15 @@ public class MainActivity extends Activity {
             public void onLocationChanged(Location location)
             {
                 getLocation(); //is this needed?
-                //Create and send JSON-String
-                String s = CreateJSONStringFromLocation(location);
-                Log.i("GPSTracker", s);
-                //SendJSONString(s);
+                Position pos = new Position(tour, location);
 
-//                Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-                dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
+                Log.i("GPSTracker", "New Location: " + pos.getJSONObject().toString());
+                //Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+
+                dbHelper.insertPositionAsync(pos, new DBHelper.DatabaseHandler<Void>()
+                {
                     @Override
                     public void onComplete(boolean success, Void result) {
-//                        if(success){
-//                            if (canGetLocation()) {
-//
-//                            }
                     }
                 });
             }
@@ -190,6 +246,7 @@ public class MainActivity extends Activity {
 
         // check if GPS enabled
         if(gps.canGetLocation()){
+            gps.getLocation();
             Position position = new Position();
             position.setLatitude(gps.getLatitude());
             position.setLongitude(gps.getLongitude());
@@ -217,32 +274,6 @@ public class MainActivity extends Activity {
         radioButton.setChecked(false);
         if (gps != null)
             gps.stopUsingGPS();
-    }
-
-    private void SendJSONString (String s)
-    {
-        String url = "https://preview.api.cycleyourcity.jmakro.de:4040/log_coordinates.php";
-        HashMap<String,String> map = new HashMap<>();
-        map.put("data", s );
-
-        Log.i("MAIN", "Sending " + s);
-        sender.SendPostRequest(url, map);
-    }
-
-    private String CreateJSONStringFromLocation(Location loc)
-    {
-        Position position = new Position();
-        position.setLatitude(loc.getLatitude());
-        position.setLongitude(loc.getLongitude());
-        position.setAltitude(loc.getAltitude());
-        //Log.i("time",loc.getTime().);
-        position.setId(id);
-        id += 1;
-
-        tour.getWayPoints().clear();
-        tour.AddWayPoint(position);
-
-        return tour.getJSONString();
     }
 
     @Override
