@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,9 +11,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,14 +23,11 @@ import java.util.HashMap;
 //ToDo: get GPS signal
 public class MainActivity extends Activity {
 
-    Button btnStartTracking;
-    Button btnStopTracking;
-    Button btnUpdate;
-    Button btnSend;
-    RadioButton radioButton;
     TextView textView;
-    ListView listView;
     ArrayList<String> list;
+
+    // Liste aller Positionen einer Tour, zum Zwischenspeichern bis Senden.
+    ArrayList<Position> wayPointList;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -61,50 +57,14 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnStartTracking = (Button) findViewById(R.id.btnStartTracking);
-        // show location button click event
-        btnStartTracking.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                StartTrackingClicked();
-            }
-        });
-
-        btnStopTracking = (Button) findViewById(R.id.btnStopTracking);
-        // show location button click event
-        btnStopTracking.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                StopTrackingClicked();
-            }
-        });
-
-        btnUpdate = (Button) findViewById(R.id.btnUpdate);
-        // show location button click event
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                UpdateClicked();
-            }
-        });
-
-        btnSend = (Button) findViewById(R.id.btnSend);
-        // show location button click event
-//        btnSend.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                SendClicked();
-//            }
-//        });
 
         textView = (TextView) findViewById(R.id.textView);
-        radioButton = (RadioButton) findViewById(R.id.radioButton);
-        listView = (ListView) findViewById(R.id.listView);
 
         list = new ArrayList<>();
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
-        listView.setAdapter(itemsAdapter);
+
+        wayPointList = new ArrayList<>();
 
         isGPSEnabled = locationManager
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -112,57 +72,22 @@ public class MainActivity extends Activity {
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
-//    private void SendClicked()
-//    {
-//        Log.i("Main", "Insert");
-//        Location location;
-//        location = new Location("");
-//        location.setLatitude(10.11);
-//        location.setLongitude(50.3);
-//        location.setAltitude(5.5);
-//        location.setTime(123456);
-//
-//        Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-//        dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
-//            @Override
-//            public void onComplete(boolean success, Void result) {
-//            }
-//        });
-//
-//    }
-
-
-    private void UpdateClicked()
-    {
-        Log.i("Main", "Update");
-        Toast.makeText(getApplicationContext(), "DB wird ausgelesen", Toast.LENGTH_SHORT).show();
-
-       dbHelper.selectAllPositionsFromTourAsync(tour.getTourID(), new DBHelper.DatabaseHandler<ArrayList<Position>>() {
-           @Override
-           public void onComplete(boolean success, ArrayList<Position> result) {
-               if (success) {
-                   list.clear();
-                   if (result != null) {
-                       String text = "DB-Entries: " + Integer.toString(result.size());
-                       textView.setText(text);
-
-                       String s;
-                       for (Position pos : result) {
-                           s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude() + "\nTS: " + pos.getTime();
-                           list.add(s);
-                       }
-                       Log.d("DB Eintrag:", list.toString());
-                   }
-               }
-           }
-        });
-
+    //Eine Sorte Clicklistener für unser start/stop Button
+    public void startTracking(View view){
+        boolean on = ((ToggleButton) view).isChecked();
+        if (on) {
+            Toast.makeText(MainActivity.this, "Tacking started", Toast.LENGTH_SHORT).show();
+            StartTrackingClicked();
+        }
+        else {
+            StopTrackingClicked();
+        }
     }
 
+// GPS-Funktion wird angeschaltet und die WayPoints einer Tour im ArrayList zwischengespeichert.
     private void StartTrackingClicked()
     {
         Log.i("Main", "Tracking started");
-        radioButton.setChecked(true);
         tour = new Tour();
         gps = new GPSTracker(MainActivity.this)
         {
@@ -176,15 +101,13 @@ public class MainActivity extends Activity {
                 //SendJSONString(s);
 
 //                Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-                dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
-                    @Override
-                    public void onComplete(boolean success, Void result) {
-//                        if(success){
-//                            if (canGetLocation()) {
+//                dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
+//                    @Override
+//                    public void onComplete(boolean success, Void result) {
 //
-//                            }
-                    }
-                });
+//                    }
+//                });
+                wayPointList.add(new Position(tour, location));
             }
         };
 
@@ -214,9 +137,40 @@ public class MainActivity extends Activity {
     {
         Log.i("Main", "Tracking stopped");
         Toast.makeText(getApplicationContext(), "Tracking wird deaktiviert", Toast.LENGTH_SHORT).show();
-        radioButton.setChecked(false);
+        
+        SaveTourInDB();
+        
         if (gps != null)
             gps.stopUsingGPS();
+    }
+
+    private void SaveTourInDB()
+    {
+        Log.i("Main", "Update");
+        Toast.makeText(getApplicationContext(), "DB wird befüllt", Toast.LENGTH_SHORT).show();
+
+        //ToDo: Insert Tour in DB aus dem ArrayList, Async
+
+//        dbHelper.selectAllPositionsFromTourAsync(tour.getTourID(), new DBHelper.DatabaseHandler<ArrayList<Position>>() {
+//            @Override
+//            public void onComplete(boolean success, ArrayList<Position> result) {
+//                if (success) {
+//                    list.clear();
+//                    if (result != null) {
+//                        String text = "DB-Entries: " + Integer.toString(result.size());
+//                        textView.setText(text);
+//
+//                        String s;
+//                        for (Position pos : result) {
+//                            s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude() + "\nTS: " + pos.getTime();
+//                            list.add(s);
+//                        }
+//                        Log.d("DB Eintrag:", list.toString());
+//                    }
+//                }
+//            }
+//        });
+
     }
 
     private void SendJSONString (String s)

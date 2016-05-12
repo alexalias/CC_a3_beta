@@ -9,101 +9,29 @@
                 tools:context=".MainActivity"
                 style="@android:style/Theme.Light">
 
-    <!--<ToggleButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/playButton"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_alignParentEnd="false"-->
-        <!--android:layout_alignParentRight="false"-->
-        <!--android:layout_alignParentLeft="false"-->
-        <!--android:background="@android:color/transparent"-->
-        <!--android:textOn=""-->
-        <!--android:textOff=""-->
-        <!--android:button="@drawable/button_selector"-->
-        <!--android:onClick="startTracking"/> rHorizontal="true"-->
-        <!--android:layout_alignParentEnd="false"-->
-        <!--android:layout_alignParentRight="false"-->
-        <!--android:layout_alignParentLeft="false"-->
-        <!--android:background="@android:color/transparent"-->
-        <!--android:textOn=""-->
-        <!--android:textOff=""-->
-        <!--android:button="@drawable/button_selector"-->
-        <!--android:onClick="startTracking"/>-->
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/stop_tracking"
-        android:id="@+id/btnStopTracking"
-
-        android:layout_alignTop="@+id/btnStartTracking"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start_tracking"
-        android:id="@+id/btnStartTracking"
-
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <!--Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/send"
-        android:id="@+id/btnSend"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" /-->
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/update"
-        android:id="@+id/btnUpdate"
-
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/btnUpdate"
-        android:layout_toStartOf="@+id/btnUpdate"/>
-
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/radioButton"
-        android:layout_alignBottom="@+id/btnStopTracking"
-        android:layout_centerHorizontal="true"
-        android:clickable="false"
-        android:singleLine="true" />
+        android:layout_alignParentTop="true"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/btnUpdate"
-        android:layout_above="@+id/radioButton">
+        android:layout_below="@+id/textView"
+        android:layout_above="@+id/playButton">
 
-        <com.esri.android.map.MapView
+        <!--com.esri.android.map.MapView
             android:id="@+id/map"
             android:layout_width="fill_parent"
             android:layout_height="216dp"
             mapoptions.MapType="Streets"
             mapoptions.center="53.551085, 9.993682"
             mapoptions.ZoomLevel="16">
-        </com.esri.android.map.MapView>
+        </com.esri.android.map.MapView-->
 
-        <ListView
+        <!--ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/listView"
@@ -111,8 +39,24 @@
             android:layout_above="@+id/radioButton"
             android:layout_alignRight="@+id/btnStopTracking"
             android:layout_alignEnd="@+id/btnStopTracking"
-            android:layout_toLeftOf="@+id/radioButton" />
+            android:layout_toLeftOf="@+id/radioButton"
+            /-->
+
+
     </LinearLayout>
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/playButton"
+        android:background="@android:color/transparent"
+        android:textOn=""
+        android:textOff=""
+        android:button="@drawable/button_selector"
+        android:onClick="startTracking"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
 
 
 </RelativeLayout>
