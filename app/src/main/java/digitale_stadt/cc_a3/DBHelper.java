@@ -226,8 +226,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Position pos;
 
         try {
-            if (cursor.getCount() > 0)
-            {
+            if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
 
                 for (int i = 0; i < cursor.getCount(); i++) {
@@ -242,8 +241,6 @@ public class DBHelper extends SQLiteOpenHelper {
                     positions.add(pos);
                     cursor.moveToNext();
                 }
-            } else {
-                return null;
             }
         } finally {
             cursor.close();

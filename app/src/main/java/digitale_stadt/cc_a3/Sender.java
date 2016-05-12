@@ -39,27 +39,47 @@ import com.android.volley.toolbox.Volley;
  */
 public class Sender {
     private RequestQueue queue;
+    final String default_url = "https://preview.api.cycleyourcity.jmakro.de:4040/log_coordinates.php";
 
     public Sender(Context context)
     {
         queue = Volley.newRequestQueue(context);
     }
 
-    public void SendPostRequest(String url, final Map<String, String> params)
+    public void SendTourData(Tour tour)
+    {
+        SendJSONString(default_url, tour.getJSONString());
+    }
+
+    public void SendTourData(String url, Tour tour)
+    {
+        SendJSONString(url, tour.getJSONString());
+    }
+
+    public void SendJSONString (String url, String s)
+    {
+        HashMap<String,String> map = new HashMap<>();
+        map.put("data", s );
+
+        Log.i("MAIN", "Sending " + s);
+        SendPostRequest(url, map);
+    }
+
+    private void SendPostRequest(String url, final Map<String, String> params)
     {
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         // response
-                        Log.d("Response", response);
+                        Log.i("Response", response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
-                        Log.d("Error.Response", error.toString());
+                        Log.i("Error.Response", error.toString());
                     }
                 }
         ) {
