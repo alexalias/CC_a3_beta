@@ -1,6 +1,7 @@
 package digitale_stadt.cc_a3;
 
 import android.app.Activity;
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -9,14 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 //ToDo: create loop that checks DB for new positions and sends them using the Sender
 //ToDo: show map
@@ -25,9 +23,6 @@ public class MainActivity extends Activity {
 
     TextView textView;
     ArrayList<String> list;
-
-    // Liste aller Positionen einer Tour, zum Zwischenspeichern bis Senden.
-    ArrayList<Position> wayPointList;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -39,32 +34,32 @@ public class MainActivity extends Activity {
 
     // GPSTracker class
     private GPSTracker gps;
-    private DBHelper dbHelper;
-    private Sender sender; //ToDo: replace with DBReader-Service
-    private Tour tour;
-    private int id = 0;
+
+    // der TourManager verwaltet alle Informationen zur Tour.
+    // Er bekommt neue Positionen vom GPSTracker übergeben und sorgt für das
+    //  verschicken bzw. speichern der Positionen
+    private TourManager tourManager;
+
+//    private DBHelper dbHelper;
+//    private Sender sender;
+
+    final String deviceID = "001";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        sender = new Sender(this);
-  //      String user = "";
-  //     String password = "";
-        tour = new Tour();
-        dbHelper = new DBHelper(this);
+        //sender = new Sender(this);
+        //dbHelper = new DBHelper(this);
 
-        locationManager = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         textView = (TextView) findViewById(R.id.textView);
 
         list = new ArrayList<>();
         ArrayAdapter<String> itemsAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
-
-        wayPointList = new ArrayList<>();
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
 
         isGPSEnabled = locationManager
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -88,18 +83,23 @@ public class MainActivity extends Activity {
     private void StartTrackingClicked()
     {
         Log.i("Main", "Tracking started");
-        tour = new Tour();
+
+        //Startet eine neue Tour im TourManager
+        tourManager.StartNewTour();
+
         gps = new GPSTracker(MainActivity.this)
         {
             @Override
+            // Überschreibt GPSTracker.onLocationChanged mit einer anonymen Methode
             public void onLocationChanged(Location location)
             {
                 getLocation(); //is this needed?
-                //Create and send JSON-String
-                String s = CreateJSONStringFromLocation(location);
-                Log.i("GPSTracker", s);
-                //SendJSONString(s);
 
+                String s = "new Position   Lat: " + location.getLatitude() + "\nLong: " + location.getLongitude();
+                Log.i("Main", s);
+
+                // die neue Position wird an den Tourmanager [bergeben
+                tourManager.AddWayPoint(location);
 //                Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
 //                dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
 //                    @Override
@@ -107,23 +107,19 @@ public class MainActivity extends Activity {
 //
 //                    }
 //                });
-                wayPointList.add(new Position(tour, location));
+
             }
         };
 
         // check if GPS enabled
         if(gps.canGetLocation()){
-            Position position = new Position();
-            position.setLatitude(gps.getLatitude());
-            position.setLongitude(gps.getLongitude());
-            position.setAltitude(gps.getAltitude());
-            position.setId(id);
-            id += 1;
+            //get location and save it as StartLocation
+            Location location = gps.getLocation();
 
-            tour.getWayPoints().clear();
-            tour.AddWayPoint(position);
+            // Setzt im TourManager eine erste position
+            tourManager.AddWayPoint(location);
 
-            Toast.makeText(getApplicationContext(), "Ihre Position ist - \nLat: " + position.getLatitude() + "\nLong: " + position.getLongitude(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG).show();
             //SendJSONString(tour.getJSONString());
         }else{
             // can't get location
@@ -133,70 +129,18 @@ public class MainActivity extends Activity {
         }
     }
 
+    //Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
     private void StopTrackingClicked()
     {
         Log.i("Main", "Tracking stopped");
         Toast.makeText(getApplicationContext(), "Tracking wird deaktiviert", Toast.LENGTH_SHORT).show();
-        
-        SaveTourInDB();
+
+        // Beendet die tour im TourManager und speichert sie in die Datenbank
+        tourManager.StopTour();
+        tourManager.SaveTourToDB();
         
         if (gps != null)
             gps.stopUsingGPS();
-    }
-
-    private void SaveTourInDB()
-    {
-        Log.i("Main", "Update");
-        Toast.makeText(getApplicationContext(), "DB wird befüllt", Toast.LENGTH_SHORT).show();
-
-        //ToDo: Insert Tour in DB aus dem ArrayList, Async
-
-//        dbHelper.selectAllPositionsFromTourAsync(tour.getTourID(), new DBHelper.DatabaseHandler<ArrayList<Position>>() {
-//            @Override
-//            public void onComplete(boolean success, ArrayList<Position> result) {
-//                if (success) {
-//                    list.clear();
-//                    if (result != null) {
-//                        String text = "DB-Entries: " + Integer.toString(result.size());
-//                        textView.setText(text);
-//
-//                        String s;
-//                        for (Position pos : result) {
-//                            s = "ID: " + pos.getId() + "   Pos: " + pos.getLatitude() + "/" + pos.getLongitude() + "\nTS: " + pos.getTime();
-//                            list.add(s);
-//                        }
-//                        Log.d("DB Eintrag:", list.toString());
-//                    }
-//                }
-//            }
-//        });
-
-    }
-
-    private void SendJSONString (String s)
-    {
-        String url = "https://preview.api.cycleyourcity.jmakro.de:4040/log_coordinates.php";
-        HashMap<String,String> map = new HashMap<>();
-        map.put("data", s );
-
-        Log.i("MAIN", "Sending " + s);
-        sender.SendPostRequest(url, map);
-    }
-
-    private String CreateJSONStringFromLocation(Location loc)
-    {
-        Position position = new Position();
-        position.setLatitude(loc.getLatitude());
-        position.setLongitude(loc.getLongitude());
-        position.setAltitude(loc.getAltitude());
-        //Log.i("time",loc.getTime().);
-        position.setId(id);
-        id += 1;
-
-        tour.getWayPoints().clear();
-        tour.AddWayPoint(position);
-
-        return tour.getJSONString();
     }
 
     @Override

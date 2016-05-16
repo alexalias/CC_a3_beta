@@ -5,14 +5,16 @@ import android.location.Location;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * Created by alexutza_a on 29.04.2016.
+ * Implements a Position
  */
 public class Position {
     private long id;
-    private int tourID;
+    private String tourID;
     private Date time;
     private double latitude;
     private double longitude;
@@ -24,12 +26,18 @@ public class Position {
     }
 
     //Konstruktor
-    public Position(Tour tour, Location location){
-        this.tourID = tour.getTourID();
-        time = new Date(location.getTime());
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        altitude = location.getAltitude();
+    public Position(String tourID, long positionID, Location location){
+        this(tourID, positionID, location.getTime(), location.getLatitude(), location.getLongitude(), location.getAltitude());
+    }
+
+    //Konstruktor
+    public Position(String tourID, long positionID, long time, double lat, double lon, double alt){
+        this.tourID = tourID;
+        this.id = positionID;
+        this.time = new Date(time);
+        this.latitude = lat;
+        this.longitude = lon;
+        this.altitude = alt;
         sent = 0;
     }
 
@@ -40,8 +48,8 @@ public class Position {
     public long getId() {return id;}
     public void setId(long id) {this.id = id;}
 
-    public int getTourID() {return tourID;}
-    public void setTourID(int tourID) {this.tourID = tourID;}
+    public String getTourID() {return tourID;}
+    public void setTourID(String tourID) {this.tourID = tourID;}
 
     public Date getTime() {return time;}
     public void setTime(Date time) {this.time = time;}
@@ -55,19 +63,26 @@ public class Position {
     public double getAltitude() {return altitude;}
     public void setAltitude(double altitude) {this.altitude = altitude;}
 
-    public JSONObject getJSONObject()
+    public JSONObject toJSON()
     {
         JSONObject jsonObject = new JSONObject();
         try
         {
-            jsonObject.accumulate("cmt", id);
-            jsonObject.accumulate("time", time);
-            jsonObject.accumulate("lat", latitude);
-            jsonObject.accumulate("lon", longitude);
-            jsonObject.accumulate("ele", altitude);
+            jsonObject.put("cmt", id);
+
+            String strCurrentDate = "Wed, 18 Apr 2012 07:55:29 +0000";
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
+            String date = format.format(time);
+            jsonObject.put("time", date);
+
+            jsonObject.put("lat", latitude);
+            jsonObject.put("lon", longitude);
+            jsonObject.put("ele", altitude);
+
+            return jsonObject;
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return jsonObject;
+        return null;
     }
 }

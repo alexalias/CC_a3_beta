@@ -26,7 +26,15 @@ android {
         }
     }
 
-
+    // The android.jar file that is used to run unit tests does not contain any actual code -
+    // that is provided by the Android system image on real devices. Instead, all methods throw exceptions (by default).
+    // This is to make sure your unit tests only test your code and do not depend on any particular behaviour of the Android platform
+    // (that you have not explicitly mocked e.g. using Mockito).
+    // If that proves problematic, you can add the snippet below to your build.gradle to change this behavior:
+    // android.location.Location not mocked
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -37,4 +45,11 @@ dependencies {
     //ArcGIS
     compile 'com.esri.arcgis.android:arcgis-android:10.2.7'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+
+    // Required -- JUnit 4 framework
+    testCompile 'junit:junit:4.12'
+    // Optional -- Mockito framework
+    testCompile 'org.mockito:mockito-core:1.10.19'
+
+    testCompile 'org.json:json:20140107'
 }

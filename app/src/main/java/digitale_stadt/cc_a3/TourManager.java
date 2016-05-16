@@ -1,0 +1,190 @@
+package digitale_stadt.cc_a3;
+
+import android.content.Context;
+import android.location.Location;
+
+/**
+ * Created by Ralf Engelken on 16.05.2016.
+ *
+ * The TourManager manages the GPS-positions.
+ * the tour acts as a queue holding the positions, new positions are added to the queue
+ * depending on the transmission-type the data is then sent to the server or saved in the db
+ */
+public class TourManager implements ITourManager
+{
+    Tour tour;                  //stores the tour data
+    int queueLength;            //number of waypoints in the tour before data is sent
+    boolean sendDirect;         //true: data is sent to server if queue is full
+    double distanceTreshold;    //the minimum distance to travel per interval for data to be used if ignoreStops is set
+    boolean ignoreStops;        //true: intervals with a distance < distanceTreshold will be ignored
+    int counter = 0;            //waypoint-id of last entry
+    String deviceID;            //
+    Location startLocation;     //the first position of the tour; cached for ?
+    Location lastLocation;      //the last position of the tour; cached for ?
+    long duration_ms_all;       //the time travelled so far
+    long duration_ms_filtered;  //the time travelled so far
+    double distance_m_all;      //the distance travelled so far
+    double distance_m_filtered; //the distance travelled so far
+    //Sender sender;              //the object handling the server interaction
+    //DBHelper dbHelper;          //the object handling the db interaction
+
+    public TourManager(Context context, String deviceID)
+    {
+        //sender = new Sender(context);
+        //dbHelper = new DBHelper(context);
+
+        this.queueLength = 3;
+        this.sendDirect = false;
+        this.deviceID = deviceID;
+
+        StartNewTour();
+    }
+
+    // creates a new tour
+    public void StartNewTour() {
+        if (tour == null || tour.GetWayPoints().size() == 0) {
+            tour = new Tour(deviceID);
+            counter = 0;
+        }
+    }
+
+    // sets the id of the last wayPoint to -1
+    public void StopTour() {
+        if (tour != null)
+        {
+            Position pos = tour.GetLastPosition();
+            if (pos != null)
+                pos.setId(-1);
+        }
+    }
+
+    public void ClearWayPoints()
+    {
+        tour.ClearWayPoints();
+    }
+
+    // manages the tour data
+    // there are 3 cases:
+    // 1. sendDirect = true; queue not full
+    //     the new position will be added to the tour.
+    // 2. sendDirect = true; queue is full
+    //     the new position will be added to the tour. afterwards, all positions in the tour will be sent to the server.
+    //     if the transmission us successfull, the positions in the tour are deleted.
+    // 3. sendDirect = false
+    //    the new position is added to the tour
+    public void AddWayPoint(Location location) {
+        if (tour != null) {
+            Position position = new Position(tour.getTourID(), counter, location);
+
+            if (counter == 0)
+                startLocation = location;
+
+            // ToDo: update time and distance
+//            Double distance = ...
+//            distance_m_all += ...
+//            duration_ms_all += ...
+//            if (distance >= distanceTreshold)
+//            {
+//                distance_m_filtered += ...
+//                duration_ms_filtered += ...
+//            }
+
+            lastLocation = location;
+
+            // the tour is added to the queue
+            tour.AddWayPoint(position);
+            counter++;
+
+            // check what to do with the data
+            // if sendDirect == true and enough positions in the queue, the tour is sent to the server
+            if (sendDirect) {
+                //check if number of wayPoints is enough to send data
+                if ((tour.GetWayPoints().size() >= queueLength) || (tour.GetTourComplete())) {
+                    // send data and clear waypoint list in tour
+                    if (SendTourToServer())
+                        tour.ClearWayPoints();
+                }
+            }
+        }
+    }
+
+    public void SetQueueLength(int queueLength) {
+        this.queueLength = queueLength;
+    }
+
+    public int GetQueueLength() {
+        return queueLength;
+    }
+
+    public boolean GetSendDirect() {
+        return sendDirect;
+    }
+
+    public void SetSendDirect(boolean sendDirect) {
+        this.sendDirect = sendDirect;
+    }
+
+    public Tour GetTour() {
+        return tour;
+    }
+
+    public Location GetStartLocation() {
+        return startLocation;
+    }
+
+    public Location GetLastLocation() {
+        return lastLocation;
+    }
+
+    public long GetDuration_ms()
+    {
+        if (ignoreStops)
+            return duration_ms_filtered;
+        else
+            return duration_ms_all;
+    }
+
+    public double GetDistance_km() {
+        if (ignoreStops)
+            return distance_m_filtered / 1000;
+        else
+            return distance_m_all / 1000;
+    }
+
+    public double GetAvgSpeed_kmh() {
+        if (ignoreStops)
+            return distance_m_filtered / ((double)duration_ms_filtered)/3600000;
+        else
+            return distance_m_all / duration_ms_all;
+    }
+
+    public boolean LoadTourDataFromDB(String tourID) {
+        return false;
+    }
+
+    public boolean SaveTourToDB() {
+        try
+        {
+            //for (Position pos : tour.GetWayPoints())
+            //    dbHelper.insertPosition(pos);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    public boolean SendTourToServer() {
+        try
+        {
+            //sender.SendTourData(tour);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+}

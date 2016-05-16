@@ -1,32 +1,51 @@
 package digitale_stadt.cc_a3;
 
+import android.location.Location;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Ralf Engelken on 02.05.16.
+ * Implements a Tour
  */
 public class Tour {
-    private int tourid;
+    private String tourID;
     private List<Position> WayPoints;
+    private boolean tourComplete;
 
-    public Tour()
+    public Tour(String deviceID)
     {
-        tourid = new Date().hashCode();
+        this.tourID = Hasher.md5(new Date().toString() + deviceID);
         WayPoints = new ArrayList<>();
     }
 
-    public int getTourID() {
-        return tourid;
+    public Tour(String deviceID, Date date)
+    {
+        this.tourID = Hasher.md5(date.toString() + deviceID);
+        WayPoints = new ArrayList<>();
     }
 
-    public List<Position> getWayPoints() {
+    public Tour(String tourID, ArrayList<Position> wayPointList)
+    {
+        this.tourID = tourID;
+        WayPoints = new ArrayList<>();
+        for (Position pos : wayPointList)
+        {
+            WayPoints.add(pos);
+        }
+    }
+
+    public String getTourID() {
+        return tourID;
+    }
+
+    public List<Position> GetWayPoints() {
         return WayPoints;
     }
 
@@ -36,8 +55,52 @@ public class Tour {
             WayPoints.add(position);
     }
 
-    //return the JSON-Stringfo the tour
-    public String getJSONString()
+    public void AddWayPoint(Location location)
+    {
+        long id = 0;
+        if (location != null)
+        {
+            if (WayPoints.size() > 0)
+                id = WayPoints.get(WayPoints.size()-1).getId()+1;
+            Position position = new Position(tourID, id, location);
+
+            WayPoints.add(position);
+        }
+    }
+
+    public Position GetStartPosition()
+    {
+        return WayPoints.get(0);
+    }
+
+    public Position GetEndPosition()
+    {
+        if (WayPoints.size() > 0) {
+            Position pos = WayPoints.get(WayPoints.size() - 1);
+            if (pos.getId() == -1)
+                return pos;
+            else
+                return null;
+        }
+        else
+            return null;
+    }
+
+    public Position GetLastPosition()
+    {
+        if (WayPoints.size() > 0)
+            return WayPoints.get(WayPoints.size()-1);
+        else
+            return null;
+    }
+
+    public void ClearWayPoints()
+    {
+        WayPoints.clear();
+    }
+
+    //return the JSON-Object for the tour
+    public JSONObject toJSON()
     {
         String json;
 
@@ -46,11 +109,11 @@ public class Tour {
         JSONArray jsonArray = new JSONArray();
 
         try {
-            jsonObject.put("tourid", tourid);
+            jsonObject.put("tourid", tourID);
             //jsonObject.put("WayPoints", WayPoints);
             for (Position pos : WayPoints)
             {
-                jsonArray.put(pos.getJSONObject());
+                jsonArray.put(pos.toJSON());
             }
             jsonObject.put("WayPoints", jsonArray);
 
@@ -61,6 +124,14 @@ public class Tour {
         //Convert jsonObject to String
         json = jsonObject.toString();
 
-        return json;
+        return jsonObject;
+    }
+
+    public boolean GetTourComplete() {
+        return tourComplete;
+    }
+
+    public void SetTourComplete(boolean tourComplete) {
+        this.tourComplete = tourComplete;
     }
 }
