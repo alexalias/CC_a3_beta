@@ -79,19 +79,21 @@ public class TourManager implements ITourManager
             if (counter == 0)
                 startLocation = location;
 
-            // ToDo: update time and distance
-//            Double distance = ...
-//            distance_m_all += ...
-//            duration_ms_all += ...
-//            if (distance >= distanceTreshold)
-//            {
-//                distance_m_filtered += ...
-//                duration_ms_filtered += ...
-//            }
+            //calculate distance to last waypoint
+            float distance = location.distanceTo(lastLocation);
+            //update filtered data if distance is higher than treshold
+            if (distance > 0.05)
+            {
+                distance_m_filtered += distance;
+                duration_ms_filtered += location.getTime() - lastLocation.getTime();
+            }
+            //update all data
+            distance_m_all += distance;
+            duration_ms_all += location.getTime() - lastLocation.getTime();
 
             lastLocation = location;
 
-            // the tour is added to the queue
+            // the waypoint is added to the tour
             tour.AddWayPoint(position);
             counter++;
 
