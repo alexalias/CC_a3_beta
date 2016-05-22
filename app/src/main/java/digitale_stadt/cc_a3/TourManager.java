@@ -76,8 +76,10 @@ public class TourManager implements ITourManager
         if (tour != null) {
             Position position = new Position(tour.getTourID(), counter, location);
 
-            if (counter == 0)
+            if (counter == 0) {
                 startLocation = location;
+                lastLocation = location;
+            }
 
             //calculate distance to last waypoint
             float distance = location.distanceTo(lastLocation);

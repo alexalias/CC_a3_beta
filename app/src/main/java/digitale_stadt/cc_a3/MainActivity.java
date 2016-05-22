@@ -65,6 +65,8 @@ public class MainActivity extends Activity {
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkEnabled = locationManager
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        tourManager = new TourManager(this, deviceID);
     }
 
     //Eine Sorte Clicklistener für unser start/stop Button
