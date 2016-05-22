@@ -26,9 +26,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "CycleCity.db";
 
     private SQLiteDatabase db;
+    private Context context;
 
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        this.context = context;
         db = getWritableDatabase();
     }
 
@@ -215,6 +217,23 @@ public class DBHelper extends SQLiteOpenHelper {
             @Override
             protected Void executeMethod() {
                 deletePosition(id);
+                return null;
+            }
+        }.execute();
+    }
+
+    // Löscht die gesamte Datenbank
+    public void deleteDatabase() {
+        if (!context.deleteDatabase("CycleCity.db")) {
+            throw new SQLException();
+        }
+    }
+
+    public void deleteDatabaseAsync(DatabaseHandler<Void> handler) {
+        new DatabaseAsyncTask<Void>(handler) {
+            @Override
+            protected Void executeMethod() {
+                deleteDatabase();
                 return null;
             }
         }.execute();
