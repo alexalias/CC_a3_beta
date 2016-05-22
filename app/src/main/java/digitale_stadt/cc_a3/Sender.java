@@ -5,6 +5,8 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -21,10 +23,12 @@ import com.android.volley.toolbox.Volley;
 public class Sender {
     private RequestQueue queue;
     final String default_url = "https://preview.api.cycleyourcity.jmakro.de:4040/log_coordinates.php";
+    Context _context;
 
     public Sender(Context context)
     {
         queue = Volley.newRequestQueue(context);
+        _context = context;
     }
 
     public void SendTourData(Tour tour)
@@ -42,8 +46,10 @@ public class Sender {
         HashMap<String,String> map = new HashMap<>();
         map.put("data", s );
 
-        Log.i("MAIN", "Sending " + s);
-        SendPostRequest(url, map);
+        if(WiFiAvailable()) {
+            Log.i("MAIN", "Sending " + s);
+            SendPostRequest(url, map);
+        }
     }
 
     private void SendPostRequest(String url, final Map<String, String> params)
@@ -70,6 +76,16 @@ public class Sender {
             }
         };
         queue.add(postRequest);
+    }
+
+    public boolean WiFiAvailable (){
+        ConnectivityManager cm =
+                (ConnectivityManager)_context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+        return isWiFi;
+
     }
 
 }

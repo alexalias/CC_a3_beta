@@ -134,6 +134,7 @@ public class MainActivity extends Activity {
     //Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
     private void StopTrackingClicked()
     {
+
         Log.i("Main", "Tracking stopped");
         Toast.makeText(getApplicationContext(), "Tracking wird deaktiviert", Toast.LENGTH_SHORT).show();
 
