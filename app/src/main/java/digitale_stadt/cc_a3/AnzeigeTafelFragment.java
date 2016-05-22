@@ -23,6 +23,8 @@ public class AnzeigeTafelFragment extends Fragment {
 
 //    private OnFragmentInteractionListener mListener;
 
+    private String dauer = "00:00";
+
     public AnzeigeTafelFragment() {
         // Required empty public constructor
     }
@@ -31,10 +33,12 @@ public class AnzeigeTafelFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         //Beispiel-Daten
         String [] trackInfoArray = {
                 "Startzeitpunkt: 00:00:00",
-                "Bisherige Dauer: 00:00 Std",
+                "Bisherige Dauer: "+ dauer + " Std",
                 "Geschwindigkeit: 00 km/h",
                 "Zurückgelegte Strecke: 00 km"
         };
