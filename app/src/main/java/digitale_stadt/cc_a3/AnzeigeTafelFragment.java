@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -23,10 +24,21 @@ public class AnzeigeTafelFragment extends Fragment {
 
 //    private OnFragmentInteractionListener mListener;
 
-    private String dauer = "00:00";
+    TourManager _tourManager;
+    private long dauer;
+    private String startZeitpunkt;
+    private double geschwindigkeit;
+    private double zurückgelegteStrecke;
 
+    // Required empty public constructor
+    //Variabeln für die AnzeigeTafel, die Daten aus dem TourManager auslesen
     public AnzeigeTafelFragment() {
-        // Required empty public constructor
+
+        _tourManager = new TourManager(getActivity(), "001");
+        dauer = _tourManager.GetDuration_ms();
+        startZeitpunkt = _tourManager.GetStartTime();
+        geschwindigkeit =_tourManager.GetAvgSpeed_kmh();
+        zurückgelegteStrecke = _tourManager.GetDistance_km();
     }
 
 
@@ -34,13 +46,13 @@ public class AnzeigeTafelFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-        //Beispiel-Daten
+        //ToDo: Die Daten sollten sich regelmäßig aktualisieren;
+        //ToDo: Die Daten aus dem TourManager sind falsch! Warum?
         String [] trackInfoArray = {
-                "Startzeitpunkt: 00:00:00",
+                "Startzeitpunkt: " + startZeitpunkt + " Uhr",
                 "Bisherige Dauer: "+ dauer + " Std",
-                "Geschwindigkeit: 00 km/h",
-                "Zurückgelegte Strecke: 00 km"
+                "Geschwindigkeit: " + geschwindigkeit + " km/h",
+                "Zurückgelegte Strecke: " + zurückgelegteStrecke + " km"
         };
         List<String> trackInfoList = new ArrayList<>(Arrays.asList(trackInfoArray));
 

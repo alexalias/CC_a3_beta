@@ -3,6 +3,10 @@ package digitale_stadt.cc_a3;
 import android.content.Context;
 import android.location.Location;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Ralf Engelken on 16.05.2016.
  *
@@ -21,6 +25,7 @@ public class TourManager implements ITourManager
     String deviceID;            //
     Location startLocation;     //the first position of the tour; cached for ?
     Location lastLocation;      //the last position of the tour; cached for ?
+    long startTime;
     long duration_ms_all;       //the time travelled so far
     long duration_ms_filtered;  //the time travelled so far
     double distance_m_all;      //the distance travelled so far
@@ -94,6 +99,7 @@ public class TourManager implements ITourManager
             duration_ms_all += location.getTime() - lastLocation.getTime();
 
             lastLocation = location;
+            startTime = startLocation.getTime();
 
             // the waypoint is added to the tour
             tour.AddWayPoint(position);
@@ -138,6 +144,13 @@ public class TourManager implements ITourManager
 
     public Location GetLastLocation() {
         return lastLocation;
+    }
+
+    public String GetStartTime(){
+        Date t = new Date(startTime);
+        DateFormat df = new SimpleDateFormat("HH:mm:ss");
+        String time= df.format(t);
+        return time;
     }
 
     public long GetDuration_ms()
