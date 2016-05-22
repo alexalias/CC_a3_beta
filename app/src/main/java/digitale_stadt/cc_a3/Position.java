@@ -63,6 +63,12 @@ public class Position {
     public double getAltitude() {return altitude;}
     public void setAltitude(double altitude) {this.altitude = altitude;}
 
+    //changes Flag
+    public void changeSent() {
+        if (sent == 0) {sent = 1;}
+        else {sent = 0;}
+    }
+
     public JSONObject toJSON()
     {
         JSONObject jsonObject = new JSONObject();
