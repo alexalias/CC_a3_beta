@@ -29,8 +29,8 @@ public class SettingsActivity extends Activity{
 
         wlan_switch = (Switch) findViewById(R.id.switch_wlan);
 
-        //set the switch to off (=upload nicht nur bei wlan, sondern immer)
-        wlan_switch.setChecked(false);
+        //initialize switch
+        wlan_switch.setChecked(sharedPrefs.getBoolean("wlan_upload", false));
 
         //attach listener to check for changes in state
         wlan_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
