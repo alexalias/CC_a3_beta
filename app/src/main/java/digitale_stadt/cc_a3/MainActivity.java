@@ -1,11 +1,10 @@
 package digitale_stadt.cc_a3;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 //ToDo: show map
 //ToDo: get GPS signal
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     TextView textView;
     ArrayList<String> list;
@@ -76,7 +75,7 @@ public class MainActivity extends Activity {
     public void startTracking(View view){
         boolean on = ((ToggleButton) view).isChecked();
         if (on) {
-            Toast.makeText(MainActivity.this, "Tacking started", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Tracking started", Toast.LENGTH_SHORT).show();
             StartTrackingClicked();
         }
         else {
@@ -139,7 +138,7 @@ public class MainActivity extends Activity {
     {
 
         Log.i("Main", "Tracking stopped");
-        Toast.makeText(getApplicationContext(), "Tracking wird deaktiviert", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Tracking wurde deaktiviert", Toast.LENGTH_SHORT).show();
 
         // Beendet die tour im TourManager und speichert sie in die Datenbank
         tourManager.StopTour();

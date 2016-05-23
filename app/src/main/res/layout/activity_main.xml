@@ -9,14 +9,16 @@
                 tools:context=".MainActivity"
                 style="@android:style/Theme.Light">
 
-
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentLeft="true"
+        android:text="Aktuelle Fahrt:"
+        android:textSize="18dp"
+        android:layout_margin="25dp"
+        />
 
     <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -27,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/playButton"
-        android:layout_below="@+id/textView"/>
+        android:layout_below="@+id/textView" />
 
     <ToggleButton
         android:layout_width="wrap_content"
@@ -41,8 +43,5 @@
         android:layout_gravity="center_horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>
-
-
-
 
 </RelativeLayout>
