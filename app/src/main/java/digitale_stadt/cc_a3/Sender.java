@@ -5,8 +5,10 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -44,7 +46,7 @@ public class Sender {
     public void SendJSONString (String url, String s)
     {
         HashMap<String,String> map = new HashMap<>();
-        map.put("data", s );
+        map.put("data", s);
 
         if(WiFiAvailable()) {
             Log.i("MAIN", "Sending " + s);
@@ -78,12 +80,18 @@ public class Sender {
         queue.add(postRequest);
     }
 
-    public boolean WiFiAvailable (){
+    public boolean WiFiAvailable(){
         ConnectivityManager cm =
                 (ConnectivityManager)_context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI);
+    }
+
+    // prüft ob 'datenupload nur bei WLAN' in den shared prefs true ist
+    public boolean wlanUploadChecked(){
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(_context);
+        return sharedPrefs.getBoolean("wlan_upload", false);
     }
 
 }
