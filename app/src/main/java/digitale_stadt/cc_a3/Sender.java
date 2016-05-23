@@ -83,9 +83,7 @@ public class Sender {
                 (ConnectivityManager)_context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-        return isWiFi;
-
+        return (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI);
     }
 
 }
