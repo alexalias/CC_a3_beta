@@ -20,7 +20,15 @@
         android:layout_margin="25dp"
         />
 
-    <fragment
+    <ListView
+        android:id="@+id/listView_anzeigeTafel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/hello_blank_fragment"
+        android:layout_below="@+id/textView"
+        android:layout_above="@+id/playButton" />
+
+<!--    <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/fragment"
@@ -29,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/playButton"
-        android:layout_below="@+id/textView" />
+        android:layout_below="@+id/textView" />-->
 
     <ToggleButton
         android:layout_width="wrap_content"

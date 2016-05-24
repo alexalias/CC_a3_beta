@@ -6,6 +6,7 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,18 +45,23 @@ public class TourManager implements ITourManager
         //sender = new Sender(context);
         //dbHelper = new DBHelper(context);
 
+        this.ignoreStops = false;
         this.queueLength = 3;
         this.deviceID = deviceID;
+        distanceTreshold = 0.1;
 
         StartNewTour();
     }
 
     // creates a new tour
     public void StartNewTour() {
-        if (tour == null || tour.GetWayPoints().size() == 0) {
-            tour = new Tour(deviceID);
-            counter = 0;
-        }
+        tour = new Tour(deviceID);
+        counter = 0;
+
+        duration_ms_filtered = 0;
+        duration_ms_all = 0;
+        distance_m_filtered = 0;
+        distance_m_all = 0;
     }
 
     // sets the id of the last wayPoint to -1
@@ -93,8 +99,9 @@ public class TourManager implements ITourManager
 
             //calculate distance to last waypoint
             float distance = location.distanceTo(lastLocation);
+            Log.i("Movement", String.format("dist: %.3f   bearing: %.3f", distance, lastLocation.bearingTo(location)));
             //update filtered data if distance is higher than treshold
-            if (distance > 0.05)
+            if (distance > distanceTreshold)
             {
                 distance_m_filtered += distance;
                 duration_ms_filtered += location.getTime() - lastLocation.getTime();
@@ -166,10 +173,18 @@ public class TourManager implements ITourManager
     }
 
     public double GetAvgSpeed_kmh() {
-        if (ignoreStops)
-            return distance_m_filtered / ((double)duration_ms_filtered)/3600000;
-        else
-            return distance_m_all / duration_ms_all;
+        if (ignoreStops) {
+            if (duration_ms_filtered != 0)
+                return distance_m_filtered / ((double) duration_ms_filtered) / 3600000;
+            else
+                return 0;
+        }
+        else {
+            if (duration_ms_all != 0)
+                return distance_m_all / duration_ms_all;
+            else
+                return 0;
+        }
     }
 
     public boolean LoadTourDataFromDB(String tourID) {

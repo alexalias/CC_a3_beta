@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -11,11 +12,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 //ToDo: create loop that checks DB for new positions and sends them using the Sender
 //ToDo: show map
@@ -24,7 +29,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     TextView textView;
-    ArrayList<String> list;
+    ArrayAdapter<String> itemsAdapter;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -59,9 +64,11 @@ public class MainActivity extends AppCompatActivity {
 
         textView = (TextView) findViewById(R.id.textView);
 
-        list = new ArrayList<>();
-        ArrayAdapter<String> itemsAdapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
+        itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
+
+        ListView lv = (ListView) findViewById(R.id.listView_anzeigeTafel);
+        lv.setAdapter(itemsAdapter);
+
 
         isGPSEnabled = locationManager
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -104,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
 
                 // die neue Position wird an den Tourmanager [bergeben
                 tourManager.AddWayPoint(location);
+
+                UpdateListView();
             }
         };
 
@@ -117,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 tourManager.AddWayPoint(location);
 
                 Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG).show();
+
             }
         }else{
             // can't get location
@@ -124,6 +134,21 @@ public class MainActivity extends AppCompatActivity {
             // Ask user to enable GPS/network in settings
             gps.showSettingsAlert();
         }
+        UpdateListView();
+    }
+
+    private void UpdateListView()
+    {
+        itemsAdapter.clear();
+        itemsAdapter.add(String.format("Startzeitpunkt: %s ", tourManager.GetStartTime()));
+        itemsAdapter.add(String.format("Strecke: %.3f km", tourManager.GetDistance_km()));
+
+        DateFormat df = new SimpleDateFormat("hh:mm:ss");
+        String formatted = df.format(new Date(tourManager.GetDuration_ms()));
+        itemsAdapter.add(String.format("Bisherige Dauer: %s h", formatted));
+        //itemsAdapter.add(String.format("Bisherige Dauer: %d s", tourManager.GetDuration_ms()/1000));
+
+        itemsAdapter.add(String.format("Geschwindigkeit: %.3f km/h",tourManager.GetAvgSpeed_kmh()));
     }
 
     //Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
