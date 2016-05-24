@@ -48,7 +48,7 @@ public class TourManager implements ITourManager
         this.ignoreStops = false;
         this.queueLength = 3;
         this.deviceID = deviceID;
-        distanceTreshold = 0.1;
+        distanceTreshold = 100.0;
 
         StartNewTour();
     }
@@ -107,9 +107,10 @@ public class TourManager implements ITourManager
                 duration_ms_filtered += location.getTime() - lastLocation.getTime();
             }
             //update all data
-            distance_m_all += distance;
-            duration_ms_all += location.getTime() - lastLocation.getTime();
-
+            if (distance > distanceTreshold) {
+                distance_m_all += distance;
+                duration_ms_all += location.getTime() - lastLocation.getTime();
+            }
             lastLocation = location;
             startTime = startLocation.getTime();
 

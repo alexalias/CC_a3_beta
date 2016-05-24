@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,6 +22,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 //ToDo: create loop that checks DB for new positions and sends them using the Sender
 //ToDo: show map
@@ -30,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     TextView textView;
     ArrayAdapter<String> itemsAdapter;
+    Timer unserTimer;
+    final Handler handler = new Handler();
+
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -76,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         tourManager = new TourManager(this, deviceID);
+        unserTimer = new Timer();
     }
 
     //Eine Sorte Clicklistener für unser start/stop Button
@@ -115,6 +122,15 @@ public class MainActivity extends AppCompatActivity {
                 UpdateListView();
             }
         };
+// TODo: Funktionierendes Timer einbauen
+        handler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                itemsAdapter.notifyDataSetChanged();
+                handler.postDelayed(this, 300);
+            }
+        }, 300);
 
         // check if GPS enabled
         if(gps.canGetLocation()){
@@ -134,10 +150,9 @@ public class MainActivity extends AppCompatActivity {
             // Ask user to enable GPS/network in settings
             gps.showSettingsAlert();
         }
-        UpdateListView();
     }
 
-    private void UpdateListView()
+    public void UpdateListView()
     {
         itemsAdapter.clear();
         itemsAdapter.add(String.format("Startzeitpunkt: %s ", tourManager.GetStartTime()));
@@ -190,4 +205,8 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-}
+
+ }
+
+
+
