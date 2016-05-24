@@ -16,10 +16,6 @@ import android.location.Location;
      void SetQueueLength(int queueLength);
      int GetQueueLength();
 
-    //gets/sets flag to send data immediately or when connected to WLAN
-     void SetSendDirect(boolean sendDirect);
-     boolean GetSendDirect();
-
     //adds the given location to the tour
      void AddWayPoint(Location location);
 

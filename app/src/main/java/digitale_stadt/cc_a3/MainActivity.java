@@ -104,14 +104,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // die neue Position wird an den Tourmanager [bergeben
                 tourManager.AddWayPoint(location);
-//                Toast.makeText(this, "Neue Position: " + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-//                dbHelper.insertPositionAsync(new Position(tour, location), new DBHelper.DatabaseHandler<Void>() {
-//                    @Override
-//                    public void onComplete(boolean success, Void result) {
-//
-//                    }
-//                });
-
             }
         };
 
@@ -121,10 +113,11 @@ public class MainActivity extends AppCompatActivity {
             Location location = gps.getLocation();
 
             // Setzt im TourManager eine erste position
-            tourManager.AddWayPoint(location);
+            if (location != null) {
+                tourManager.AddWayPoint(location);
 
-            Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG).show();
-            //SendJSONString(tour.getJSONString());
+                Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG).show();
+            }
         }else{
             // can't get location
             // GPS or Network is not enabled

@@ -48,10 +48,8 @@ public class Sender {
         HashMap<String,String> map = new HashMap<>();
         map.put("data", s);
 
-        if(WiFiAvailable()) {
-            Log.i("MAIN", "Sending " + s);
-            SendPostRequest(url, map);
-        }
+        Log.i("MAIN", "Sending " + s);
+        SendPostRequest(url, map);
     }
 
     private void SendPostRequest(String url, final Map<String, String> params)
@@ -80,7 +78,7 @@ public class Sender {
         queue.add(postRequest);
     }
 
-    public boolean WiFiAvailable(){
+/*    public boolean WiFiAvailable(){
         ConnectivityManager cm =
                 (ConnectivityManager)_context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -89,9 +87,9 @@ public class Sender {
     }
 
     // prüft ob 'datenupload nur bei WLAN' in den shared prefs true ist
-    public boolean wlanUploadChecked(){
+    public boolean WlanUploadChecked(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(_context);
         return sharedPrefs.getBoolean("wlan_upload", false);
-    }
+    }*/
 
 }

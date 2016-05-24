@@ -1,7 +1,11 @@
 package digitale_stadt.cc_a3;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -18,7 +22,6 @@ public class TourManager implements ITourManager
 {
     Tour tour;                  //stores the tour data
     int queueLength;            //number of waypoints in the tour before data is sent
-    boolean sendDirect;         //true: data is sent to server if queue is full
     double distanceTreshold;    //the minimum distance to travel per interval for data to be used if ignoreStops is set
     boolean ignoreStops;        //true: intervals with a distance < distanceTreshold will be ignored
     int counter = 0;            //waypoint-id of last entry
@@ -32,14 +35,16 @@ public class TourManager implements ITourManager
     double distance_m_filtered; //the distance travelled so far
     //Sender sender;              //the object handling the server interaction
     //DBHelper dbHelper;          //the object handling the db interaction
+    Context context;
 
     public TourManager(Context context, String deviceID)
     {
+        this.context = context;
+
         //sender = new Sender(context);
         //dbHelper = new DBHelper(context);
 
         this.queueLength = 3;
-        this.sendDirect = false;
         this.deviceID = deviceID;
 
         StartNewTour();
@@ -78,7 +83,7 @@ public class TourManager implements ITourManager
     // 3. sendDirect = false
     //    the new position is added to the tour
     public void AddWayPoint(Location location) {
-        if (tour != null) {
+        if ((tour != null) && (location != null)) {
             Position position = new Position(tour.getTourID(), counter, location);
 
             if (counter == 0) {
@@ -106,8 +111,8 @@ public class TourManager implements ITourManager
             counter++;
 
             // check what to do with the data
-            // if sendDirect == true and enough positions in the queue, the tour is sent to the server
-            if (sendDirect) {
+            // if WLAN is available or not neccessary, send data
+            if ((WiFiAvailable()) || (!WlanUploadChecked())) {
                 //check if number of wayPoints is enough to send data
                 if ((tour.GetWayPoints().size() >= queueLength) || (tour.GetTourComplete())) {
                     // send data and clear waypoint list in tour
@@ -124,14 +129,6 @@ public class TourManager implements ITourManager
 
     public int GetQueueLength() {
         return queueLength;
-    }
-
-    public boolean GetSendDirect() {
-        return sendDirect;
-    }
-
-    public void SetSendDirect(boolean sendDirect) {
-        this.sendDirect = sendDirect;
     }
 
     public Tour GetTour() {
@@ -203,5 +200,21 @@ public class TourManager implements ITourManager
         {
             return false;
         }
+    }
+
+    public boolean WiFiAvailable (){
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+        return isWiFi;
+
+    }
+
+    // prüft ob 'datenupload nur bei WLAN' in den shared prefs true ist
+    public boolean WlanUploadChecked(){
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPrefs.getBoolean("wlan_upload", false);
     }
 }
