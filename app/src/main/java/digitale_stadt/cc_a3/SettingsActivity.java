@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -22,9 +24,12 @@ public class SettingsActivity extends Activity{
     private Switch wlan_switch;
     private EditText username;
     private EditText userpassword;
+    private Button button_reset;
 
     // Shared Preferences um Einstellungen zu speichern
-    SharedPreferences sharedPrefs;
+    private SharedPreferences sharedPrefs;
+
+    private DBHelper dbHelper;
 
     public void onCreate(Bundle savedInstance) {
 
@@ -44,10 +49,13 @@ public class SettingsActivity extends Activity{
         wlan_switch = (Switch) findViewById(R.id.switch_wlan);
         username = (EditText) findViewById(R.id.edit_username);
         userpassword = (EditText) findViewById(R.id.edit_userPassword);
+        button_reset = (Button) findViewById(R.id.button_reset);
 
         wlan_switch.setChecked(sharedPrefs.getBoolean("wlan_upload", false));
         username.setText(sharedPrefs.getString("username", "Bitte Benutzernamen angeben"));
         userpassword.setText(sharedPrefs.getString("userpassword", "Bitte Passwort angeben"));
+
+        dbHelper = new DBHelper(this);
     }
 
     private void attachListeners() {
@@ -89,6 +97,18 @@ public class SettingsActivity extends Activity{
             @Override
             public void afterTextChanged(Editable s) {
                 sharedPrefs.edit().putString("userpassword", s.toString()).commit();
+            }
+        });
+
+        button_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dbHelper.deleteDatabaseAsync(new DBHelper.DatabaseHandler<Void>() {
+                    @Override
+                    public void onComplete(boolean success, Void result) {
+                        //TODO: ?
+                    }
+                });
             }
         });
     }
