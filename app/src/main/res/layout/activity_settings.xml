@@ -19,4 +19,40 @@
         android:text="Datenupload nur bei WLAN  "
         />
 
+    <TextView
+        android:id="@+id/label_username"
+        android:layout_below="@id/switch_wlan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="20dp"
+        android:text="Benutzername:"
+        />
+
+    <EditText
+        android:id="@+id/edit_username"
+        android:layout_below="@id/switch_wlan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        />
+
+    <TextView
+        android:id="@+id/label_userPassword"
+        android:layout_below="@id/label_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentLeft="true"
+        android:text="Passwort:"
+        />
+
+    <EditText
+        android:id="@+id/edit_userPassword"
+        android:layout_below="@id/label_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        />
+
 </LinearLayout>
