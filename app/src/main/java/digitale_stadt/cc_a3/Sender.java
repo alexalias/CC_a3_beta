@@ -47,13 +47,13 @@ public class Sender {
                     public void onResponse(String response) {
                         // response
 
-                        if (response == "wrong credentials")
+                        if (response.equals("wrong credentials"))
                         {
-                            Log.i("Response", "Login rejected");
-                            _token = "";
+                            Log.i("Connect Response", "Login rejected: " + response);
+                            _token = "Test_ohne_login";
                         }
                         else {
-                            Log.i("Response", "Token received");
+                            Log.i("Connect Response", "Token received: " + response);
                             _token = response;
                         }
                     }
@@ -62,7 +62,7 @@ public class Sender {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
-                        Log.i("Error.Response", error.toString());
+                        Log.i("Connect Error.Response", error.toString());
                         _token = "";
                     }
                 }
@@ -78,7 +78,7 @@ public class Sender {
 
         //set timeout to 2000ms and retries to 1
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, // 2000
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, // 1000
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES, // 1
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)); //1f
 
@@ -124,7 +124,14 @@ public class Sender {
                     @Override
                     public void onResponse(String response) {
                         // response
-                        Log.i("Response", response);
+                        if (response.equals("auth_token not set"))
+                        {
+                            Log.i("Response", "Login error: resetting token " + response);
+                        }
+                        else
+                        {
+                            Log.i("Response", "Data transmitted: " + response);
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -143,7 +150,7 @@ public class Sender {
 
         //set timeout to 2000ms and retries to 1
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
-            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, // 2000
+            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, // 1000
             DefaultRetryPolicy.DEFAULT_MAX_RETRIES, // 1
             DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)); //1f
 
