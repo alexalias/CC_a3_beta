@@ -6,11 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -24,18 +23,76 @@ import com.android.volley.toolbox.Volley;
  */
 public class Sender {
     private RequestQueue queue;
-    final String default_url = "https://preview.api.cycleyourcity.jmakro.de:4040/log_coordinates.php";
+    final String login_url = "https://api.cyc.jmakro.de:4040/get_auth_token.php";
+    final String data_url = "https://api.cyc.jmakro.de:4040/log_coordinates.php";
+    String _token;
     Context _context;
 
     public Sender(Context context)
     {
+//        RequestManager.getInstance(context);
+//        RequestManager.getInstance().doRequest().login();
         queue = Volley.newRequestQueue(context);
         _context = context;
+        _token = "";
+        Connect(GetUsername(), GetPassword());
+    }
+
+    public void Connect(final String username, final String password)
+    {
+        Log.i("Connect", "Connecting with " + username + " / " + password);
+        StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+
+                        if (response == "wrong credentials")
+                        {
+                            Log.i("Response", "Login rejected");
+                            _token = "";
+                        }
+                        else {
+                            Log.i("Response", "Token received");
+                            _token = response;
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        Log.i("Error.Response", error.toString());
+                        _token = "";
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("username", username);
+                params.put("password", password);
+                return params;
+            }
+        };
+
+        //set timeout to 2000ms and retries to 1
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, // 2000
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, // 1
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)); //1f
+
+        queue.add(postRequest);
+    }
+
+    public void Disconnect()
+    {
+
     }
 
     public void SendTourData(Tour tour)
     {
-        SendJSONString(default_url, tour.toJSON().toString());
+        SendJSONString(data_url, tour.toJSON().toString());
     }
 
     public void SendTourData(String url, Tour tour)
@@ -45,11 +102,19 @@ public class Sender {
 
     public void SendJSONString (String url, String s)
     {
-        HashMap<String,String> map = new HashMap<>();
-        map.put("data", s);
+        if (_token == "")
+        {
+            Connect(GetUsername(), GetPassword());
+        }
+        else {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("data", s);
+            map.put("token", _token);
 
-        Log.i("MAIN", "Sending " + s);
-        SendPostRequest(url, map);
+            Log.i("Sender", "Sending " + s);
+            Log.i("Sender", "Token " + _token);
+            SendPostRequest(url, map);
+        }
     }
 
     private void SendPostRequest(String url, final Map<String, String> params)
@@ -75,21 +140,25 @@ public class Sender {
                 return params;
             }
         };
+
+        //set timeout to 2000ms and retries to 1
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, // 2000
+            DefaultRetryPolicy.DEFAULT_MAX_RETRIES, // 1
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)); //1f
+
         queue.add(postRequest);
     }
 
-/*    public boolean WiFiAvailable(){
-        ConnectivityManager cm =
-                (ConnectivityManager)_context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI);
+    // fragt den usernamen aus den shared preferences ab
+    public String GetUsername(){
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(_context);
+        return sharedPrefs.getString("username", "");
     }
 
-    // prüft ob 'datenupload nur bei WLAN' in den shared prefs true ist
-    public boolean WlanUploadChecked(){
+    // fragt das passwort aus den shared preferences ab
+    public String GetPassword(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(_context);
-        return sharedPrefs.getBoolean("wlan_upload", false);
-    }*/
-
+        return sharedPrefs.getString("userpassword", "");
+    }
 }

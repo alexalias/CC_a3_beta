@@ -34,16 +34,16 @@ public class TourManager implements ITourManager
     long duration_ms_filtered;  //the time travelled so far
     double distance_m_all;      //the distance travelled so far
     double distance_m_filtered; //the distance travelled so far
-    //Sender sender;              //the object handling the server interaction
-    //DBHelper dbHelper;          //the object handling the db interaction
+    Sender sender;              //the object handling the server interaction
+    DBHelper dbHelper;          //the object handling the db interaction
     Context context;
 
     public TourManager(Context context, String deviceID)
     {
         this.context = context;
 
-        //sender = new Sender(context);
-        //dbHelper = new DBHelper(context);
+        sender = new Sender(context);
+        dbHelper = new DBHelper(context);
 
         this.ignoreStops = false;
         this.queueLength = 3;
@@ -195,8 +195,8 @@ public class TourManager implements ITourManager
     public boolean SaveTourToDB() {
         try
         {
-            //for (Position pos : tour.GetWayPoints())
-            //    dbHelper.insertPosition(pos);
+            for (Position pos : tour.GetWayPoints())
+                dbHelper.insertPosition(pos);
 
             return true;
         }
@@ -209,7 +209,7 @@ public class TourManager implements ITourManager
     public boolean SendTourToServer() {
         try
         {
-            //sender.SendTourData(tour);
+            sender.SendTourData(tour);
             return true;
         }
         catch (Exception e)
