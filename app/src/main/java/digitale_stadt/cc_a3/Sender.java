@@ -25,6 +25,10 @@ public class Sender {
     private RequestQueue queue;
     final String login_url = "https://api.cyc.jmakro.de:4040/get_auth_token.php";
     final String data_url = "https://api.cyc.jmakro.de:4040/log_coordinates.php";
+
+    final String server_login_failed = "wrong credentials";
+    final String server_data_transmission_token_not_valid = "auth_token not set";
+
     String _token;
     Context _context;
 
@@ -38,7 +42,7 @@ public class Sender {
         Connect(GetUsername(), GetPassword());
     }
 
-    public void Connect(final String username, final String password)
+    private void Connect(final String username, final String password)
     {
         Log.i("Connect", "Connecting with " + username + " / " + password);
         StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
@@ -47,7 +51,7 @@ public class Sender {
                     public void onResponse(String response) {
                         // response
 
-                        if (response.equals("wrong credentials"))
+                        if (response.equals(server_login_failed))
                         {
                             Log.i("Connect Response", "Login rejected: " + response);
                             _token = "Test_ohne_login";
@@ -124,9 +128,10 @@ public class Sender {
                     @Override
                     public void onResponse(String response) {
                         // response
-                        if (response.equals("auth_token not set"))
+                        if (response.equals(server_data_transmission_token_not_valid))
                         {
                             Log.i("Response", "Login error: resetting token " + response);
+                            _token = "";
                         }
                         else
                         {
