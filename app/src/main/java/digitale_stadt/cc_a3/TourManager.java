@@ -23,17 +23,23 @@ public class TourManager implements ITourManager
 {
     Tour tour;                  //stores the tour data
     int queueLength;            //number of waypoints in the tour before data is sent
-    double distanceTreshold;    //the minimum distance to travel per interval for data to be used if ignoreStops is set
-    boolean ignoreStops;        //true: intervals with a distance < distanceTreshold will be ignored
     int counter = 0;            //waypoint-id of last entry
     String deviceID;            //
     Location startLocation;     //the first position of the tour; cached for ?
     Location lastLocation;      //the last position of the tour; cached for ?
     long startTime;
+
+    //the following values define tresholds to filter out data when user is not moving
+    //filtered data is not used for distance/duration calculation, the data is always sent to server
+    boolean use_filtered_values;//true: intervals with a distance < speedTreshold_kmh will be ignored
+    double speedTreshold_kmh;   //the minimum speed to travel at for data to be used if use_filtered_values is set
+    double distanceTreshold_m;  //the minimum distance to travel per interval for data to be used if use_filtered_values is set
+
     long duration_ms_all;       //the time travelled so far
-    long duration_ms_filtered;  //the time travelled so far
     double distance_m_all;      //the distance travelled so far
-    double distance_m_filtered; //the distance travelled so far
+    long duration_ms_filtered;  //the time travelled so far, without stops
+    double distance_m_filtered; //the distance travelled so far, without stops
+
     Sender sender;              //the object handling the server interaction
     DBHelper dbHelper;          //the object handling the db interaction
     Context context;
@@ -45,12 +51,12 @@ public class TourManager implements ITourManager
         sender = new Sender(context);
         dbHelper = new DBHelper(context);
 
-        this.ignoreStops = false;
-        this.queueLength = 3;
+        this.queueLength = 1;
         this.deviceID = deviceID;
-        distanceTreshold = 100.0;
 
-        StartNewTour();
+        this.use_filtered_values = false;
+        speedTreshold_kmh = 5.0;
+        distanceTreshold_m = 20.0;
     }
 
     // creates a new tour
@@ -99,18 +105,20 @@ public class TourManager implements ITourManager
 
             //calculate distance to last waypoint
             float distance = location.distanceTo(lastLocation);
+            long duration = location.getTime() - lastLocation.getTime();
+
             Log.i("Movement", String.format("dist: %.3f   bearing: %.3f", distance, lastLocation.bearingTo(location)));
             //update filtered data if distance is higher than treshold
-            if (distance > distanceTreshold)
+            if ((distance > distanceTreshold_m) || (distance * 3600 / (double)duration > speedTreshold_kmh))
             {
                 distance_m_filtered += distance;
-                duration_ms_filtered += location.getTime() - lastLocation.getTime();
+                duration_ms_filtered += duration;
             }
+
             //update all data
-            if (distance > distanceTreshold) {
-                distance_m_all += distance;
-                duration_ms_all += location.getTime() - lastLocation.getTime();
-            }
+            distance_m_all += distance;
+            duration_ms_all += duration;
+
             lastLocation = location;
             startTime = startLocation.getTime();
 
@@ -158,34 +166,40 @@ public class TourManager implements ITourManager
         return time;
     }
 
+    // returns the duration since the tour started in ms
     public long GetDuration_ms()
     {
-        if (ignoreStops)
+        if (use_filtered_values)
             return duration_ms_filtered;
         else
             return duration_ms_all;
     }
 
+    // returns the distance travelled since the tour started in km
     public double GetDistance_km() {
-        if (ignoreStops)
-            return distance_m_filtered / 1000;
+        if (use_filtered_values)
+            return distance_m_filtered / 1000f;
         else
-            return distance_m_all / 1000;
+            return distance_m_all / 1000f;
     }
 
+    // returns the average speed in km/h
     public double GetAvgSpeed_kmh() {
-        if (ignoreStops) {
-            if (duration_ms_filtered != 0)
-                return distance_m_filtered / ((double) duration_ms_filtered) / 3600000;
-            else
-                return 0;
+        double distance_m;
+        double duration_ms;
+
+        if (use_filtered_values) {
+            distance_m = distance_m_filtered;
+            duration_ms = duration_ms_filtered;
+        } else {
+            distance_m = distance_m_all;
+            duration_ms = duration_ms_all;
         }
-        else {
-            if (duration_ms_all != 0)
-                return distance_m_all / duration_ms_all;
-            else
-                return 0;
-        }
+
+        if (duration_ms != 0)
+            return (distance_m * 3600) / ((double) duration_ms);
+        else
+            return 0;
     }
 
     public boolean LoadTourDataFromDB(String tourID) {
