@@ -18,6 +18,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import java.util.Timer;
+
 import digitale_stadt.cc_a3.DBHelper.DatabaseHandler;
 
 /**

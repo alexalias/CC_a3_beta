@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         //Startet eine neue Tour im TourManager
         tourManager.StartNewTour();
 
+
         gps = new GPSTracker(MainActivity.this)
         {
             @Override
@@ -118,20 +119,22 @@ public class MainActivity extends AppCompatActivity {
 
                 // die neue Position wird an den Tourmanager [bergeben
                 tourManager.AddWayPoint(location);
-
                 UpdateListView();
             }
+
         };
-// TODo: Funktionierendes Timer einbauen
-        handler.postDelayed(new Runnable() {
 
-            @Override
-            public void run() {
-                itemsAdapter.notifyDataSetChanged();
-                handler.postDelayed(this, 300);
-            }
-        }, 300);
-
+        //Handler zum Aktualisieren der ListView = Anzeige >> BRAUCHEN WIR NICHT, wenn UpdateListView aus dem OnLocationChanged gerufen wird.
+//        handler.postDelayed(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                tourManager.GetDuration_ms();
+//                itemsAdapter.notifyDataSetChanged();
+//                handler.postDelayed(this, 3000L);
+//            }
+//        }, 3000L);
+//        UpdateListView();
         // check if GPS enabled
         if(gps.canGetLocation()){
             //get location and save it as StartLocation
@@ -155,13 +158,12 @@ public class MainActivity extends AppCompatActivity {
     public void UpdateListView()
     {
         itemsAdapter.clear();
-        itemsAdapter.add(String.format("Startzeitpunkt: %s ", tourManager.GetStartTime()));
+//        itemsAdapter.add(String.format("Startzeitpunkt: %s ", tourManager.GetStartTime()));
         itemsAdapter.add(String.format("Strecke: %.3f km", tourManager.GetDistance_km()));
 
         DateFormat df = new SimpleDateFormat("hh:mm:ss");
         String formatted = df.format(new Date(tourManager.GetDuration_ms()));
         itemsAdapter.add(String.format("Bisherige Dauer: %s h", formatted));
-        //itemsAdapter.add(String.format("Bisherige Dauer: %d s", tourManager.GetDuration_ms()/1000));
 
         itemsAdapter.add(String.format("Geschwindigkeit: %.3f km/h",tourManager.GetAvgSpeed_kmh()));
     }
