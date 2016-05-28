@@ -56,7 +56,7 @@ public class TourManager implements ITourManager
 
         this.use_filtered_values = false;
         speedTreshold_kmh = 5.0;
-        distanceTreshold_m = 20.0;
+        distanceTreshold_m = 30.0;
     }
 
     // creates a new tour
@@ -105,7 +105,7 @@ public class TourManager implements ITourManager
 
             //calculate distance to last waypoint
             float distance = location.distanceTo(lastLocation);
-            long duration = location.getTime() - lastLocation.getTime();
+            long duration = System.currentTimeMillis() - lastLocation.getTime();
 
             Log.i("Movement", String.format("dist: %.3f   bearing: %.3f", distance, lastLocation.bearingTo(location)));
             //update filtered data if distance is higher than treshold
@@ -116,11 +116,11 @@ public class TourManager implements ITourManager
             }
 
             //update all data
+            startTime = startLocation.getTime();
             distance_m_all += distance;
-            duration_ms_all += duration;
+            duration_ms_all = System.currentTimeMillis() - startTime;
 
             lastLocation = location;
-            startTime = startLocation.getTime();
 
             // the waypoint is added to the tour
             tour.AddWayPoint(position);
