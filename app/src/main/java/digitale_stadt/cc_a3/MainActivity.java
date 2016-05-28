@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 getLocation(); //is this needed?
 
-                String s = "new Position   Lat: " + location.getLatitude() + "\nLong: " + location.getLongitude();
+                String s = "new Position   Lat: " + location.getLatitude() + "   Long: " + location.getLongitude();
                 Log.i("Main", s);
 
                 // die neue Position wird an den Tourmanager [bergeben
