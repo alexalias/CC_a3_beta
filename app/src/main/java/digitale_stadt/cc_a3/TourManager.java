@@ -101,6 +101,7 @@ public class TourManager implements ITourManager
             if (counter == 0) {
                 startLocation = location;
                 lastLocation = location;
+                startTime = startLocation.getTime();
             }
 
             //calculate distance to last waypoint
@@ -116,7 +117,6 @@ public class TourManager implements ITourManager
             }
 
             //update all data
-            startTime = startLocation.getTime();
             distance_m_all += distance;
             duration_ms_all = System.currentTimeMillis() - startTime;
 

@@ -147,6 +147,11 @@ public class MainActivity extends AppCompatActivity {
         strecke.setText(String.format("Strecke: %.3f km", tourManager.GetDistance_km()));
     }
 
+    public void UpdateDebugInfo(String string)
+    {
+        debug.setText(debug.getText() + " " + string);
+    }
+
     //Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
     private void StopTrackingClicked()
     {
