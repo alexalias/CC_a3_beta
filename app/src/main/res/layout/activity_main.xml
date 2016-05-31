@@ -12,32 +12,81 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView"
+        android:id="@+id/textInfo"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:text="Aktuelle Fahrt:"
         android:textSize="18dp"
-        android:layout_margin="25dp"
+        android:layout_margin="10dp"
         />
 
-    <ListView
-        android:id="@+id/listView_anzeigeTafel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"
-        android:layout_below="@+id/textView"
-        android:layout_above="@+id/playButton" />
 
-<!--    <fragment
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/fragment"
-        android:name="digitale_stadt.cc_a3.AnzeigeTafelFragment"
-        tools:layout="@layout/fragment_anzeige_tafel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/playButton"
-        android:layout_below="@+id/textView" />-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textDauer"
+        android:layout_below="@+id/textInfo"
+        android:layout_centerHorizontal="true"
+        android:text="Dauer"
+        android:textSize="18dp"
+        android:layout_margin="2dp"
+        />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/dauerAnzeige"
+        android:layout_below="@+id/textDauer"
+        android:layout_centerHorizontal="true"
+        android:hint="01:20:30 h" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textSpeed"
+        android:layout_below="@+id/dauerAnzeige"
+        android:layout_centerHorizontal="true"
+        android:text="Speed"
+        android:textSize="18dp"
+        android:layout_margin="2dp"
+        />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/speedAnzeige"
+        android:layout_below="@+id/textSpeed"
+        android:layout_centerHorizontal="true"
+        android:hint="13,4 km/h" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textStrecke"
+        android:layout_below="@+id/speedAnzeige"
+        android:layout_centerHorizontal="true"
+        android:text="Strecke"
+        android:textSize="18dp"
+        android:layout_margin="2dp"
+        />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/streckeAnzeige"
+        android:layout_below="@+id/textStrecke"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:hint="31,2 km" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/debugEditTex"
+        android:layout_below="@+id/streckeAnzeige"
+        android:layout_centerHorizontal="true"
+        android:hint = "Debug Fenster" />
+
 
     <ToggleButton
         android:layout_width="wrap_content"
@@ -51,5 +100,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>
+
+
 
 </RelativeLayout>

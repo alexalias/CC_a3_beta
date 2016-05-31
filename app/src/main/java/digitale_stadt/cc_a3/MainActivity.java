@@ -4,38 +4,31 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
-//ToDo: create loop that checks DB for new positions and sends them using the Sender
-//ToDo: show map
-//ToDo: get GPS signal
+
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView textView;
-    ArrayAdapter<String> itemsAdapter;
-    Timer unserTimer;
-    final Handler handler = new Handler();
-
+    TextView textInfo;
+    EditText speed;
+    EditText dauer;
+    EditText strecke;
+    EditText debug;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -68,13 +61,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textView = (TextView) findViewById(R.id.textView);
+        textInfo = (TextView) findViewById(R.id.textInfo);
 
-        itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
-
-        ListView lv = (ListView) findViewById(R.id.listView_anzeigeTafel);
-        lv.setAdapter(itemsAdapter);
-
+        strecke = (EditText) findViewById(R.id.streckeAnzeige);
+        dauer = (EditText) findViewById(R.id.dauerAnzeige);
+        speed = (EditText) findViewById(R.id.speedAnzeige);
+        debug = (EditText) findViewById(R.id.debugEditTex);
 
         isGPSEnabled = locationManager
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -82,14 +74,15 @@ public class MainActivity extends AppCompatActivity {
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         tourManager = new TourManager(this, deviceID);
-        unserTimer = new Timer();
     }
 
     //Eine Sorte Clicklistener für unser start/stop Button
     public void startTracking(View view){
         boolean on = ((ToggleButton) view).isChecked();
         if (on) {
-            Toast.makeText(MainActivity.this, "Tracking started", Toast.LENGTH_SHORT).show();
+            Toast toast = Toast.makeText(MainActivity.this, "Tracking started", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+            toast.show();
             StartTrackingClicked();
         }
         else {
@@ -124,17 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
         };
 
-        //Handler zum Aktualisieren der ListView = Anzeige >> BRAUCHEN WIR NICHT, wenn UpdateListView aus dem OnLocationChanged gerufen wird.
-//        handler.postDelayed(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                tourManager.GetDuration_ms();
-//                itemsAdapter.notifyDataSetChanged();
-//                handler.postDelayed(this, 3000L);
-//            }
-//        }, 3000L);
-//        UpdateListView();
+        UpdateListView();
         // check if GPS enabled
         if(gps.canGetLocation()){
             //get location and save it as StartLocation
@@ -143,9 +126,9 @@ public class MainActivity extends AppCompatActivity {
             // Setzt im TourManager eine erste position
             if (location != null) {
                 tourManager.AddWayPoint(location);
-
-                Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG).show();
-
+                Toast toast = Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+                toast.show();
             }
         }else{
             // can't get location
@@ -157,15 +140,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void UpdateListView()
     {
-        itemsAdapter.clear();
-//        itemsAdapter.add(String.format("Startzeitpunkt: %s ", tourManager.GetStartTime()));
-        itemsAdapter.add(String.format("Strecke: %.3f km", tourManager.GetDistance_km()));
-
+        speed.setText(String.format("Geschwindigkeit: %.3f km/h",tourManager.GetAvgSpeed_kmh()));
         DateFormat df = new SimpleDateFormat("hh:mm:ss");
         String formatted = df.format(new Date(tourManager.GetDuration_ms()));
-        itemsAdapter.add(String.format("Bisherige Dauer: %s h", formatted));
-
-        itemsAdapter.add(String.format("Geschwindigkeit: %.3f km/h",tourManager.GetAvgSpeed_kmh()));
+        dauer.setText(String.format("Bisherige Dauer: %s h", formatted));
+        strecke.setText(String.format("Strecke: %.3f km", tourManager.GetDistance_km()));
     }
 
     //Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
@@ -173,7 +152,9 @@ public class MainActivity extends AppCompatActivity {
     {
 
         Log.i("Main", "Tracking stopped");
-        Toast.makeText(getApplicationContext(), "Tracking wurde deaktiviert", Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(getApplicationContext(), "Tracking wurde deaktiviert", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
 
         // Beendet die tour im TourManager und speichert sie in die Datenbank
         tourManager.StopTour();
