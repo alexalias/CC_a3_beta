@@ -17,6 +17,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONObject;
+
 /**
  * Created by alexutza_a on 29.04.2016.
  * Implements a Sender
@@ -58,7 +60,18 @@ public class Sender {
                         }
                         else {
                             Log.i("Connect Response", "Token received: " + response);
-                            _token = response;
+                            try {
+                                JSONObject myJson = new JSONObject(response);
+                                // use myJson as needed, for example
+                                String name = myJson.optString("name");
+                                String token = myJson.optString("auth_token");
+                                // etc
+                                _token = token;
+                            }
+                            catch (Exception e)
+                            {
+
+                            }
                         }
                     }
                 },
@@ -113,10 +126,9 @@ public class Sender {
         else {
             HashMap<String, String> map = new HashMap<>();
             map.put("data", s);
-            map.put("token", _token);
+            map.put("auth_token", _token);
 
-            Log.i("Sender", "Sending " + s);
-            Log.i("Sender", "Token " + _token);
+            Log.i("Sender", "Sending " + map);
             SendPostRequest(url, map);
         }
     }
