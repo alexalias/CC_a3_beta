@@ -22,7 +22,7 @@ import java.util.Date;
 
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     TextView textInfo;
     EditText speed;
@@ -112,12 +112,12 @@ public class MainActivity extends AppCompatActivity {
 
                 // die neue Position wird an den Tourmanager [bergeben
                 tourManager.AddWayPoint(location);
-                UpdateListView();
+                UpdateView();
             }
 
         };
 
-        UpdateListView();
+        UpdateView();
         // check if GPS enabled
         if(gps.canGetLocation()){
             //get location and save it as StartLocation
@@ -138,13 +138,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void UpdateListView()
-    {
-        speed.setText(String.format("Geschwindigkeit: %.3f km/h",tourManager.GetAvgSpeed_kmh()));
+    public void UpdateView() {
+        speed.setText(String.format("%.3f km/h", tourManager.GetAvgSpeed_kmh()));
         DateFormat df = new SimpleDateFormat("hh:mm:ss");
         String formatted = df.format(new Date(tourManager.GetDuration_ms()));
-        dauer.setText(String.format("Bisherige Dauer: %s h", formatted));
-        strecke.setText(String.format("Strecke: %.3f km", tourManager.GetDistance_km()));
+        dauer.setText(String.format("%s h", formatted));
+        strecke.setText(String.format("%.3f km", tourManager.GetDistance_km()));
     }
 
     public void UpdateDebugInfo(String string)
@@ -158,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.i("Main", "Tracking stopped");
         Toast toast = Toast.makeText(getApplicationContext(), "Tracking wurde deaktiviert", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
 
         // Beendet die tour im TourManager und speichert sie in die Datenbank
@@ -195,7 +194,20 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
- }
+
+
+//    @Override
+//    public void onPause(){
+//        super.onPause();
+//        senSensorManager.unregisterListener(this);
+//    }
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+//    }
+}
 
 
 
