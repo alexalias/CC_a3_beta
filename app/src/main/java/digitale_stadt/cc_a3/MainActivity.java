@@ -164,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         // Beendet die tour im TourManager und speichert sie in die Datenbank
         tourManager.StopTour();
         tourManager.SaveTourToDB();
+
         
         if (gps != null)
             gps.stopUsingGPS();

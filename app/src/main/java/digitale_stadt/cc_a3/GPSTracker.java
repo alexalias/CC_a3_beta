@@ -22,6 +22,8 @@ import java.util.Timer;
 
 import digitale_stadt.cc_a3.DBHelper.DatabaseHandler;
 
+//import static android.support.v4.app.ActivityCompat.requestPermissions;
+
 /**
  * Created by alexutza_a on 02.05.2016.
  */
@@ -54,6 +56,11 @@ public class GPSTracker extends Service implements LocationListener {
     }
 
     public Location getLocation() {
+        final String[] LOCATION_PERMS={
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        };
+//        if (canGetLocation()) { requestPermissions(LOCATION_PERMS,ACCESS_LOCATION_PERMISSION_CODE); }
         try {
             locationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
 
@@ -65,6 +72,8 @@ public class GPSTracker extends Service implements LocationListener {
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
+
+
             } else {
                 this.canGetLocation = true;
 
@@ -79,12 +88,12 @@ public class GPSTracker extends Service implements LocationListener {
                             longitude = location.getLongitude();
                         }
                     }
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                             PackageManager.PERMISSION_GRANTED &&
                             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
                                     PackageManager.PERMISSION_GRANTED) {
                         return location;
-                    }
+                    }*/
                 }
                 // if GPS Enabled get lat/long using GPS Services
                 if (isGPSEnabled) {

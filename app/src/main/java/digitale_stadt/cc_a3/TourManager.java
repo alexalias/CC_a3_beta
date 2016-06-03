@@ -11,6 +11,7 @@ import android.util.Log;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by Ralf Engelken on 16.05.2016.
@@ -56,7 +57,7 @@ public class TourManager implements ITourManager
 
         this.use_filtered_values = false;
         speedTreshold_kmh = 5.0;
-        distanceTreshold_m = 30.0;
+        distanceTreshold_m = 40.0;
     }
 
     // creates a new tour
@@ -106,7 +107,7 @@ public class TourManager implements ITourManager
 
             //calculate distance to last waypoint
             float distance = location.distanceTo(lastLocation);
-            long duration = System.currentTimeMillis() - lastLocation.getTime();
+            long duration = System.currentTimeMillis() - startLocation.getTime();
 
             Log.i("Movement", String.format("dist: %.3f   bearing: %.3f", distance, lastLocation.bearingTo(location)));
             //update filtered data if distance is higher than treshold
@@ -118,7 +119,7 @@ public class TourManager implements ITourManager
 
             //update all data
             distance_m_all += distance;
-            duration_ms_all = System.currentTimeMillis() - startTime;
+            duration_ms_all = (System.currentTimeMillis() + TimeZone.getDefault().getRawOffset()) - startTime;
 
             lastLocation = location;
 
