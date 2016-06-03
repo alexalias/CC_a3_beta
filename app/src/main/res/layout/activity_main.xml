@@ -33,12 +33,12 @@
         />
 
     <EditText
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dauerAnzeige"
         android:layout_below="@+id/textDauer"
         android:layout_centerHorizontal="true"
-        android:hint="01:20:30 h" />
+        android:hint="00:00:00" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -52,12 +52,12 @@
         />
 
     <EditText
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/speedAnzeige"
         android:layout_below="@+id/textSpeed"
         android:layout_centerHorizontal="true"
-        android:hint="13,4 km/h" />
+        android:hint="0,0 km/h" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -71,13 +71,13 @@
         />
 
     <EditText
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/streckeAnzeige"
         android:layout_below="@+id/textStrecke"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
-        android:hint="31,2 km" />
+        android:hint="0 km" />
 
     <EditText
         android:layout_width="fill_parent"
