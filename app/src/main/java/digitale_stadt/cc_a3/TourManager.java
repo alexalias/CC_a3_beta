@@ -14,7 +14,9 @@ import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -91,8 +93,8 @@ public class TourManager implements SensorEventListener
         tour = new Tour(deviceID);
         counter = 0;
 
-        duration_ms_filtered = 0;
-        duration_ms_all = 0;
+        duration_ms_filtered = 0L;
+        duration_ms_all = 0L;
         distance_m_filtered = 0;
         distance_m_all = 0;
     }
@@ -128,12 +130,12 @@ public class TourManager implements SensorEventListener
             if (counter == 0) {
                 startLocation = location;
                 lastLocation = location;
-                startTime = startLocation.getTime() + TimeZone.getDefault().getRawOffset();
+                startTime = startLocation.getTime();
             }
 
             //calculate distance to last waypoint
             float distance = location.distanceTo(lastLocation);
-            long duration = (location.getTime()+ TimeZone.getDefault().getRawOffset()) - startTime;
+            long duration = location.getTime() - startTime;
 
             Log.i("Movement", String.format("dist: %.3f   bearing: %.3f", distance, lastLocation.bearingTo(location)));
             //update filtered data if distance is higher than treshold
@@ -144,8 +146,9 @@ public class TourManager implements SensorEventListener
             }
 
             //update all data
-            distance_m_all += distance;
-            duration_ms_all = (System.currentTimeMillis() + TimeZone.getDefault().getRawOffset()) - startTime;
+            distance_m_all += lastLocation.getTime() - location.getTime();
+
+            duration_ms_all = duration;
 
             lastLocation = location;
 
@@ -194,16 +197,23 @@ public class TourManager implements SensorEventListener
     }
 
     // returns the duration since the tour started in ms
-    public long GetDuration_ms()
+    public String GetDuration_ms()
     {
+        Date t0 = new Date(duration_ms_filtered - TimeZone.getDefault().getDSTSavings());
+        Date t1 = new Date(duration_ms_all - TimeZone.getDefault().getDSTSavings());
+        DateFormat df = new SimpleDateFormat("HH:mm:ss");
+        String d_filtered= df.format(t0);
+        String d_all = df.format(t1);
+
         if (use_filtered_values)
-            return duration_ms_filtered;
+            return d_filtered;
         else
-            return duration_ms_all;
+            return d_all;
     }
 
     // returns the distance travelled since the tour started in km
     public double GetDistance_km() {
+
         if (isMoving) {
             if (use_filtered_values)
                 return distance_m_filtered / 1000f;

@@ -140,9 +140,7 @@ public class MainActivity extends AppCompatActivity{
 
     public void UpdateView() {
         speed.setText(String.format("%.3f km/h", tourManager.GetAvgSpeed_kmh()));
-        DateFormat df = new SimpleDateFormat("hh:mm:ss");
-        String formatted = df.format(new Date(tourManager.GetDuration_ms()));
-        dauer.setText(String.format("%s h", formatted));
+        dauer.setText(String.format("%s h", tourManager.GetDuration_ms()));
         strecke.setText(String.format("%.3f km", tourManager.GetDistance_km()));
     }
 
