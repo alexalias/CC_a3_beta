@@ -128,12 +128,12 @@ public class TourManager implements SensorEventListener
             if (counter == 0) {
                 startLocation = location;
                 lastLocation = location;
-                startTime = startLocation.getTime();
+                startTime = startLocation.getTime() + TimeZone.getDefault().getRawOffset();
             }
 
             //calculate distance to last waypoint
             float distance = location.distanceTo(lastLocation);
-            long duration = System.currentTimeMillis() - startLocation.getTime();
+            long duration = (location.getTime()+ TimeZone.getDefault().getRawOffset()) - startTime;
 
             Log.i("Movement", String.format("dist: %.3f   bearing: %.3f", distance, lastLocation.bearingTo(location)));
             //update filtered data if distance is higher than treshold

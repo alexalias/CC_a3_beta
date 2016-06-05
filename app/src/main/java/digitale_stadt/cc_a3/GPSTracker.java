@@ -56,11 +56,11 @@ public class GPSTracker extends Service implements LocationListener {
     }
 
     public Location getLocation() {
-        final String[] LOCATION_PERMS={
+        /*final String[] LOCATION_PERMS={
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         };
-//        if (canGetLocation()) { requestPermissions(LOCATION_PERMS,ACCESS_LOCATION_PERMISSION_CODE); }
+       if (canGetLocation()) { requestPermissions(LOCATION_PERMS,ACCESS_LOCATION_PERMISSION_CODE); }*/
         try {
             locationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
 
