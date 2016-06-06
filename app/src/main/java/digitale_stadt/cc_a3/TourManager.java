@@ -14,9 +14,7 @@ import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -298,6 +296,8 @@ public class TourManager implements SensorEventListener
         Sensor mySensor = event.sensor;
 
         if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+            // Beschleunigung in m/s^2
             float x = event.values[0];
             float y = event.values[1];
             float z = event.values[2];
