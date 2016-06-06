@@ -32,7 +32,7 @@
         android:layout_margin="2dp"
         />
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dauerAnzeige"
@@ -51,7 +51,7 @@
         android:layout_margin="2dp"
         />
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/speedAnzeige"
@@ -70,16 +70,15 @@
         android:layout_margin="2dp"
         />
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/streckeAnzeige"
         android:layout_below="@+id/textStrecke"
         android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
         android:hint="0 km" />
 
-    <EditText
+    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/debugEditTex"

@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -25,10 +24,10 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity{
 
     TextView textInfo;
-    EditText speed;
-    EditText dauer;
-    EditText strecke;
-    EditText debug;
+    TextView speed;
+    TextView dauer;
+    TextView strecke;
+    TextView debug;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -63,10 +62,10 @@ public class MainActivity extends AppCompatActivity{
 
         textInfo = (TextView) findViewById(R.id.textInfo);
 
-        strecke = (EditText) findViewById(R.id.streckeAnzeige);
-        dauer = (EditText) findViewById(R.id.dauerAnzeige);
-        speed = (EditText) findViewById(R.id.speedAnzeige);
-        debug = (EditText) findViewById(R.id.debugEditTex);
+        strecke = (TextView) findViewById(R.id.streckeAnzeige);
+        dauer = (TextView) findViewById(R.id.dauerAnzeige);
+        speed = (TextView) findViewById(R.id.speedAnzeige);
+        debug = (TextView) findViewById(R.id.debugEditTex);
 
         isGPSEnabled = locationManager
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
