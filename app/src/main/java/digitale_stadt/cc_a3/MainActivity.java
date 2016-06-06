@@ -15,19 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-
-
 public class MainActivity extends AppCompatActivity{
 
     TextView textInfo;
     TextView speed;
     TextView dauer;
     TextView strecke;
-    TextView debug;
+//    TextView debug;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -65,7 +59,7 @@ public class MainActivity extends AppCompatActivity{
         strecke = (TextView) findViewById(R.id.streckeAnzeige);
         dauer = (TextView) findViewById(R.id.dauerAnzeige);
         speed = (TextView) findViewById(R.id.speedAnzeige);
-        debug = (TextView) findViewById(R.id.debugEditTex);
+//        debug = (TextView) findViewById(R.id.debugEditTex);
 
         isGPSEnabled = locationManager
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -143,10 +137,10 @@ public class MainActivity extends AppCompatActivity{
         strecke.setText(String.format("%.3f km", tourManager.GetDistance_km()));
     }
 
-    public void UpdateDebugInfo(String string)
-    {
-        debug.setText(debug.getText() + " " + string);
-    }
+//    public void UpdateDebugInfo(String string)
+//    {
+//        debug.setText(debug.getText() + " " + string);
+//    }
 
     //Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
     private void StopTrackingClicked()
