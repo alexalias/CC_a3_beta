@@ -66,7 +66,20 @@ public class SettingsActivity extends Activity{
                 SharedPreferences.Editor editor = sharedPrefs.edit();
                 editor.putBoolean("wlan_upload", isChecked);
                 editor.apply();
-                Toast.makeText(SettingsActivity.this, "Einstellung wurde gespeichert", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                username.setText("");
+            }
+        });
+
+        userpassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userpassword.setText("");
             }
         });
 
@@ -109,6 +122,11 @@ public class SettingsActivity extends Activity{
                         //TODO: ?
                     }
                 });
+                sharedPrefs.edit().clear().commit();
+                wlan_switch.setChecked(sharedPrefs.getBoolean("wlan_upload", false));
+                username.setText(sharedPrefs.getString("username", "Bitte Benutzernamen angeben"));
+                userpassword.setText(sharedPrefs.getString("userpassword", "Bitte Passwort angeben"));
+                Toast.makeText(SettingsActivity.this, "Einstellungen wurden gelöscht", Toast.LENGTH_SHORT).show();
             }
         });
     }
