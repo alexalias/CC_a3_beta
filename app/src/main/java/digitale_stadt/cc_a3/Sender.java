@@ -57,7 +57,7 @@ public class Sender {
                         {
                             Log.i("Connect Response", "Login rejected: " + response);
                             _token = "Test_ohne_login";
-                            ((MainActivity)_context).UpdateDebugInfo(" F ");
+//                            ((MainActivity)_context).UpdateDebugInfo(" F ");
                         }
                         else {
                             Log.i("Connect Response", "Token received: " + response);
@@ -68,7 +68,7 @@ public class Sender {
                                 String token = myJson.optString("auth_token");
                                 // etc
                                 _token = token;
-                                ((MainActivity)_context).UpdateDebugInfo(" L ");
+//                                ((MainActivity)_context).UpdateDebugInfo(" L ");
                             }
                             catch (Exception e)
                             {
@@ -83,7 +83,7 @@ public class Sender {
                         // error
                         Log.i("Connect Error.Response", error.toString());
                         _token = "";
-                        ((MainActivity)_context).UpdateDebugInfo(" F ");
+//                        ((MainActivity)_context).UpdateDebugInfo(" F ");
                     }
                 }
         ) {
@@ -147,12 +147,12 @@ public class Sender {
                         {
                             Log.i("Response", "Login error: resetting token " + response);
                             _token = "";
-                            ((MainActivity)_context).UpdateDebugInfo("F");
+//                            ((MainActivity)_context).UpdateDebugInfo("F");
                         }
                         else
                         {
                             Log.i("Response", "Data transmitted: " + response);
-                            ((MainActivity)_context).UpdateDebugInfo("S");
+//                            ((MainActivity)_context).UpdateDebugInfo("S");
                         }
                     }
                 },
@@ -161,7 +161,7 @@ public class Sender {
                     public void onErrorResponse(VolleyError error) {
                         // error
                         Log.i("Error.Response", error.toString());
-                        ((MainActivity)_context).UpdateDebugInfo("F");
+//                        ((MainActivity)_context).UpdateDebugInfo("F");
                     }
                 }
         ) {
