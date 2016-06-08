@@ -50,7 +50,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Datenupload nur bei WLAN  "
-        android:onClick="onCheckBoxClicked"
         />
 
     <CheckBox
@@ -58,7 +57,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Anonymer Datenupload"
-        android:onClick="onCheckBoxClicked"
         />
 
     <Button

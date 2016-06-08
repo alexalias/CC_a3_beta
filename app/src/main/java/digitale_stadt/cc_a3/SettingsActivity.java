@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -106,6 +107,37 @@ public class SettingsActivity extends Activity{
             }
         });
 
+        checkBox_wlan.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (compoundButton.isChecked()) {
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    editor.putBoolean("wlan_upload", true);
+                    editor.apply();
+                } else {
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    editor.putBoolean("wlan_upload", false);
+                    editor.apply();
+                }
+            }
+        });
+
+        checkBox_anonym.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (compoundButton.isChecked()) {
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    editor.putBoolean("anonymous_upload", true);
+                    editor.apply();
+                }
+                else {
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    editor.putBoolean("anonymous_upload", false);
+                    editor.apply();
+                }
+            }
+        });
+
         button_reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,29 +155,6 @@ public class SettingsActivity extends Activity{
                 Toast.makeText(SettingsActivity.this, "Einstellungen wurden gelöscht", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    public void onCheckBoxClicked(View view) {
-            boolean checked = ((CheckBox) view).isChecked();
-            SharedPreferences.Editor editor = sharedPrefs.edit();
-
-            //check which checkbox was clicked
-            switch (view.getId()) {
-                case R.id.checkBox_wlan:
-                    if (checked) {
-                        editor.putBoolean("wlan_upload", checked);
-                    } else {
-                        editor.putBoolean("wlan_upload", !checked);
-                    }
-                case R.id.checkBox_anonym:
-                    if (checked) {
-                        editor.putBoolean("anonymous_upload", checked);
-                    } else {
-                        editor.putBoolean("anonymous_upload", !checked);
-                    }
-            }
-            editor.apply();
-
     }
 
     public String getUserName() {
