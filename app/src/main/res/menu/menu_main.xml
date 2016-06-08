@@ -6,4 +6,11 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:icon="@android:drawable/ic_menu_preferences"/>
+
+    <item
+        android:id="@+id/action_impressum"
+        android:title="Impressum"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_preferences"/>
 </menu>

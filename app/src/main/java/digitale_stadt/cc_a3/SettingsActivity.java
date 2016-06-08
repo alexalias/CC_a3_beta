@@ -8,9 +8,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.Toast;
 
 /**
@@ -21,7 +20,8 @@ import android.widget.Toast;
 
 public class SettingsActivity extends Activity{
 
-    private Switch wlan_switch;
+    private CheckBox checkBox_wlan;
+    private CheckBox checkBox_anonym;
     private EditText username;
     private EditText userpassword;
     private Button button_reset;
@@ -46,12 +46,14 @@ public class SettingsActivity extends Activity{
     private void initializeComponents() {
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        wlan_switch = (Switch) findViewById(R.id.switch_wlan);
+        checkBox_wlan = (CheckBox) findViewById(R.id.checkBox_wlan);
+        checkBox_anonym = (CheckBox) findViewById(R.id.checkBox_anonym);
         username = (EditText) findViewById(R.id.edit_username);
         userpassword = (EditText) findViewById(R.id.edit_userPassword);
         button_reset = (Button) findViewById(R.id.button_reset);
 
-        wlan_switch.setChecked(sharedPrefs.getBoolean("wlan_upload", false));
+        checkBox_wlan.setChecked(sharedPrefs.getBoolean("wlan_upload", false));
+        checkBox_anonym.setChecked(sharedPrefs.getBoolean("anonymous_upload", false));
         username.setText(sharedPrefs.getString("username", "Bitte Benutzernamen angeben"));
         userpassword.setText(sharedPrefs.getString("userpassword", "Bitte Passwort angeben"));
 
@@ -59,15 +61,6 @@ public class SettingsActivity extends Activity{
     }
 
     private void attachListeners() {
-
-        wlan_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences.Editor editor = sharedPrefs.edit();
-                editor.putBoolean("wlan_upload", isChecked);
-                editor.apply();
-            }
-        });
 
         username.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,12 +116,36 @@ public class SettingsActivity extends Activity{
                     }
                 });
                 sharedPrefs.edit().clear().commit();
-                wlan_switch.setChecked(sharedPrefs.getBoolean("wlan_upload", false));
+                checkBox_wlan.setChecked(sharedPrefs.getBoolean("wlan_upload", false));
+                checkBox_anonym.setChecked(sharedPrefs.getBoolean("wlan_upload", false));
                 username.setText(sharedPrefs.getString("username", "Bitte Benutzernamen angeben"));
                 userpassword.setText(sharedPrefs.getString("userpassword", "Bitte Passwort angeben"));
                 Toast.makeText(SettingsActivity.this, "Einstellungen wurden gelöscht", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void onCheckBoxClicked(View view) {
+            boolean checked = ((CheckBox) view).isChecked();
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+
+            //check which checkbox was clicked
+            switch (view.getId()) {
+                case R.id.checkBox_wlan:
+                    if (checked) {
+                        editor.putBoolean("wlan_upload", checked);
+                    } else {
+                        editor.putBoolean("wlan_upload", !checked);
+                    }
+                case R.id.checkBox_anonym:
+                    if (checked) {
+                        editor.putBoolean("anonymous_upload", checked);
+                    } else {
+                        editor.putBoolean("anonymous_upload", !checked);
+                    }
+            }
+            editor.apply();
+
     }
 
     public String getUserName() {
@@ -137,5 +154,13 @@ public class SettingsActivity extends Activity{
 
     public String getUserPassword() {
         return sharedPrefs.getString("userpassword", "");
+    }
+
+    public Boolean getWlanOption() {
+        return sharedPrefs.getBoolean("wlan_upload", false);
+    }
+
+    public Boolean getAnonymOption() {
+        return sharedPrefs.getBoolean("anonymous_upload", false);
     }
 }
