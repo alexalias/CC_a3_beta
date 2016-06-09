@@ -46,7 +46,7 @@
         android:id="@+id/textSpeed"
         android:layout_below="@+id/dauerAnzeige"
         android:layout_centerHorizontal="true"
-        android:text="Speed"
+        android:text="Geschwindigkeit"
         android:textSize="18dp"
         android:layout_margin="2dp"
         />
@@ -65,7 +65,7 @@
         android:id="@+id/textStrecke"
         android:layout_below="@+id/speedAnzeige"
         android:layout_centerHorizontal="true"
-        android:text="Strecke"
+        android:text="Distanz"
         android:textSize="18dp"
         android:layout_margin="2dp"
         />
