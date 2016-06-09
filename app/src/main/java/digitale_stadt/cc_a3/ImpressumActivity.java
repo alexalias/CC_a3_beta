@@ -2,19 +2,17 @@ package digitale_stadt.cc_a3;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.widget.TextView;
 
 /**
- * Hier steht ein kurzer Impressumtext.
+ * Kleinste Klasse der Welt. :-)
+ * Enthält nur einen kurzen Impressumtext.
  *
  * Created by Anne Lorenz on 08.06.2016.
  */
 public class ImpressumActivity extends Activity {
 
-    private TextView text1;
-
-    public void OnCreate(Bundle savedInstance) {
-
+    @Override
+    public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_impressum);
     }

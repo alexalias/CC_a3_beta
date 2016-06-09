@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity{
 
         switch (id) {
             case R.id.action_settings:
-                 intent = new Intent(this, SettingsActivity.class);
+                intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.action_impressum:

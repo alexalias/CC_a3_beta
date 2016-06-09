@@ -15,14 +15,21 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hier ist das Impressum, blabla..."
+        android:text="Impressum"
+        android:layout_marginBottom="32dp"
         />
 
     <TextView
         android:id="@+id/text_impressum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Copyright:\nEngelken, Krah, Lorenz (2016).\nEin Projekt des Fachbereichs Informatik, Universität Hamburg."
+        android:text="Copyright: Engelken, Krah, Lorenz (2016)."
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ein Projekt des Fachbereichs Informatik,\nUniversität Hamburg."
         />
 
 </LinearLayout>
