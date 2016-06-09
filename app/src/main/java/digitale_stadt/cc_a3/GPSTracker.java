@@ -1,13 +1,14 @@
 package digitale_stadt.cc_a3;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,19 +16,14 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import java.util.Timer;
-
-import digitale_stadt.cc_a3.DBHelper.DatabaseHandler;
-
-//import static android.support.v4.app.ActivityCompat.requestPermissions;
-
 /**
+ * GPS Tracking Klasse
  * Created by alexutza_a on 02.05.2016.
  */
-public class GPSTracker extends Service implements LocationListener {
+
+public class GPSTracker extends Service implements LocationListener, SensorEventListener {
 
     private final Context mContext;
 
@@ -39,123 +35,86 @@ public class GPSTracker extends Service implements LocationListener {
 
     boolean canGetLocation = false;
 
-
     Location location;
     double latitude;
     double longitude;
-    double altitude;
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
+
+    // Für die Bewegungserkennung benötigt
+    boolean isMoving = false;
+
+    private SensorManager senSensorManager;
+    private Sensor senAccelerometer;
+
+    private long lastUpdate = 0;
+
+    //lateral movement
+    private float last_x;
+    // vertical movement
+    private float last_y;
+    // z-axis
+    private float last_z;
+
+    private static final int SHAKE_THRESHOLD = 700;
 
 
     public GPSTracker(Context context) {
         this.mContext = context;
         getLocation();
 
+        //Sensor initialisieren
+        senSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public Location getLocation() {
-        /*final String[] LOCATION_PERMS={
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-        };
-       if (canGetLocation()) { requestPermissions(LOCATION_PERMS,ACCESS_LOCATION_PERMISSION_CODE); }*/
-        try {
-            locationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
 
-            // getting GPS status
-            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            try {
+                locationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
 
-            // getting network status
-            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                // getting GPS status
+                isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            if (!isGPSEnabled && !isNetworkEnabled) {
-                // no network provider is enabled
+                // getting network status
+                isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
+                if (!(!isGPSEnabled && !isNetworkEnabled)) {
+                    this.canGetLocation = true;
 
-            } else {
-                this.canGetLocation = true;
-
-                // First get location from Network Provider
-                if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000L, 0, this);
-                    Log.d("Network", "Network");
-                    if (locationManager != null) {
-                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
-                    }
-                    /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                            PackageManager.PERMISSION_GRANTED &&
-                            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                                    PackageManager.PERMISSION_GRANTED) {
-                        return location;
-                    }*/
-                }
-                // if GPS Enabled get lat/long using GPS Services
-                if (isGPSEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000L, 0, this);
-                        Log.d("GPS Enabled", "GPS Enabled");
+                    // First get location from Network Provider
+                    if (isNetworkEnabled) {
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000L, 0, this);
+                        Log.d("Network", "Network");
                         if (locationManager != null) {
-                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                             if (location != null) {
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();
                             }
                         }
                     }
+                    // if GPS Enabled get lat/long using GPS Services
+                    if (isGPSEnabled) {
+                        if (location == null) {
+                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000L, 0, this);
+                            Log.d("GPS Enabled", "GPS Enabled");
+                            if (locationManager != null) {
+                                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                                if (location != null) {
+                                    latitude = location.getLatitude();
+                                    longitude = location.getLongitude();
+                                }
+                            }
+                        }
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return location;
-    }
-
-
-
-
-    /**
-     * Function to get latitude
-     * */
-    public double getLatitude() {
-        //Log.i("GPSTracker", "getLatitude");
-        if (location != null) {
-            latitude = location.getLatitude();
-        }
-
-        // return latitude
-        return latitude;
-    }
-
-    /**
-     * Function to get longitude
-     * */
-    public double getLongitude() {
-        //Log.i("GPSTracker", "getLongitude");
-        if (location != null) {
-            longitude = location.getLongitude();
-        }
-
-        // return longitude
-        return longitude;
-    }
-
-    /**
-     * Function to get longitude
-     * */
-    public double getAltitude() {
-        //Log.i("GPSTracker", "getAltitude");
-        if (location != null) {
-            altitude = location.getAltitude();
-        }
-
-        // return longitude
-        return altitude;
+            return location;
     }
 
     /**
@@ -166,12 +125,6 @@ public class GPSTracker extends Service implements LocationListener {
     public void stopUsingGPS() {
         try {
             if (locationManager != null) {
-//                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-//                        PackageManager.PERMISSION_GRANTED &&
-//                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-//                                PackageManager.PERMISSION_GRANTED) {
-//                }
-//                else{showSettingsAlert();}
                 locationManager.removeUpdates(GPSTracker.this);
             }
         }catch (Exception e){
@@ -220,11 +173,6 @@ public class GPSTracker extends Service implements LocationListener {
         alertDialog.show();
     }
 
-    //public void OnCreated()
-    //{
-    //    Log.i("GPSTracker", "GPSTracker created");
-    //}
-
     @Override
     public void onLocationChanged(Location location) {
         //getLocation();
@@ -250,5 +198,39 @@ public class GPSTracker extends Service implements LocationListener {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    // Hier soll geprüft werden, ob sich das Handy überhaupt bewegt
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Sensor mySensor = event.sensor;
+        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+            // Beschleunigung in m/s^2
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+
+            long curTime = System.currentTimeMillis();
+
+            if ((curTime - lastUpdate) > 100) {
+                long diffTime = (curTime - lastUpdate);
+                lastUpdate = curTime;
+
+                float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000;
+
+                if (speed > SHAKE_THRESHOLD) {
+                    isMoving = true;
+                }
+                last_x = x;
+                last_y = y;
+                last_z = z;
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

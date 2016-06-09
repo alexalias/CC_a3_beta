@@ -2,10 +2,6 @@ package digitale_stadt.cc_a3;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -24,8 +20,8 @@ import java.util.TimeZone;
  * the tour acts as a queue holding the positions, new positions are added to the queue
  * depending on the transmission-type the data is then sent to the server or saved in the db
  */
-public class TourManager implements SensorEventListener
-{
+public class TourManager {
+
     Tour tour;                  //stores the tour data
     int queueLength;            //number of waypoints in the tour before data is sent
     int counter = 0;            //waypoint-id of last entry
@@ -49,23 +45,6 @@ public class TourManager implements SensorEventListener
     DBHelper dbHelper;          //the object handling the db interaction
     Context context;
 
-    // Für die Bewegungserkennung benötigt
-    boolean isMoving = false;
-
-    private SensorManager senSensorManager;
-    private Sensor senAccelerometer;
-
-    private long lastUpdate = 0;
-
-    //lateral movement
-    private float last_x;
-    // vertical movement
-    private float last_y;
-    // z-axis
-    private float last_z;
-
-    private static final int SHAKE_THRESHOLD = 700;
-
     public TourManager(Context context, String deviceID)
     {
         this.context = context;
@@ -79,11 +58,6 @@ public class TourManager implements SensorEventListener
         this.use_filtered_values = false;
         speedTreshold_kmh = 5.0;
         distanceTreshold_m = 40.0;
-
-        //Sensor initialisieren
-        senSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     // creates a new tour
@@ -211,14 +185,10 @@ public class TourManager implements SensorEventListener
 
     // returns the distance travelled since the tour started in km
     public double GetDistance_km() {
-
-        if (isMoving) {
             if (use_filtered_values)
                 return distance_m_filtered / 1000f;
             else
                 return distance_m_all / 1000f;
-        }
-            else return 0f;
     }
 
     // returns the average speed in km/h
@@ -226,7 +196,6 @@ public class TourManager implements SensorEventListener
         double distance_m;
         double duration_ms;
 
-        if (isMoving) {
         if (use_filtered_values) {
             distance_m = distance_m_filtered;
             duration_ms = duration_ms_filtered;
@@ -239,8 +208,6 @@ public class TourManager implements SensorEventListener
             return (distance_m * 3600) / ((double) duration_ms);
         else
             return 0;
-        }
-        else return 0f;
     }
 
     public boolean LoadTourDataFromDB(String tourID) {
@@ -287,42 +254,5 @@ public class TourManager implements SensorEventListener
     public boolean WlanUploadChecked(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPrefs.getBoolean("wlan_upload", false);
-    }
-
-    // Hier soll geprüft werden, ob sich das Handy überhaupt bewegt
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        Sensor mySensor = event.sensor;
-
-        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-
-            // Beschleunigung in m/s^2
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
-
-            long curTime = System.currentTimeMillis();
-
-            if ((curTime - lastUpdate) > 100) {
-                long diffTime = (curTime - lastUpdate);
-                lastUpdate = curTime;
-
-                float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000;
-
-                if (speed > SHAKE_THRESHOLD) {
-                    isMoving = true;
-                }
-                last_x = x;
-                last_y = y;
-                last_z = z;
-            }
-        }
-
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 }
