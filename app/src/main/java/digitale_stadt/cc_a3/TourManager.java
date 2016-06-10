@@ -11,7 +11,6 @@ import android.util.Log;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by Ralf Engelken on 16.05.2016.
@@ -49,15 +48,17 @@ public class TourManager {
     {
         this.context = context;
 
-        sender = new Sender(context);
-        dbHelper = new DBHelper(context);
+        StartServices();
 
         this.queueLength = 1;
+
         this.deviceID = deviceID;
 
         this.use_filtered_values = false;
         speedTreshold_kmh = 5.0;
         distanceTreshold_m = 40.0;
+
+        StartNewTour();
     }
 
     // creates a new tour
@@ -105,6 +106,9 @@ public class TourManager {
                 startTime = startLocation.getTime();
             }
 
+            double lat = location.getLatitude();
+            double lon = location.getLongitude();
+
             //calculate distance to last waypoint
             float distance = location.distanceTo(lastLocation);
             long duration = location.getTime() - startTime;
@@ -118,8 +122,7 @@ public class TourManager {
             }
 
             //update all data
-            distance_m_all += lastLocation.getTime() - location.getTime();
-
+            distance_m_all += distance;
             duration_ms_all = duration;
 
             lastLocation = location;
@@ -169,18 +172,12 @@ public class TourManager {
     }
 
     // returns the duration since the tour started in ms
-    public String GetDuration_ms()
+    public long GetDuration_ms()
     {
-        Date t0 = new Date(duration_ms_filtered - TimeZone.getDefault().getDSTSavings());
-        Date t1 = new Date(duration_ms_all - TimeZone.getDefault().getDSTSavings());
-        DateFormat df = new SimpleDateFormat("HH:mm:ss");
-        String d_filtered= df.format(t0);
-        String d_all = df.format(t1);
-
         if (use_filtered_values)
-            return d_filtered;
+            return duration_ms_filtered;
         else
-            return d_all;
+            return duration_ms_all;
     }
 
     // returns the distance travelled since the tour started in km
@@ -212,6 +209,19 @@ public class TourManager {
 
     public boolean LoadTourDataFromDB(String tourID) {
         return false;
+    }
+
+    public boolean StartServices() {
+        try {
+            sender = new Sender(context);
+            dbHelper = new DBHelper(context);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
     }
 
     public boolean SaveTourToDB() {
@@ -247,7 +257,6 @@ public class TourManager {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
         return isWiFi;
-
     }
 
     // prüft ob 'datenupload nur bei WLAN' in den shared prefs true ist

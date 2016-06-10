@@ -78,13 +78,13 @@
         android:layout_centerHorizontal="true"
         android:hint="0 km" />
 
-    <!--<TextView-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/debugEditTex"-->
-        <!--android:layout_below="@+id/streckeAnzeige"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:hint = "Debug Fenster" />-->
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/debugEditTex"
+        android:layout_below="@+id/streckeAnzeige"
+        android:layout_centerHorizontal="true"
+        android:hint = "Debug Fenster" />
 
 
     <ToggleButton

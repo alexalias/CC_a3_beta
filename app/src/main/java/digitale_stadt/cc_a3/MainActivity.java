@@ -15,13 +15,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class MainActivity extends AppCompatActivity{
 
     TextView textInfo;
     TextView speed;
     TextView dauer;
     TextView strecke;
-//    TextView debug;
+    TextView debug;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -59,7 +64,8 @@ public class MainActivity extends AppCompatActivity{
         strecke = (TextView) findViewById(R.id.streckeAnzeige);
         dauer = (TextView) findViewById(R.id.dauerAnzeige);
         speed = (TextView) findViewById(R.id.speedAnzeige);
-//        debug = (TextView) findViewById(R.id.debugEditTex);
+        debug = (TextView) findViewById(R.id.debugEditTex);
+        debug.setText ("");
 
         isGPSEnabled = locationManager
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -133,14 +139,19 @@ public class MainActivity extends AppCompatActivity{
 
     public void UpdateView() {
         speed.setText(String.format("%.3f km/h", tourManager.GetAvgSpeed_kmh()));
-        dauer.setText(String.format("%s h", tourManager.GetDuration_ms()));
+
+        Date t1 = new Date(tourManager.GetDuration_ms() - TimeZone.getDefault().getDSTSavings());
+        DateFormat df = new SimpleDateFormat("HH:mm:ss");
+        String s = df.format(t1);
+        dauer.setText(String.format("%s h", s));
+
         strecke.setText(String.format("%.3f km", tourManager.GetDistance_km()));
     }
 
-//    public void UpdateDebugInfo(String string)
-//    {
-//        debug.setText(debug.getText() + " " + string);
-//    }
+    public void UpdateDebugInfo(String string)
+    {
+        debug.setText(debug.getText() + " " + string);
+    }
 
     //Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
     private void StopTrackingClicked()
