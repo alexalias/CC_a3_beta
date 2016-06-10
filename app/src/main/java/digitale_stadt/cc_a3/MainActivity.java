@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity{
             // Überschreibt GPSTracker.onLocationChanged mit einer anonymen Methode
             public void onLocationChanged(Location location)
             {
-                getLocation(); //is this needed?
+                location = getLocation(); //is this needed?
 
                 String s = "new Position   Lat: " + location.getLatitude() + "   Long: " + location.getLongitude();
                 Log.i("Main", s);

@@ -9,6 +9,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -73,6 +74,7 @@ public class GPSTracker extends Service implements LocationListener, SensorEvent
     public Location getLocation() {
 
             try {
+                //instantiate Location Manager system service
                 locationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
 
                 // getting GPS status
@@ -81,8 +83,7 @@ public class GPSTracker extends Service implements LocationListener, SensorEvent
                 // getting network status
                 isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-                if (!(!isGPSEnabled && !isNetworkEnabled)) {
-                    this.canGetLocation = true;
+                if (canGetLocation()) {
 
                     // First get location from Network Provider
                     if (isNetworkEnabled) {
@@ -97,7 +98,7 @@ public class GPSTracker extends Service implements LocationListener, SensorEvent
                         }
                     }
                     // if GPS Enabled get lat/long using GPS Services
-                    if (isGPSEnabled) {
+                    else if (isGPSEnabled) {
                         if (location == null) {
                             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000L, 0, this);
                             Log.d("GPS Enabled", "GPS Enabled");
@@ -138,7 +139,9 @@ public class GPSTracker extends Service implements LocationListener, SensorEvent
      * @return boolean
      * */
     public boolean canGetLocation() {
-        return this.canGetLocation;
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        return (isGPSEnabled || isNetworkEnabled);
     }
 
     /**
