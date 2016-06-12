@@ -85,20 +85,8 @@ public class GPSTracker extends Service implements LocationListener, SensorEvent
 
                 if (canGetLocation()) {
 
-                    // First get location from Network Provider
-                    if (isNetworkEnabled) {
-                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000L, 0, this);
-                        Log.d("Network", "Network");
-                        if (locationManager != null) {
-                            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                            if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                            }
-                        }
-                    }
                     // if GPS Enabled get lat/long using GPS Services
-                    else if (isGPSEnabled) {
+                    if (isGPSEnabled) {
                         if (location == null) {
                             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000L, 0, this);
                             Log.d("GPS Enabled", "GPS Enabled");
@@ -111,6 +99,21 @@ public class GPSTracker extends Service implements LocationListener, SensorEvent
                             }
                         }
                     }
+
+                    // First get location from Network Provider
+                    else if (isNetworkEnabled) {
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000L, 0, this);
+                        Log.d("Network", "Network");
+                        if (locationManager != null) {
+                            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                            }
+                        }
+                    }
+
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
