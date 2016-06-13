@@ -12,14 +12,31 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textInfo"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:text="Aktuelle Fahrt:"
+        android:text="Herzlich Willkommen!"
+        android:id="@+id/text_welcome"
         android:textSize="18dp"
         android:layout_margin="10dp"
+        android:layout_centerHorizontal="true"/>
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_below="@id/text_welcome"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/cyc_logo_weissrot_130616"
+        android:layout_centerHorizontal="true"
         />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textInfo"
+        android:layout_below="@id/image"
+        android:text="Ihre aktuelle Fahrt:\n__________________"
+        android:textSize="18dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -83,8 +100,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/debugEditTex"
         android:layout_below="@+id/streckeAnzeige"
-        android:layout_centerHorizontal="true"
-        android:hint = "Debug Fenster" />
+        android:layout_centerHorizontal="true" />
 
 
     <ToggleButton
