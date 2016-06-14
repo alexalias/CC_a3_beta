@@ -72,7 +72,7 @@ public class Sender {
                             }
                             catch (Exception e)
                             {
-
+                                Log.i("Login Response", "JSON Exception: " + response);
                             }
                         }
                     }
@@ -138,7 +138,7 @@ public class Sender {
                             }
                             catch (Exception e)
                             {
-
+                                Log.i("Login Response", "JSON Exception: " + response);
                             }
                         }
                     }
@@ -188,7 +188,7 @@ public class Sender {
 
     public void SendJSONString (String url, String s)
     {
-        if (_token == "")
+        if (_token.equals(""))
         {
             Connect(GetUsername(), GetPassword());
         }
@@ -249,12 +249,12 @@ public class Sender {
     // fragt den usernamen aus den shared preferences ab
     public String GetUsername(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(_context);
-        return "ralf";//sharedPrefs.getString("username", "");
+        return sharedPrefs.getString("username", "");
     }
 
     // fragt das passwort aus den shared preferences ab
     public String GetPassword(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(_context);
-        return "TestPassword123!";//sharedPrefs.getString("userpassword", "");
+        return sharedPrefs.getString("userpassword", "");
     }
 }
