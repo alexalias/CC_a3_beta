@@ -22,12 +22,17 @@ import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity{
 
-    boolean firstLocationDropped;
+
     TextView textInfo;
     TextView speed;
     TextView dauer;
     TextView strecke;
     TextView debug;
+
+    LocationPostCorrection locationPostCorrection = new LocationPostCorrection(3);
+
+    //if true, the first location sent by the GPSTracker has been dropped
+    boolean firstLocationDropped;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -118,7 +123,7 @@ public class MainActivity extends AppCompatActivity{
 
                 if (firstLocationDropped) {
                     // die neue Position wird an den Tourmanager [bergeben
-                    tourManager.AddWayPoint(location);
+                    tourManager.AddWayPoint(locationPostCorrection.getSmoothenedLocation(location));
                     UpdateView();
                 }
                 else
