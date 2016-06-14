@@ -22,6 +22,7 @@ import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity{
 
+    boolean firstLocationDropped;
     TextView textInfo;
     TextView speed;
     TextView dauer;
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity{
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         tourManager = new TourManager(this, deviceID);
+
+        firstLocationDropped = false;
     }
 
     //Eine Sorte Clicklistener für unser start/stop Button
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity{
         //Startet eine neue Tour im TourManager
         tourManager.StartNewTour();
 
+        firstLocationDropped = false;
 
         gps = new GPSTracker(MainActivity.this)
         {
@@ -111,9 +115,13 @@ public class MainActivity extends AppCompatActivity{
                 String s = "new Position   Lat: " + location.getLatitude() + "   Long: " + location.getLongitude();
                 Log.i("Main", s);
 
-                // die neue Position wird an den Tourmanager [bergeben
-                tourManager.AddWayPoint(location);
-                UpdateView();
+                if (firstLocationDropped) {
+                    // die neue Position wird an den Tourmanager [bergeben
+                    tourManager.AddWayPoint(location);
+                    UpdateView();
+                }
+                else
+                    firstLocationDropped = true;
             }
 
         };
