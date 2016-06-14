@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -26,6 +27,11 @@ public class SettingsActivity extends Activity{
     private EditText username;
     private EditText userpassword;
     private Button button_reset;
+
+    private Button button_register;
+    private Button button_login;
+    private Button button_anonymous;
+    private TextView result;
 
     // Shared Preferences um Einstellungen zu speichern
     private SharedPreferences sharedPrefs;
@@ -52,6 +58,11 @@ public class SettingsActivity extends Activity{
         username = (EditText) findViewById(R.id.edit_username);
         userpassword = (EditText) findViewById(R.id.edit_userPassword);
         button_reset = (Button) findViewById(R.id.button_reset);
+
+        button_login = (Button) findViewById(R.id.login);
+        button_register = (Button) findViewById(R.id.register);
+        button_anonymous = (Button) findViewById(R.id.anonymous);
+        result = (TextView) findViewById(R.id.result);
 
         checkBox_wlan.setChecked(sharedPrefs.getBoolean("wlan_upload", false));
         checkBox_anonym.setChecked(sharedPrefs.getBoolean("anonymous_upload", false));
@@ -153,6 +164,30 @@ public class SettingsActivity extends Activity{
                 username.setText(sharedPrefs.getString("username", "Bitte Benutzernamen angeben"));
                 userpassword.setText(sharedPrefs.getString("userpassword", "Bitte Passwort angeben"));
                 Toast.makeText(SettingsActivity.this, "Einstellungen wurden gelöscht", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //Login Parameters: URL, username, password
+        button_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RequestManager.getInstance().doRequest().Login("https://api.cyc.jmakro.de:4040/get_auth_token.php", sharedPrefs.getString("username", ""), sharedPrefs.getString("userpassword", ""));
+            }
+        });
+
+        //Register Parameters: URL, username, password, email
+        button_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RequestManager.getInstance().doRequest().Register("https://api.cyc.jmakro.de:4040/register_user.php", sharedPrefs.getString("username", ""), sharedPrefs.getString("userpassword", ""), sharedPrefs.getString("username", "")+"@test.de");
+            }
+        });
+
+        //Register Parameters: URL
+        button_anonymous.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RequestManager.getInstance().doRequest().Register_Anonymous("https://api.cyc.jmakro.de:4040/register_user.php");
             }
         });
     }

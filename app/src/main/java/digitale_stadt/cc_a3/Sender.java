@@ -44,9 +44,9 @@ public class Sender {
         Connect(GetUsername(), GetPassword());
     }
 
-    private void Connect(final String username, final String password)
+    private void CreateAccount(final String username, final String password, final String email)
     {
-        Log.i("Connect", "Connecting with " + username + " / " + password);
+        Log.i("Sender", "Connecting with " + username + " / " + password);
         StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
                 new Response.Listener<String>() {
                     @Override
@@ -55,12 +55,12 @@ public class Sender {
 
                         if (response.equals(server_login_failed))
                         {
-                            Log.i("Connect Response", "Login rejected: " + response);
+                            Log.i("Login Response", "Login rejected: " + response);
                             _token = "Test_ohne_login";
-//                            ((MainActivity)_context).UpdateDebugInfo(" F ");
+                            ((MainActivity)_context).UpdateDebugInfo(" F ");
                         }
                         else {
-                            Log.i("Connect Response", "Token received: " + response);
+                            Log.i("Login Response", "Token received: " + response);
                             try {
                                 JSONObject myJson = new JSONObject(response);
                                 // use myJson as needed, for example
@@ -68,7 +68,7 @@ public class Sender {
                                 String token = myJson.optString("auth_token");
                                 // etc
                                 _token = token;
-//                                ((MainActivity)_context).UpdateDebugInfo(" L ");
+                                ((MainActivity)_context).UpdateDebugInfo(" L ");
                             }
                             catch (Exception e)
                             {
@@ -81,9 +81,75 @@ public class Sender {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
-                        Log.i("Connect Error.Response", error.toString());
+                        Log.i("Login Error.Response", error.toString());
                         _token = "";
-//                        ((MainActivity)_context).UpdateDebugInfo(" F ");
+                        ((MainActivity)_context).UpdateDebugInfo(" F ");
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("username", username);
+                params.put("password", password);
+                return params;
+            }
+        };
+
+        //set timeout to 2000ms and retries to 1
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, // 1000
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, // 1
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)); //1f
+
+        queue.add(postRequest);
+    }
+
+    private void CreateAnonymousAccount()
+    {
+
+    }
+
+    private void Connect(final String username, final String password)
+    {
+        Log.i("Login", "Connecting with " + username + " / " + password);
+        StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+
+                        if (response.equals(server_login_failed))
+                        {
+                            Log.i("Login Response", "Login rejected: " + response);
+                            _token = "Test_ohne_login";
+                            ((MainActivity)_context).UpdateDebugInfo(" F ");
+                        }
+                        else {
+                            Log.i("Login Response", "Token received: " + response);
+                            try {
+                                JSONObject myJson = new JSONObject(response);
+                                // use myJson as needed, for example
+                                String name = myJson.optString("name");
+                                String token = myJson.optString("auth_token");
+                                // etc
+                                _token = token;
+                                ((MainActivity)_context).UpdateDebugInfo(" L ");
+                            }
+                            catch (Exception e)
+                            {
+
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        Log.i("Login Error.Response", error.toString());
+                        _token = "";
+                        ((MainActivity)_context).UpdateDebugInfo(" F ");
                     }
                 }
         ) {
@@ -147,12 +213,12 @@ public class Sender {
                         {
                             Log.i("Response", "Login error: resetting token " + response);
                             _token = "";
-//                            ((MainActivity)_context).UpdateDebugInfo("F");
+                            ((MainActivity)_context).UpdateDebugInfo("F");
                         }
                         else
                         {
                             Log.i("Response", "Data transmitted: " + response);
-//                            ((MainActivity)_context).UpdateDebugInfo("S");
+                            ((MainActivity)_context).UpdateDebugInfo("S");
                         }
                     }
                 },
@@ -161,7 +227,7 @@ public class Sender {
                     public void onErrorResponse(VolleyError error) {
                         // error
                         Log.i("Error.Response", error.toString());
-//                        ((MainActivity)_context).UpdateDebugInfo("F");
+                        ((MainActivity)_context).UpdateDebugInfo("F");
                     }
                 }
         ) {

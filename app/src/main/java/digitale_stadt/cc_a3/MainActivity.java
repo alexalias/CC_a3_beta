@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity{
         //sender = new Sender(this);
         //dbHelper = new DBHelper(this);
 
+        RequestManager.getInstance(this);
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
         super.onCreate(savedInstanceState);
