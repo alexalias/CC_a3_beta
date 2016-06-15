@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity{
     public void startTracking(View view){
         boolean on = ((ToggleButton) view).isChecked();
         if (on) {
-            Toast toast = Toast.makeText(MainActivity.this, "Tracking started", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(MainActivity.this, "Tracking gestarted", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
             toast.show();
             StartTrackingClicked();
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity{
 // GPS-Funktion wird angeschaltet und die WayPoints einer Tour im ArrayList zwischengespeichert.
     private void StartTrackingClicked()
     {
-        Log.i("Main", "Tracking started");
+        Log.i("Main", "Tracking gestarted");
 
         //Startet eine neue Tour im TourManager
         tourManager.StartNewTour();
@@ -213,23 +213,17 @@ public class MainActivity extends AppCompatActivity{
                 intent = new Intent(this, ImpressumActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_login:
+                intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_register:
+                intent = new Intent(this, RegisterActivity.class);
+                startActivity(intent);
+                return true;
             }
         return super.onOptionsItemSelected(item);
     }
-
-
-
-//    @Override
-//    public void onPause(){
-//        super.onPause();
-//        senSensorManager.unregisterListener(this);
-//    }
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-//    }
 }
 
 

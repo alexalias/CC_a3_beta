@@ -12,76 +12,6 @@
     style="@android:style/Theme.Light"
     >
 
-    <TextView
-        android:id="@+id/label_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="20dp"
-        android:text="Benutzerkonto:"
-        />
-
-    <EditText
-        android:id="@+id/edit_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        />
-
-    <TextView
-        android:id="@+id/label_userPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentLeft="true"
-        android:text="Passwort:"
-        />
-
-    <EditText
-        android:id="@+id/edit_userPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        />
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Login"
-                android:id="@+id/login" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Register"
-                android:id="@+id/register" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/anonymous"
-                android:text="Anonymous" />
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="31dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
-            android:id="@+id/result" />
-    </LinearLayout>
-
     <CheckBox
         android:id="@+id/checkBox_wlan"
         android:layout_width="wrap_content"
@@ -89,20 +19,5 @@
         android:layout_marginTop="20dp"
         android:text="Datenupload nur bei WLAN  "
         />
-
-    <CheckBox
-        android:id="@+id/checkBox_anonym"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Anonymer Datenupload"
-        />
-
-    <Button
-        android:id="@+id/button_reset"
-        android:layout_below="@id/edit_userPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="RESET"/>
 
 </LinearLayout>

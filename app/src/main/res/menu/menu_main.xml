@@ -5,12 +5,27 @@
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="always"
-        android:icon="@android:drawable/ic_menu_preferences"/>
+        />
 
     <item
         android:id="@+id/action_impressum"
         android:title="Impressum"
         android:orderInCategory="100"
         android:showAsAction="always"
-        android:icon="@android:drawable/ic_menu_preferences"/>
+        />
+
+    <item
+        android:title="test_login"
+        android:id="@+id/action_login"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        />
+
+    <item
+        android:title="test_register"
+        android:id="@+id/action_register"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        />
+
 </menu>
