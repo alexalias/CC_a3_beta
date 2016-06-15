@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity{
     public void startTracking(View view){
         boolean on = ((ToggleButton) view).isChecked();
         if (on) {
-            Toast toast = Toast.makeText(MainActivity.this, "Tracking gestarted", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(MainActivity.this, "Tracking gestartet", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
             toast.show();
             StartTrackingClicked();
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity{
     {
 
         Log.i("Main", "Tracking stopped");
-        Toast toast = Toast.makeText(getApplicationContext(), "Tracking wurde deaktiviert", Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(getApplicationContext(), "Tracking gestoppt", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
 
