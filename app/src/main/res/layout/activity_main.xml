@@ -60,27 +60,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textSpeed"
-        android:layout_below="@+id/dauerAnzeige"
-        android:layout_centerHorizontal="true"
-        android:text="Geschwindigkeit"
-        android:textSize="18dp"
-        android:layout_margin="2dp"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/speedAnzeige"
-        android:layout_below="@+id/textSpeed"
-        android:layout_centerHorizontal="true"
-        android:hint="0,0 km/h" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/textStrecke"
-        android:layout_below="@+id/speedAnzeige"
+        android:layout_below="@id/dauerAnzeige"
         android:layout_centerHorizontal="true"
         android:text="Distanz"
         android:textSize="18dp"
@@ -91,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/streckeAnzeige"
-        android:layout_below="@+id/textStrecke"
+        android:layout_below="@id/textStrecke"
         android:layout_centerHorizontal="true"
         android:hint="0 km" />
 
@@ -101,6 +82,25 @@
         android:id="@+id/debugEditTex"
         android:layout_below="@+id/streckeAnzeige"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textSpeed"
+        android:layout_below="@id/streckeAnzeige"
+        android:layout_centerHorizontal="true"
+        android:text="Ø-Geschwindigkeit"
+        android:textSize="18dp"
+        android:layout_margin="2dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/speedAnzeige"
+        android:layout_below="@id/textSpeed"
+        android:layout_centerHorizontal="true"
+        android:hint="0,0 km/h" />
 
 
     <ToggleButton
