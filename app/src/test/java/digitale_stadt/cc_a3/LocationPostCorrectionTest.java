@@ -37,6 +37,8 @@ public class LocationPostCorrectionTest {
     @Test
     public void SmootheningTest()
     {
+        Location loc;
+
         when(loc1.getLatitude()).thenReturn(30.0);
         when(loc1.getLongitude()).thenReturn(50.0);
         when(loc1.getAltitude()).thenReturn(5.0);
@@ -48,5 +50,8 @@ public class LocationPostCorrectionTest {
         when(loc3.getLatitude()).thenReturn(40.0);
         when(loc3.getLongitude()).thenReturn(40.0);
         when(loc3.getAltitude()).thenReturn(7.0);
+
+        loc = lpc.getSmoothenedLocation(loc1);
+        assertEquals(30.0, loc.getAltitude(), 1.0);
     }
 }

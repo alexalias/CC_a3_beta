@@ -106,8 +106,12 @@ public class LoginActivity extends Activity {
         button_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RequestManager.getInstance().doRequest().Login("https://api.cyc.jmakro.de:4040/get_auth_token.php",
-                        sharedPrefs.getString("username", ""), sharedPrefs.getString("userpassword", ""));
+                sharedPrefs.edit().putBoolean("anonymous", false).commit();
+                RequestManager.getInstance().doRequest().Login(
+                        sharedPrefs.getString("username", ""),
+                        sharedPrefs.getString("userpassword", ""));
+                //close activity
+                finish();
             }
         });
 
@@ -117,6 +121,8 @@ public class LoginActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
                 startActivity(intent);
+                //close activity
+                finish();
             }
         });
 
@@ -124,7 +130,9 @@ public class LoginActivity extends Activity {
         button_anonymous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RequestManager.getInstance().doRequest().Register_Anonymous("https://api.cyc.jmakro.de:4040/register_user.php");
+                RequestManager.getInstance().doRequest().Register_Anonymous();
+                //close activity
+                finish();
             }
         });
     }

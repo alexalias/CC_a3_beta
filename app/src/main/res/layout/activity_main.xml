@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Herzlich Willkommen!"
+        android:text="Sie sind nicht eingeloggt!"
         android:id="@+id/text_welcome"
         android:textSize="18dp"
         android:layout_margin="10dp"
@@ -25,7 +25,7 @@
         android:layout_height="100dp"
         android:src="@drawable/cyc_logo_weissrot_130616"
         android:layout_centerHorizontal="true"
-        />
+        android:contentDescription="CycleYourCity-Hamburg Logo" />
 
     <TextView
         android:layout_width="wrap_content"

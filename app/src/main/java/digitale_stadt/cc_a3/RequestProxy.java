@@ -1,6 +1,9 @@
 package digitale_stadt.cc_a3;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,16 +22,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by lorcan on 25.05.2016.
+ * Created by 1engelke on 25.05.2016.
+ *
  */
 public class RequestProxy {
+
+    private Context mContext;
+
+    private SharedPreferences sharedPrefs;
 
     private RequestQueue mRequestQueue;
 
     final String login_url = "https://api.cyc.jmakro.de:4040/get_auth_token.php";
+    final String register_url = "https://api.cyc.jmakro.de:4040/register_user.php";
     final String data_url = "https://api.cyc.jmakro.de:4040/log_coordinates.php";
 
     final String server_login_failed = "wrong credentials";
+    final String server_register_success_pre = "Registration successfull: Account ";
+    final String server_register_success_post = " has been created succesfully.";
+    final String server_register_anonymous_failed = "wrong credentials";
     final String server_data_transmission_token_not_valid = "auth_token not set";
 
     RetryPolicy defaultRetryPolicy = new DefaultRetryPolicy(
@@ -39,50 +51,49 @@ public class RequestProxy {
 
     // package access constructor
     RequestProxy(Context context) {
+        mContext = context;
         mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void Login(final String login_url, final String username, final String password)
+    public void Login(final String username, final String password) { Login(username, password, login_url); }
+    public void Login(final String username, final String password, final String login_url)
     {
         Log.i("RequestProxy", "Connecting with " + username + " / " + password);
         StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // response
-
-                        if (response.equals(server_login_failed))
+                        // check if response string is server error message
+                        if (!response.equals(server_login_failed))
                         {
-                            Log.i("Login Response", "Login rejected: " + response);
-//                            _token = "Test_ohne_login";
-//                            ((MainActivity)_context).UpdateDebugInfo(" F ");
-//                            Toast.makeText(RequestProxy.this, "Login OK", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
                             Log.i("Login Response", "Token received: " + response);
                             try {
+                                // retrieve auth_token from server response
                                 JSONObject myJson = new JSONObject(response);
-                                // use myJson as needed, for example
-                                String name = myJson.optString("name");
                                 String token = myJson.optString("auth_token");
-                                // etc
-//                                _token = token;
-//                                ((MainActivity)_context).UpdateDebugInfo(" L ");
-                            }
-                            catch (Exception e)
-                            {
+                                sharedPrefs.edit().putString("auth_token", token).commit();
 
+                                ((MainActivity)mContext).UpdateUsername();
                             }
+                            catch (Exception e) {}
+                        }
+                        else
+                        {
+                            Log.i("Login Response", "Login rejected: " + response);
+                            // delete token and open login screen
+                            sharedPrefs.edit().putString("auth_token", "").commit();
+                            ((MainActivity)mContext).DisplayLoginActivity();
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // error
-                        Log.i("Login Error.Response", error.toString());
-//                        _token = "";
-//                        ((MainActivity)_context).UpdateDebugInfo(" F ");
+                        Log.i("Login Error: ", error.toString());
+                        // delete token and open login screen
+                        sharedPrefs.edit().putString("auth_token", "").commit();
+                        ((MainActivity)mContext).DisplayLoginActivity();
                     }
                 }
         ) {
@@ -101,48 +112,37 @@ public class RequestProxy {
         mRequestQueue.add(postRequest);
     }
 
-    public void Register(final String login_url, final String username, final String password, final String email)
+    public void Register(final String username, final String password, final String email) { Register(username, password, email, register_url);  }
+    public void Register(final String username, final String password, final String email, final String login_url)
     {
         Log.i("RequestProxy", "Register with " + username + " / " + password);
         StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // response
-
-                        if (response.equals(server_login_failed))
-                        {
-                            Log.i("Register Response", "Login rejected: " + response);
-//                            _token = "Test_ohne_login";
-//                            ((MainActivity)_context).UpdateDebugInfo(" F ");
-//                            Toast.makeText(RequestProxy.this, "Login OK", Toast.LENGTH_SHORT).show();
+                        // check if register was successfull
+                        if (response.startsWith(server_register_success_pre)) {
+                            Log.i("Register Response", "Registration successfull: " + response);
+                            // save data
+                            sharedPrefs.edit().putString("username", username).commit();
+                            sharedPrefs.edit().putString("userpassword", password).commit();
+                            // login with new username
+                            RequestManager.getInstance().doRequest().Login(username, password);
                         }
-                        else {
-                            Log.i("Register Response", "Token received: " + response);
-//                            Toast.makeText(RequestProxy.this, "Login FAILED", Toast.LENGTH_SHORT).show();
-                            try {
-                                JSONObject myJson = new JSONObject(response);
-                                // use myJson as needed, for example
-                                String name = myJson.optString("name");
-                                String token = myJson.optString("auth_token");
-                                // etc
-//                                _token = token;
-//                                ((MainActivity)_context).UpdateDebugInfo(" L ");
-                            }
-                            catch (Exception e)
-                            {
-
-                            }
+                        else
+                        {
+                            Log.i("Register Response", "Registration failed: " + response);
+                            // open register activity
+                            ((MainActivity)mContext).DisplayRegisterActivity();
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // error
-                        Log.i("Register Error.Response", error.toString());
-//                        _token = "";
-//                        ((MainActivity)_context).UpdateDebugInfo(" F ");
+                        Log.i("Register Error: ", error.toString());
+                        // open register activity
+                        ((MainActivity)mContext).DisplayRegisterActivity();
                     }
                 }
         ) {
@@ -161,48 +161,48 @@ public class RequestProxy {
         mRequestQueue.add(postRequest);
     }
 
-    public void Register_Anonymous(final String login_url)
+    public void Register_Anonymous() { Register_Anonymous(register_url); }
+    public void Register_Anonymous(final String register_url)
     {
         Log.i("RequestProxy", "Register Anonymous");
-        StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
+        StringRequest postRequest = new StringRequest(Request.Method.POST, register_url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // response
-
-                        if (response.equals(server_login_failed))
+                        if (!response.equals(server_register_anonymous_failed))
                         {
-                            Log.i("Register Anonymous Resp", "Login rejected: " + response);
-//                            _token = "Test_ohne_login";
-//                            ((MainActivity)_context).UpdateDebugInfo(" F ");
-//                            Toast.makeText(RequestProxy.this, "Login OK", Toast.LENGTH_SHORT).show();
+                            Log.i("Reg.Anon Response", "Token received: " + response);
+                            try {
+                                // retrieve username and auth_token from server response
+                                JSONObject myJson = new JSONObject(response);
+
+                                String username = myJson.optString("username");
+                                sharedPrefs.edit().putString("username", username).commit();
+
+                                String password = myJson.optString("password");
+                                sharedPrefs.edit().putString("userpassword", password).commit();
+
+                                sharedPrefs.edit().putBoolean("anonymous", true).commit();
+
+                                // login with new username
+                                RequestManager.getInstance().doRequest().Login(username, password);
+                            }
+                            catch (Exception e) {}
                         }
-                        else {
-                            Log.i("Register Anonymous Resp", "Token received: " + response);
-//                            Toast.makeText(RequestProxy.this, "Login FAILED", Toast.LENGTH_SHORT).show();
-//                            try {
-//                                JSONObject myJson = new JSONObject(response);
-//                                // use myJson as needed, for example
-//                                String name = myJson.optString("name");
-//                                String token = myJson.optString("auth_token");
-//                                // etc
-//                                _token = token;
-//                                ((MainActivity)_context).UpdateDebugInfo(" L ");
-//                            }
-//                            catch (Exception e)
-//                            {
-//
-//                            }
+                        else
+                        {
+                            Log.i("Login Response", "Login rejected: " + response);
+                            // delete token and open login screen
+                            sharedPrefs.edit().putString("auth_token", "").commit();
+                            ((MainActivity)mContext).DisplayLoginActivity();
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // error
                         Log.i("Reg Anon Error.Resp", error.toString());
-//                        _token = "";
-//                        ((MainActivity)_context).UpdateDebugInfo(" F ");
+                        RequestManager.getInstance().doRequest().Register_Anonymous();
                     }
                 }
         ) {
@@ -215,11 +215,7 @@ public class RequestProxy {
         };
 
         //set timeout to 1000ms and retries to 1
-        postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, // 1000
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, // 1
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)); //1f
-
+        postRequest.setRetryPolicy(defaultRetryPolicy);
         mRequestQueue.add(postRequest);
     }
 }

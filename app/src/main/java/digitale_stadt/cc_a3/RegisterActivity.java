@@ -147,10 +147,12 @@ public class RegisterActivity extends Activity {
         button_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RequestManager.getInstance().doRequest().Register("https://api.cyc.jmakro.de:4040/register_user.php",
+                RequestManager.getInstance().doRequest().Register(
                         sharedPrefs.getString("username", ""),
                         sharedPrefs.getString("userpassword", ""),
                         sharedPrefs.getString("useremail", ""));
+                //close activity
+                finish();
             }
         });
     }

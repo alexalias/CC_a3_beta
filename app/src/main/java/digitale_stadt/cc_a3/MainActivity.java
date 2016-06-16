@@ -1,9 +1,11 @@
 package digitale_stadt.cc_a3;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -22,14 +24,13 @@ import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity{
 
-
     TextView textInfo;
     TextView speed;
     TextView dauer;
     TextView strecke;
     TextView debug;
 
-    LocationPostCorrection locationPostCorrection = new LocationPostCorrection(3);
+    LocationPostCorrection locationPostCorrection = new LocationPostCorrection(10);
 
     //if true, the first location sent by the GPSTracker has been dropped
     boolean firstLocationDropped;
@@ -187,6 +188,27 @@ public class MainActivity extends AppCompatActivity{
             gps.stopUsingGPS();
     }
 
+    public void UpdateUsername()
+    {
+        String username;
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        TextView welcome = (TextView) findViewById(R.id.text_welcome);
+
+        String token = sharedPrefs.getString("auth_token", "");
+        boolean anonymous = sharedPrefs.getBoolean("anonymous", false);
+
+        if (!token.equals("")) {
+            if (anonymous == true)
+                username = "Anonymous";
+            else
+                username = sharedPrefs.getString("username", "");
+
+            welcome.setText("Herzlich Willkommen " + username + "!");
+        }
+        else
+            welcome.setText("Sie sind nicht angemeldet!");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -214,15 +236,29 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(intent);
                 return true;
             case R.id.action_login:
-                intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-                return true;
+                return DisplayLoginActivity();
             case R.id.action_register:
-                intent = new Intent(this, RegisterActivity.class);
-                startActivity(intent);
-                return true;
+                return DisplayRegisterActivity();
             }
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean DisplayLoginActivity()
+    {
+        Intent intent;
+
+        intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
+    public boolean DisplayRegisterActivity()
+    {
+        Intent intent;
+
+        intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+        return true;
     }
 }
 
