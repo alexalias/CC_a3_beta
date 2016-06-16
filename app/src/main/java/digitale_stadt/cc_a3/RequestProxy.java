@@ -218,4 +218,50 @@ public class RequestProxy {
         postRequest.setRetryPolicy(defaultRetryPolicy);
         mRequestQueue.add(postRequest);
     }
+
+
+
+    public void SendTourData(String auth_token, Tour tour) { SendJSONString(auth_token, tour.toJSON().toString(), data_url); }
+    public void SendTourData(String auth_token, Tour tour, String url) { SendJSONString(auth_token, tour.toJSON().toString(), url); }
+
+    public void SendJSONString (final String auth_token, final String data, final String data_url)
+    {
+        Log.i("RequestProxy", "Send Tour Data");
+        StringRequest postRequest = new StringRequest(Request.Method.POST, data_url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                // check if transmission was successfull
+                if (!response.equals(server_data_transmission_token_not_valid))
+                {
+                    Log.i("SendTourData", "Data transmitted: " + response);
+                }
+                else
+                {
+                    Log.i("SendTourData", "Login error: resetting token " + response);
+                    sharedPrefs.edit().putString("auth_token", "").commit();
+                    //save data to DB
+                }
+            }
+        },
+        new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i("SendData Error.Response", error.toString());
+                //save data to DB
+            }
+        }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("auth_token", auth_token);
+                params.put("data", data);
+                return params;
+            }
+        };
+
+        //set timeout to 1000ms and retries to 1
+        postRequest.setRetryPolicy(defaultRetryPolicy);
+        mRequestQueue.add(postRequest);
+    }
 }

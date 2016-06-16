@@ -19,6 +19,13 @@ public class Tour {
     private List<Position> WayPoints;
     private boolean tourComplete;
 
+    public Tour(Tour tour)
+    {
+        tourID = tour.tourID;
+        WayPoints = new ArrayList<>(tour.WayPoints);
+        tourComplete = tour.tourComplete;
+    }
+
     public Tour(String deviceID)
     {
         this.tourID = Hasher.md5(new Date().toString() + deviceID);

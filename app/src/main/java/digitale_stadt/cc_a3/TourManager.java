@@ -40,7 +40,6 @@ public class TourManager {
     long duration_ms_filtered;  //the time travelled so far, without stops
     double distance_m_filtered; //the distance travelled so far, without stops
 
-    Sender sender;              //the object handling the server interaction
     DBHelper dbHelper;          //the object handling the db interaction
     Context context;
 
@@ -82,9 +81,12 @@ public class TourManager {
         }
     }
 
-    public void ClearWayPoints()
+    public Tour ClearWayPoints()
     {
+        Tour oldTour = new Tour(tour);
         tour.ClearWayPoints();
+
+        return oldTour;
     }
 
     // manages the tour data
@@ -133,12 +135,15 @@ public class TourManager {
 
             // check what to do with the data
             // if WLAN is available or not neccessary, send data
-            if ((WiFiAvailable()) || (!WlanUploadChecked())) {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            String auth_token = sharedPrefs.getString("auth_token", "");
+            boolean connected = !auth_token.equals("");
+            if (connected && (WiFiAvailable() || !WlanUploadChecked())) {
                 //check if number of wayPoints is enough to send data
                 if ((tour.GetWayPoints().size() >= queueLength) || (tour.GetTourComplete())) {
                     // send data and clear waypoint list in tour
-                    if (SendTourToServer())
-                        tour.ClearWayPoints();
+                    Tour t = ClearWayPoints();
+                    RequestManager.getInstance().doRequest().SendTourData(auth_token, t);
                 }
             }
         }
@@ -213,7 +218,6 @@ public class TourManager {
 
     public boolean StartServices() {
         try {
-            sender = new Sender(context);
             dbHelper = new DBHelper(context);
 
             return true;
@@ -238,17 +242,17 @@ public class TourManager {
         }
     }
 
-    public boolean SendTourToServer() {
-        try
-        {
-            sender.SendTourData(tour);
-            return true;
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
-    }
+//    public boolean SendTourToServer() {
+//        try
+//        {
+//            RequestManager.getInstance().doRequest().SendTourData(tour);
+//            return true;
+//        }
+//        catch (Exception e)
+//        {
+//            return false;
+//        }
+//    }
 
     public boolean WiFiAvailable (){
         ConnectivityManager cm =
