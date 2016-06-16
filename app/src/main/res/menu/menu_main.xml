@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Login"
+        android:id="@+id/action_login"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        />
+
     <item
         android:title="@string/action_settings"
         android:id="@+id/action_settings"
@@ -10,20 +18,6 @@
     <item
         android:id="@+id/action_impressum"
         android:title="Impressum"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        />
-
-    <item
-        android:title="test_login"
-        android:id="@+id/action_login"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        />
-
-    <item
-        android:title="test_register"
-        android:id="@+id/action_register"
         android:orderInCategory="100"
         android:showAsAction="always"
         />

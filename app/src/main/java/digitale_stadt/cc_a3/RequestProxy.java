@@ -1,11 +1,9 @@
 package digitale_stadt.cc_a3;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -83,7 +81,7 @@ public class RequestProxy {
                             Log.i("Login Response", "Login rejected: " + response);
                             // delete token and open login screen
                             sharedPrefs.edit().putString("auth_token", "").commit();
-                            ((MainActivity)mContext).DisplayLoginActivity();
+                            ((MainActivity)mContext).displayLoginActivity();
                         }
                     }
                 },
@@ -93,7 +91,7 @@ public class RequestProxy {
                         Log.i("Login Error: ", error.toString());
                         // delete token and open login screen
                         sharedPrefs.edit().putString("auth_token", "").commit();
-                        ((MainActivity)mContext).DisplayLoginActivity();
+                        ((MainActivity)mContext).displayLoginActivity();
                     }
                 }
         ) {
@@ -133,7 +131,7 @@ public class RequestProxy {
                         {
                             Log.i("Register Response", "Registration failed: " + response);
                             // open register activity
-                            ((MainActivity)mContext).DisplayRegisterActivity();
+                            ((MainActivity)mContext).displayRegisterActivity();
                         }
                     }
                 },
@@ -142,7 +140,7 @@ public class RequestProxy {
                     public void onErrorResponse(VolleyError error) {
                         Log.i("Register Error: ", error.toString());
                         // open register activity
-                        ((MainActivity)mContext).DisplayRegisterActivity();
+                        ((MainActivity)mContext).displayRegisterActivity();
                     }
                 }
         ) {
@@ -194,7 +192,7 @@ public class RequestProxy {
                             Log.i("Login Response", "Login rejected: " + response);
                             // delete token and open login screen
                             sharedPrefs.edit().putString("auth_token", "").commit();
-                            ((MainActivity)mContext).DisplayLoginActivity();
+                            ((MainActivity)mContext).displayLoginActivity();
                         }
                     }
                 },

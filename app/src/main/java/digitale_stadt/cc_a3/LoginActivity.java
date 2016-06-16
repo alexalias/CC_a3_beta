@@ -1,10 +1,10 @@
 package digitale_stadt.cc_a3;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -17,7 +17,7 @@ import android.widget.EditText;
  * Created by Anne Lorenz on 15.06.2016.
  */
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends AppCompatActivity {
 
     private EditText username;
     private EditText userpassword;
@@ -54,6 +54,8 @@ public class LoginActivity extends Activity {
 
         username.setText(sharedPrefs.getString("username", "Bitte Benutzernamen angeben"));
         userpassword.setText(sharedPrefs.getString("userpassword", "Bitte Passwort angeben"));
+
+        setTitle("Login");
     }
 
     private void attachListeners() {

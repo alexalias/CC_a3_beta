@@ -2,6 +2,7 @@ package digitale_stadt.cc_a3;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -83,6 +85,8 @@ public class MainActivity extends AppCompatActivity{
         tourManager = new TourManager(this, deviceID);
 
         firstLocationDropped = false;
+
+        setTitleBackgroundColor();
     }
 
     //Eine Sorte Clicklistener für unser start/stop Button
@@ -203,7 +207,7 @@ public class MainActivity extends AppCompatActivity{
             else
                 username = sharedPrefs.getString("username", "");
 
-            welcome.setText("Herzlich Willkommen " + username + "!");
+            welcome.setText("Herzlich Willkommen, " + username + "!");
         }
         else
             welcome.setText("Sie sind nicht angemeldet!");
@@ -224,26 +228,18 @@ public class MainActivity extends AppCompatActivity{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        Intent intent;
-
         switch (id) {
             case R.id.action_settings:
-                intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
+                return displaySettingsActivity();
             case R.id.action_impressum:
-                intent = new Intent(this, ImpressumActivity.class);
-                startActivity(intent);
-                return true;
+                return displayImpressumActivity();
             case R.id.action_login:
-                return DisplayLoginActivity();
-            case R.id.action_register:
-                return DisplayRegisterActivity();
-            }
+                return displayLoginActivity();
+        }
         return super.onOptionsItemSelected(item);
     }
 
-    public boolean DisplayLoginActivity()
+    public boolean displayLoginActivity()
     {
         Intent intent;
 
@@ -252,13 +248,40 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
 
-    public boolean DisplayRegisterActivity()
+    public boolean displayRegisterActivity()
     {
         Intent intent;
 
         intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
         return true;
+    }
+
+    public boolean displaySettingsActivity()
+    {
+        Intent intent;
+        intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
+    public boolean displayImpressumActivity()
+    {
+        Intent intent;
+        intent = new Intent(this, ImpressumActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
+    private void setTitleBackgroundColor() {
+        View titleView = getWindow().findViewById(android.R.id.title);
+        if (titleView != null) {
+            ViewParent parent = titleView.getParent();
+            if (parent != null && (parent instanceof View)) {
+                View parentView = (View)parent;
+                parentView.setBackgroundColor(Color.rgb(255,0,0));
+            }
+        }
     }
 }
 

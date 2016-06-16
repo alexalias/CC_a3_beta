@@ -1,9 +1,9 @@
 package digitale_stadt.cc_a3;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -18,7 +18,7 @@ import android.widget.Toast;
  *
  * Created by Anne Lorenz on 15.06.2016.
  */
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends AppCompatActivity {
 
     private EditText username;
     private EditText useremail;
@@ -50,9 +50,12 @@ public class RegisterActivity extends Activity {
         username = (EditText) findViewById(R.id.edit_username);
         useremail = (EditText) findViewById(R.id.edit_userEmail);
         userpassword = (EditText) findViewById(R.id.edit_userPassword);
-        userpassword2 = (EditText) findViewById(R.id.edit_userPassword);
+        userpassword2 = (EditText) findViewById(R.id.edit_userPassword2);
 
         button_register = (Button) findViewById(R.id.register);
+
+        //setzt den Titel der Activity
+        setTitle("Registrieren");
     }
 
     private void attachListeners() {
