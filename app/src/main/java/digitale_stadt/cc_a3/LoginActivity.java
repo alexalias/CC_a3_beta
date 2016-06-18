@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * LoginActivity. Wird von MainActivity aus beim erstmaligen Start der App gestartet.
@@ -121,6 +122,8 @@ public class LoginActivity extends AppCompatActivity {
         button_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                checkIfPasswordsAreIdentical();
                 Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
                 startActivity(intent);
                 //close activity
@@ -138,4 +141,11 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-}
+
+    private void checkIfPasswordsAreIdentical() {
+    if (sharedPrefs.getString("userpassword", "") != sharedPrefs.getString("userpassword2", "")) {
+
+        Toast.makeText(getApplicationContext(),
+                "Passwörter stimmen nicht überein!", Toast.LENGTH_SHORT).show();
+    }
+}}

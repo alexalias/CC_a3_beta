@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity{
 
                 if (firstLocationDropped) {
                     // die neue Position wird an den Tourmanager [bergeben
-                    tourManager.AddWayPoint(locationPostCorrection.getSmoothenedLocation(location));
+                    tourManager.AddWayPoint(/*locationPostCorrection.getSmoothenedLocation*/(location));
                     if(pgGPSWait.isShowing())
                         pgGPSWait.dismiss();
                     UpdateView();
