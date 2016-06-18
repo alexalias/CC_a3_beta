@@ -1,5 +1,6 @@
 package digitale_stadt.cc_a3;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity{
     // GPSTracker class
     private GPSTracker gps;
 
+    //Unsere GPS-Warte-Meldung
+    private ProgressDialog pgGPSWait;
+
     // der TourManager verwaltet alle Informationen zur Tour.
     // Er bekommt neue Positionen vom GPSTracker übergeben und sorgt für das
     //  verschicken bzw. speichern der Positionen
@@ -85,8 +89,24 @@ public class MainActivity extends AppCompatActivity{
         tourManager = new TourManager(this, deviceID);
 
         firstLocationDropped = false;
+        pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
         setTitleBackgroundColor();
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        gps = new GPSTracker(this){ };
+
+        if(isGPSEnabled && (gps.getLocation() == null)){
+            pgGPSWait.show(this, "", "Warte auf GPS Empfang");
+            Log.i("PG is showing: ", pgGPSWait.isShowing()+"");
+        }
+        else{
+            if(pgGPSWait.isShowing())
+                pgGPSWait.dismiss();
+        }
     }
 
     //Eine Sorte Clicklistener für unser start/stop Button

@@ -96,7 +96,7 @@
         android:id="@+id/textSpeed"
         android:layout_below="@id/streckeAnzeige"
         android:layout_centerHorizontal="true"
-        android:text="Ø-Geschwindigkeit"
+        android:text="Geschwindigkeit"
         android:textSize="18dp"
         android:layout_margin="2dp"
         />
