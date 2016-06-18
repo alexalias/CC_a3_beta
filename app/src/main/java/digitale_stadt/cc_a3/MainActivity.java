@@ -99,14 +99,10 @@ public class MainActivity extends AppCompatActivity{
         super.onStart();
         gps = new GPSTracker(this){ };
 
-        if(isGPSEnabled && (gps.getLocation() == null)){
-            pgGPSWait.show(this, "", "Warte auf GPS Empfang");
-            Log.i("PG is showing: ", pgGPSWait.isShowing()+"");
-        }
-        else{
-            if(pgGPSWait.isShowing())
-                pgGPSWait.dismiss();
-        }
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        RequestManager.getInstance().doRequest().Login(
+                sharedPrefs.getString("username", ""),
+                sharedPrefs.getString("userpassword", ""));
     }
 
     //Eine Sorte Clicklistener für unser start/stop Button
@@ -149,6 +145,8 @@ public class MainActivity extends AppCompatActivity{
                 if (firstLocationDropped) {
                     // die neue Position wird an den Tourmanager [bergeben
                     tourManager.AddWayPoint(locationPostCorrection.getSmoothenedLocation(location));
+                    if(pgGPSWait.isShowing())
+                        pgGPSWait.dismiss();
                     UpdateView();
                 }
                 else
@@ -156,6 +154,11 @@ public class MainActivity extends AppCompatActivity{
             }
 
         };
+
+        if(isGPSEnabled && (gps.getLocation() == null)){
+            pgGPSWait.show(this, "", "Warte auf GPS Empfang");
+            Log.i("PG is showing: ", pgGPSWait.isShowing()+"");
+        }
 
         UpdateView();
         // check if GPS enabled
