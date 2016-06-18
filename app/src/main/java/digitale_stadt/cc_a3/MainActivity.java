@@ -2,7 +2,6 @@ package digitale_stadt.cc_a3;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewParent;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -85,8 +83,6 @@ public class MainActivity extends AppCompatActivity{
         tourManager = new TourManager(this, deviceID);
 
         firstLocationDropped = false;
-
-        setTitleBackgroundColor();
     }
 
     //Eine Sorte Clicklistener für unser start/stop Button
@@ -169,11 +165,6 @@ public class MainActivity extends AppCompatActivity{
         strecke.setText(String.format("%.3f km", tourManager.GetDistance_km()));
     }
 
-    public void UpdateDebugInfo(String string)
-    {
-        debug.setText(debug.getText() + " " + string);
-    }
-
     //Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
     private void StopTrackingClicked()
     {
@@ -202,7 +193,7 @@ public class MainActivity extends AppCompatActivity{
         boolean anonymous = sharedPrefs.getBoolean("anonymous", false);
 
         if (!token.equals("")) {
-            if (anonymous == true)
+            if (anonymous)
                 username = "Anonymous";
             else
                 username = sharedPrefs.getString("username", "");
@@ -271,17 +262,6 @@ public class MainActivity extends AppCompatActivity{
         intent = new Intent(this, ImpressumActivity.class);
         startActivity(intent);
         return true;
-    }
-
-    private void setTitleBackgroundColor() {
-        View titleView = getWindow().findViewById(android.R.id.title);
-        if (titleView != null) {
-            ViewParent parent = titleView.getParent();
-            if (parent != null && (parent instanceof View)) {
-                View parentView = (View)parent;
-                parentView.setBackgroundColor(Color.rgb(255,0,0));
-            }
-        }
     }
 }
 
