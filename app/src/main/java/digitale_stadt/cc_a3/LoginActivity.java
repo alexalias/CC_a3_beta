@@ -53,9 +53,11 @@ public class LoginActivity extends AppCompatActivity {
         button_register = (Button) findViewById(R.id.register);
         button_anonymous = (Button) findViewById(R.id.anonymous);
 
-        username.setText(sharedPrefs.getString("username", "Bitte Benutzernamen angeben"));
-        userpassword.setText(sharedPrefs.getString("userpassword", "Bitte Passwort angeben"));
-
+        // setze vorhandene Logindaten, falls nicht anonym
+        if (!sharedPrefs.getBoolean("anonymous", false)) {
+            username.setText(sharedPrefs.getString("username", ""));
+            userpassword.setText(sharedPrefs.getString("userpassword", ""));
+        }
         setTitle("Login");
     }
 
@@ -123,7 +125,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                checkIfPasswordsAreIdentical();
                 Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
                 startActivity(intent);
                 //close activity
@@ -141,11 +142,4 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void checkIfPasswordsAreIdentical() {
-    if (sharedPrefs.getString("userpassword", "") != sharedPrefs.getString("userpassword2", "")) {
-
-        Toast.makeText(getApplicationContext(),
-                "Passwörter stimmen nicht überein!", Toast.LENGTH_SHORT).show();
-    }
-}}
+}

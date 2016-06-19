@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,8 +14,6 @@ import android.widget.Toast;
 
 /**
  * Registrierungs-Activity. Neues Benutzerkonto wird angelegt.
- *
- * //ToDo: Korrekte Eingaben erzwingen (Email usw.)
  *
  * Created by Anne Lorenz on 15.06.2016.
  */
@@ -56,6 +55,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         //setzt den Titel der Activity
         setTitle("Registrieren");
+
+        setContents();
     }
 
     private void attachListeners() {
@@ -95,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString("username", s.toString()).commit();
+                sharedPrefs.edit().putString("username", s.toString()).apply();
             }
         });
 
@@ -110,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString("useremail", s.toString()).commit();
+                sharedPrefs.edit().putString("useremail", s.toString()).apply();
             }
         });
 
@@ -125,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString("userpassword", s.toString()).commit();
+                sharedPrefs.edit().putString("userpassword", s.toString()).apply();
             }
         });
 
@@ -140,9 +141,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!sharedPrefs.getString("userpassword", "").equals(userpassword2.getText().toString())){
-                    Toast.makeText(RegisterActivity.this, "Passwörter stimmen nicht überein", Toast.LENGTH_SHORT).show();
-                }
+                sharedPrefs.edit().putString("userpassword2", s.toString()).apply();
             }
         });
 
@@ -150,13 +149,45 @@ public class RegisterActivity extends AppCompatActivity {
         button_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RequestManager.getInstance().doRequest().Register(
-                        sharedPrefs.getString("username", ""),
-                        sharedPrefs.getString("userpassword", ""),
-                        sharedPrefs.getString("useremail", ""));
-                //close activity
-                finish();
+
+                if ((username.getText().toString().length() == 0) ||
+                        (userpassword.getText().toString().length() == 0) ||
+                        (useremail.getText().toString().length() == 0)) {
+                    Toast.makeText(getApplicationContext(),
+                            "Es fehlen wichtige Angaben", Toast.LENGTH_LONG).show();
+                } else if (!passwordsAreIdentical()) {
+                    Toast.makeText(getApplicationContext(),
+                            "Passwörter stimmen nicht überein", Toast.LENGTH_LONG).show();
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(useremail.getText().toString()).matches()) {
+                    Toast.makeText(getApplicationContext(),
+                            "Bitte geben Sie eine gültige Emailadresse an", Toast.LENGTH_LONG).show();
+                } else
+                {
+                    RequestManager.getInstance().doRequest().Register(
+                            sharedPrefs.getString("username", ""),
+                            sharedPrefs.getString("userpassword", ""),
+                            sharedPrefs.getString("useremail", ""));
+
+                    Toast.makeText(getApplicationContext(),
+                            "Sie erhalten in Kürze eine Email mit Ihren Login-Daten", Toast.LENGTH_LONG).show();
+
+                    //close activity
+                    finish();
+                }
             }
         });
+    }
+
+    private void setContents(){
+        if (!sharedPrefs.getBoolean("anonymous", false)) {
+            username.setText(sharedPrefs.getString("username", ""));
+            useremail.setText(sharedPrefs.getString("useremail", ""));
+            userpassword.setText(sharedPrefs.getString("userpassword", ""));
+            userpassword2.setText(sharedPrefs.getString("userpassword2", ""));
+        }
+    }
+
+    private boolean passwordsAreIdentical() {
+        return (sharedPrefs.getString("userpassword", "").equals(sharedPrefs.getString("userpassword2", "")));
     }
 }
