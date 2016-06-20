@@ -30,7 +30,7 @@
         android:layout_below="@id/text_welcome"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/cyc_logo_weissrot_130616"
+        android:src="@drawable/logo_512x512dpi"
         android:layout_centerHorizontal="true"
         android:contentDescription="CycleYourCity-Hamburg Logo" />
 

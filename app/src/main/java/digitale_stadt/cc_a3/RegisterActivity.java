@@ -154,13 +154,13 @@ public class RegisterActivity extends AppCompatActivity {
                         (userpassword.getText().toString().length() == 0) ||
                         (useremail.getText().toString().length() == 0)) {
                     Toast.makeText(getApplicationContext(),
-                            "Es fehlen wichtige Angaben", Toast.LENGTH_LONG).show();
+                            "Es fehlen wichtige Angaben!", Toast.LENGTH_LONG).show();
                 } else if (!passwordsAreIdentical()) {
                     Toast.makeText(getApplicationContext(),
-                            "Passwörter stimmen nicht überein", Toast.LENGTH_LONG).show();
+                            "Passwörter stimmen nicht überein!", Toast.LENGTH_LONG).show();
                 } else if (!Patterns.EMAIL_ADDRESS.matcher(useremail.getText().toString()).matches()) {
                     Toast.makeText(getApplicationContext(),
-                            "Bitte geben Sie eine gültige Emailadresse an", Toast.LENGTH_LONG).show();
+                            "Ungültige Emailadresse!", Toast.LENGTH_LONG).show();
                 } else
                 {
                     RequestManager.getInstance().doRequest().Register(
@@ -168,11 +168,11 @@ public class RegisterActivity extends AppCompatActivity {
                             sharedPrefs.getString("userpassword", ""),
                             sharedPrefs.getString("useremail", ""));
 
-                    Toast.makeText(getApplicationContext(),
-                            "Sie erhalten in Kürze eine Email mit Ihren Login-Daten", Toast.LENGTH_LONG).show();
-
                     //close activity
                     finish();
+
+                    Toast.makeText(getApplicationContext(),
+                            "Sie erhalten in Kürze eine Email mit Ihren Login-Daten!", Toast.LENGTH_LONG).show();
                 }
             }
         });

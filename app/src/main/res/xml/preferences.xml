@@ -11,7 +11,7 @@
         android:id="@+id/checkBox_wlan"
         android:key="wlan_upload"
         android:title="LIVE-Datenupload"
-        android:summary="Trackingdaten werden sofort versendet. Bei Deaktivieren wird nur bei WLAN übertragen."
+        android:summary="Deaktivieren, falls Trackingdaten nur bei WLAN übertragen werden sollen."
         android:defaultValue="true"
         android:layout_width="wrap_content"
         android:layout_height="match_parent" />
