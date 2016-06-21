@@ -164,6 +164,7 @@ public class RegisterActivity extends AppCompatActivity {
                 } else
                 {
                     RequestManager.getInstance().doRequest().Register(
+                            false,
                             sharedPrefs.getString("username", ""),
                             sharedPrefs.getString("userpassword", ""),
                             sharedPrefs.getString("useremail", ""));

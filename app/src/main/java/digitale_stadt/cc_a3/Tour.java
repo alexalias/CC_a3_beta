@@ -15,6 +15,9 @@ import java.util.List;
  * Implements a Tour
  */
 public class Tour {
+    final String json_id_tourID = "tourid";
+    final String json_id_WayPoints = "WayPoints";
+
     private String tourID;
     private List<Position> WayPoints;
     private boolean tourComplete;
@@ -45,6 +48,29 @@ public class Tour {
         for (Position pos : wayPointList)
         {
             WayPoints.add(pos);
+        }
+    }
+
+    public Tour (JSONObject json)
+    {
+        try {
+            this.tourID = json.optString(json_id_tourID);
+
+            this.WayPoints = new ArrayList<>();
+            this.tourComplete = false;
+            JSONArray array = json.optJSONArray(json_id_WayPoints);
+            JSONObject object;
+            Position position;
+            for (int i = 0; i < array.length(); i++) {
+                object = array.getJSONObject(i);
+                position = new Position(object);
+                position.setTourID(tourID);
+                this.WayPoints.add(position);
+            }
+        }
+        catch (Exception e)
+        {
+
         }
     }
 
@@ -116,13 +142,13 @@ public class Tour {
         JSONArray jsonArray = new JSONArray();
 
         try {
-            jsonObject.put("tourid", tourID);
+            jsonObject.put(json_id_tourID, tourID);
             //jsonObject.put("WayPoints", WayPoints);
             for (Position pos : WayPoints)
             {
                 jsonArray.put(pos.toJSON());
             }
-            jsonObject.put("WayPoints", jsonArray);
+            jsonObject.put(json_id_WayPoints, jsonArray);
 
         } catch (JSONException e) {
             e.printStackTrace();

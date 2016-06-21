@@ -113,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 sharedPrefs.edit().putBoolean("anonymous", false).commit();
                 RequestManager.getInstance().doRequest().Login(
+                        false,
                         sharedPrefs.getString("username", ""),
                         sharedPrefs.getString("userpassword", ""));
                 //close activity
@@ -136,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
         button_anonymous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RequestManager.getInstance().doRequest().Register_Anonymous();
+                RequestManager.getInstance().doRequest().Register_Anonymous(false);
                 //close activity
                 finish();
             }

@@ -1,6 +1,7 @@
 package digitale_stadt.cc_a3;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity{
         //dbHelper = new DBHelper(this);
 
         RequestManager.getInstance(this);
+        DBManager.getInstance(this);
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
         super.onCreate(savedInstanceState);
@@ -92,6 +94,22 @@ public class MainActivity extends AppCompatActivity{
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
         setTitleBackgroundColor();
+
+//        DBHelper Test
+//        DBHelper dbHelper = new DBHelper((Context)this);
+//        Tour t = new Tour("111");
+//        Position pos = new Position(t.getTourID(), 123l, 1, 5.0, 5.0, 5.0);
+//        t.AddWayPoint(pos);
+//        for (Position p : t.GetWayPoints()) {
+//            dbHelper.insertPosition(p);
+//        }
+//        Log.i("ABC", "##############################################");
+//        Log.i("TourID", t.getTourID());
+//        Log.i("Einträge:", String.format("%d", dbHelper.selectAllPositions().size()));
+//        Log.i("ungesendet:", String.format("%d", dbHelper.selectAllPositionsNotSent().size()));
+//        dbHelper.updatePosition(t.getTourID(), (int)t.GetWayPoints().get(0).getId());
+//        Log.i("ungesendet:", String.format("%d", dbHelper.selectAllPositionsNotSent().size()));
+//        Log.i("ABC", ".############################################.");
     }
 
     @Override
@@ -101,6 +119,7 @@ public class MainActivity extends AppCompatActivity{
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         RequestManager.getInstance().doRequest().Login(
+                false,
                 sharedPrefs.getString("username", ""),
                 sharedPrefs.getString("userpassword", ""));
     }
@@ -210,7 +229,6 @@ public class MainActivity extends AppCompatActivity{
         tourManager.StopTour();
         tourManager.SaveTourToDB();
 
-        
         if (gps != null)
             gps.stopUsingGPS();
     }

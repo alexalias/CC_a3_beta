@@ -16,6 +16,7 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,8 +55,8 @@ public class RequestProxy {
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void Login(final String username, final String password) { Login(username, password, login_url); }
-    public void Login(final String username, final String password, final String login_url)
+    public void Login(final boolean retry, final String username, final String password) { Login(retry, username, password, login_url); }
+    public void Login(final boolean retry, final String username, final String password, final String login_url)
     {
         Log.i("RequestProxy", "Connecting with " + username + " / " + password);
         StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
@@ -72,7 +73,10 @@ public class RequestProxy {
                                 String token = myJson.optString("auth_token");
                                 sharedPrefs.edit().putString("auth_token", token).commit();
 
-                                ((MainActivity)mContext).UpdateUsername();
+                                // Nicht versendete Touren aus der Datenbank versenden
+                                ArrayList<Position> list = DBManager.getInstance().doRequest().selectAllPositionsNotSent();
+                                Tour tour = new Tour(list.get(0).getTourID(), list);
+                                RequestManager.getInstance().doRequest().SendTourData(token, tour);
                             }
                             catch (Exception e) {}
                         }
@@ -81,8 +85,12 @@ public class RequestProxy {
                             Log.i("Login Response", "Login rejected: " + response);
                             // delete token and open login screen
                             sharedPrefs.edit().putString("auth_token", "").commit();
-                            ((MainActivity)mContext).displayLoginActivity();
+                            if (retry == true)
+                                ((MainActivity)mContext).displayLoginActivity();
                         }
+
+                        // UI update
+                        ((MainActivity)mContext).UpdateUsername();
                     }
                 },
                 new Response.ErrorListener() {
@@ -91,7 +99,11 @@ public class RequestProxy {
                         Log.i("Login Error: ", error.toString());
                         // delete token and open login screen
                         sharedPrefs.edit().putString("auth_token", "").commit();
-                        ((MainActivity)mContext).displayLoginActivity();
+                        if (retry == true)
+                            ((MainActivity)mContext).displayLoginActivity();
+
+                        // UI update
+                        ((MainActivity)mContext).UpdateUsername();
                     }
                 }
         ) {
@@ -105,13 +117,13 @@ public class RequestProxy {
         };
 
         //set timeout to 1000ms and retries to 1
-        postRequest.setRetryPolicy(defaultRetryPolicy);
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(2000, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         mRequestQueue.add(postRequest);
     }
 
-    public void Register(final String username, final String password, final String email) { Register(username, password, email, register_url);  }
-    public void Register(final String username, final String password, final String email, final String login_url)
+    public void Register(final boolean retry, final String username, final String password, final String email) { Register(retry, username, password, email, register_url);  }
+    public void Register(final boolean retry, final String username, final String password, final String email, final String login_url)
     {
         Log.i("RequestProxy", "Register with " + username + " / " + password);
         StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
@@ -125,13 +137,15 @@ public class RequestProxy {
                             sharedPrefs.edit().putString("username", username).commit();
                             sharedPrefs.edit().putString("userpassword", password).commit();
                             // login with new username
-                            RequestManager.getInstance().doRequest().Login(username, password);
+                            RequestManager.getInstance().doRequest().Login(false, username, password);
                         }
                         else
                         {
                             Log.i("Register Response", "Registration failed: " + response);
+                            sharedPrefs.edit().putString("auth_token", "").commit();
                             // open register activity
-                            ((MainActivity)mContext).displayRegisterActivity();
+                            if (retry == true)
+                                ((MainActivity)mContext).displayRegisterActivity();
                         }
                     }
                 },
@@ -139,8 +153,10 @@ public class RequestProxy {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.i("Register Error: ", error.toString());
+                        sharedPrefs.edit().putString("auth_token", "").commit();
                         // open register activity
-                        ((MainActivity)mContext).displayRegisterActivity();
+                        if (retry == true)
+                            ((MainActivity)mContext).displayRegisterActivity();
                     }
                 }
         ) {
@@ -155,12 +171,12 @@ public class RequestProxy {
         };
 
         //set timeout to 1000ms and retries to 1
-        postRequest.setRetryPolicy(defaultRetryPolicy);
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(2000, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         mRequestQueue.add(postRequest);
     }
 
-    public void Register_Anonymous() { Register_Anonymous(register_url); }
-    public void Register_Anonymous(final String register_url)
+    public void Register_Anonymous(final boolean retry) { Register_Anonymous(retry, register_url); }
+    public void Register_Anonymous(final boolean retry, final String register_url)
     {
         Log.i("RequestProxy", "Register Anonymous");
         StringRequest postRequest = new StringRequest(Request.Method.POST, register_url,
@@ -183,7 +199,7 @@ public class RequestProxy {
                                 sharedPrefs.edit().putBoolean("anonymous", true).commit();
 
                                 // login with new username
-                                RequestManager.getInstance().doRequest().Login(username, password);
+                                RequestManager.getInstance().doRequest().Login(retry, username, password);
                             }
                             catch (Exception e) {}
                         }
@@ -192,7 +208,8 @@ public class RequestProxy {
                             Log.i("Login Response", "Login rejected: " + response);
                             // delete token and open login screen
                             sharedPrefs.edit().putString("auth_token", "").commit();
-                            ((MainActivity)mContext).displayLoginActivity();
+                            if (retry == true)
+                                ((MainActivity)mContext).displayLoginActivity();
                         }
                     }
                 },
@@ -200,7 +217,9 @@ public class RequestProxy {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.i("Reg Anon Error.Resp", error.toString());
-                        RequestManager.getInstance().doRequest().Register_Anonymous();
+                        sharedPrefs.edit().putString("auth_token", "").commit();
+                        if (retry == true)
+                            RequestManager.getInstance().doRequest().Register_Anonymous(retry);
                     }
                 }
         ) {
@@ -213,7 +232,7 @@ public class RequestProxy {
         };
 
         //set timeout to 1000ms and retries to 1
-        postRequest.setRetryPolicy(defaultRetryPolicy);
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(2000, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         mRequestQueue.add(postRequest);
     }
 
@@ -225,13 +244,30 @@ public class RequestProxy {
     public void SendJSONString (final String auth_token, final String data, final String data_url)
     {
         Log.i("RequestProxy", "Send Tour Data");
-        StringRequest postRequest = new StringRequest(Request.Method.POST, data_url, new Response.Listener<String>() {
+        final StringRequest postRequest = new StringRequest(Request.Method.POST, data_url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 // check if transmission was successfull
                 if (!response.equals(server_data_transmission_token_not_valid))
                 {
                     Log.i("SendTourData", "Data transmitted: " + response);
+//                    try {
+//                        // retrieve position data
+//                        if (postRequest != null)
+//                        JSONObject myJson = new JSONObject(postRequest.getHeaders());
+//                        for
+//                        String token = myJson.optString("auth_token");
+//                        sharedPrefs.edit().putString("auth_token", token).commit();
+//
+//                        // UI update
+//                        ((MainActivity)mContext).UpdateUsername();
+//
+//                        // Nicht versendete Touren aus der Datenbank versenden
+//                        ArrayList<Position> list = DBManager.getInstance().doRequest().selectAllPositionsNotSent();
+//                        Tour tour = new Tour(list.get(0).getTourID(), list);
+//                        RequestManager.getInstance().doRequest().SendTourData(token, tour);
+//                    }
+//                    catch (Exception e) {}
                 }
                 else
                 {

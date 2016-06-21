@@ -13,6 +13,12 @@ import java.util.Date;
  * Implements a Position
  */
 public class Position {
+    final String json_id_id = "cmt";
+    final String json_id_lat = "lat";
+    final String json_id_lon = "lon";
+    final String json_id_alt = "ele";
+    final String json_id_time = "time";
+
     private long id;
     private String tourID;
     private Date time;
@@ -39,6 +45,21 @@ public class Position {
         this.longitude = lon;
         this.altitude = alt;
         sent = 0;
+    }
+
+    public Position(JSONObject json)
+    {
+        try {
+            //JSONObject json = new JSONObject(JSONString);
+            this.id = json.optLong(json_id_id);
+            this.time = new Date();
+            this.latitude = json.optLong(json_id_lat);
+            this.longitude = json.optLong(json_id_lon);
+            this.altitude = json.optLong(json_id_alt);
+        }
+        catch (Exception e)
+        {
+        }
     }
 
     // Getter und Setter
@@ -74,16 +95,16 @@ public class Position {
         JSONObject jsonObject = new JSONObject();
         try
         {
-            jsonObject.put("cmt", id);
+            jsonObject.put(json_id_id, id);
 
             String strCurrentDate = "Wed, 18 Apr 2012 07:55:29 +0000";
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
             String date = format.format(time);
-            jsonObject.put("time", date);
+            jsonObject.put(json_id_time, date);
 
-            jsonObject.put("lat", latitude);
-            jsonObject.put("lon", longitude);
-            jsonObject.put("ele", altitude);
+            jsonObject.put(json_id_lat, latitude);
+            jsonObject.put(json_id_lon, longitude);
+            jsonObject.put(json_id_alt, altitude);
 
             return jsonObject;
         } catch (JSONException e) {

@@ -40,14 +40,11 @@ public class TourManager {
     long duration_ms_filtered;  //the time travelled so far, without stops
     double distance_m_filtered; //the distance travelled so far, without stops
 
-    DBHelper dbHelper;          //the object handling the db interaction
     Context context;
 
     public TourManager(Context context, String deviceID)
     {
         this.context = context;
-
-        StartServices();
 
         this.queueLength = 1;
 
@@ -138,11 +135,14 @@ public class TourManager {
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             String auth_token = sharedPrefs.getString("auth_token", "");
             boolean connected = !auth_token.equals("");
-            if (connected && (WiFiAvailable() || !WlanUploadChecked())) {
+            if (connected && (WiFiAvailable() || LiveUploadChecked())) {
                 //check if number of wayPoints is enough to send data
                 if ((tour.GetWayPoints().size() >= queueLength) || (tour.GetTourComplete())) {
-                    // send data and clear waypoint list in tour
+                    // send/save data and clear waypoint list in tour
                     Tour t = ClearWayPoints();
+                    for (Position p : t.GetWayPoints()) {
+                        DBManager.getInstance().doRequest().insertPosition(p);
+                    }
                     RequestManager.getInstance().doRequest().SendTourData(auth_token, t);
                 }
             }
@@ -167,13 +167,6 @@ public class TourManager {
 
     public Location GetLastLocation() {
         return lastLocation;
-    }
-
-    public String GetStartTime(){
-        Date t = new Date(startTime);
-        DateFormat df = new SimpleDateFormat("HH:mm:ss");
-        String time= df.format(t);
-        return time;
     }
 
     // returns the duration since the tour started in ms
@@ -212,28 +205,11 @@ public class TourManager {
             return 0;
     }
 
-    public boolean LoadTourDataFromDB(String tourID) {
-        return false;
-    }
-
-    public boolean StartServices() {
-        try {
-            dbHelper = new DBHelper(context);
-
-            return true;
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
-    }
-
     public boolean SaveTourToDB() {
         try
         {
             for (Position pos : tour.GetWayPoints())
-                dbHelper.insertPosition(pos);
-
+                DBManager.getInstance().doRequest().insertPosition(pos);
             return true;
         }
         catch (Exception e)
@@ -242,17 +218,17 @@ public class TourManager {
         }
     }
 
-//    public boolean SendTourToServer() {
-//        try
-//        {
-//            RequestManager.getInstance().doRequest().SendTourData(tour);
-//            return true;
-//        }
-//        catch (Exception e)
-//        {
-//            return false;
-//        }
-//    }
+    public boolean SendTourToServer() {
+        try
+        {
+            RequestManager.getInstance().doRequest().SendTourData("", tour);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
 
     public boolean WiFiAvailable (){
         ConnectivityManager cm =
@@ -263,8 +239,8 @@ public class TourManager {
         return isWiFi;
     }
 
-    // prüft ob 'datenupload nur bei WLAN' in den shared prefs true ist
-    public boolean WlanUploadChecked(){
+    // prüft ob 'LiveUpload' in den shared prefs true ist
+    public boolean LiveUploadChecked(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPrefs.getBoolean("wlan_upload", false);
     }

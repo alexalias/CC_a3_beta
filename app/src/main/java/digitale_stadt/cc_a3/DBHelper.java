@@ -69,7 +69,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE positions (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "trackId INTEGER," +
+                "trackId TEXT," +
+                "posId INTEGER," +
                 "deviceId TEXT," +
                 "timestamp INTEGER," +
                 "latitude REAL," +
@@ -78,9 +79,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 "sent INTEGER)");
 
         // add dummy gps positions
-        db.execSQL("INSERT INTO positions (trackId, deviceId, timestamp, latitude, longitude, altitude, sent)" +
-                "VALUES (1, 100, 1451649018000, 53.551085, 9.993682, 0.0, 0), " +
-                "(1, 100, 1451649019000, 53.551090, 9.993692, 2.0, 0)");
+        db.execSQL("INSERT INTO positions (trackId, posId, deviceId, timestamp, latitude, longitude, altitude, sent)" +
+                "VALUES ('1', 1, 100, 1451649018000, 53.551085, 9.993682, 0.0, 0), " +
+                "('1', 2, 100, 1451649019000, 53.551090, 9.993692, 2.0, 0)");
     }
 
     @Override
@@ -91,46 +92,47 @@ public class DBHelper extends SQLiteOpenHelper {
                 ", new version: " + newVersion);
     }
 
-    public void insertPosition(Position position2) {
+    public void insertPosition(Position position) {
 
         ContentValues values = new ContentValues();
-        values.put("trackId", position2.getTourID());
-        values.put("timestamp", position2.getTime().getTime());
-        values.put("latitude", position2.getLatitude());
-        values.put("longitude", position2.getLongitude());
-        values.put("altitude", position2.getAltitude());
-        values.put("sent", position2.getSent());
+        values.put("trackId", position.getTourID());
+        values.put("posId", position.getId());
+        values.put("timestamp", position.getTime().getTime());
+        values.put("latitude", position.getLatitude());
+        values.put("longitude", position.getLongitude());
+        values.put("altitude", position.getAltitude());
+        values.put("sent", position.getSent());
 
         db.insertOrThrow("positions", null, values);
     }
 
-    public void insertPositionAsync(final Position position2, DatabaseHandler<Void> handler) {
+    public void insertPositionAsync(final Position position, DatabaseHandler<Void> handler) {
         new DatabaseAsyncTask<Void>(handler) {
             @Override
             protected Void executeMethod() {
-                insertPosition(position2);
+                insertPosition(position);
                 return null;
             }
         }.execute();
     }
 
-    // Gibt die erste Position2 in der Tabelle zurück.
+    // Gibt die erste Position in der Tabelle zurück.
     // TODO: BRAUCHEN WIR SO WAS ÜBERHAUPT???
 
     public Position selectPosition() {
-        Position position2 = new Position();
+        Position position = new Position();
         Cursor cursor = db.rawQuery("SELECT * FROM positions ORDER BY id DESC LIMIT 1", null);
 
         try {
             if (cursor.getCount() > 0) {
 
                 cursor.moveToFirst();
-                position2.setId(cursor.getLong(cursor.getColumnIndex("id")));
-                position2.setTourID(cursor.getString(cursor.getColumnIndex("trackId")));
-                position2.setTime(new Date(cursor.getLong(cursor.getColumnIndex("timestamp"))));
-                position2.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
-                position2.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
-                position2.setAltitude(cursor.getDouble(cursor.getColumnIndex("altitude")));
+                position.setTourID(cursor.getString(cursor.getColumnIndex("trackId")));
+                position.setId(cursor.getInt(cursor.getColumnIndex("posId")));
+                position.setTime(new Date(cursor.getLong(cursor.getColumnIndex("timestamp"))));
+                position.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
+                position.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
+                position.setAltitude(cursor.getDouble(cursor.getColumnIndex("altitude")));
 
             } else {
                 return null;
@@ -138,7 +140,7 @@ public class DBHelper extends SQLiteOpenHelper {
         } finally {
             cursor.close();
         }
-        return position2;
+        return position;
     }
 
     public void selectPositionAsync(DatabaseHandler<Position> handler) {
@@ -190,7 +192,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // Gibt eine Liste aller Positionsobjekte der gegebenen Tour zurück,
     public ArrayList<Position> selectAllPositionsFromTour(int tourID) {
 
-        Cursor cursor = db.rawQuery("SELECT * FROM positions WHERE trackID = " + tourID + " ORDER BY id", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM positions WHERE trackId = " + tourID + " ORDER BY id", null);
 
         return EvaluateCursor(cursor);
     }
@@ -201,6 +203,25 @@ public class DBHelper extends SQLiteOpenHelper {
             @Override
             protected ArrayList<Position> executeMethod() {
                 return selectAllPositionsFromTour(tourID);
+                //return null;
+            }
+        }.execute();
+    }
+
+    // Gibt eine Liste aller Positionsobjekte der gegebenen Tour zurück,
+    public ArrayList<Position> updatePosition(String tourID, int posID) {
+
+        Cursor cursor = db.rawQuery("UPDATE positions SET sent = 1 WHERE trackId = '" + tourID + "' AND posId = " + posID, null);
+
+        return EvaluateCursor(cursor);
+    }
+
+    public void updatePositionAsync(final String tourID, final int posID, DatabaseHandler<ArrayList<Position>> handler) {
+
+        new DatabaseAsyncTask<ArrayList<Position>>(handler) {
+            @Override
+            protected ArrayList<Position> executeMethod() {
+                return updatePosition(tourID, posID);
                 //return null;
             }
         }.execute();
