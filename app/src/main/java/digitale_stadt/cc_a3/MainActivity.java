@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity{
     LocationPostCorrection locationPostCorrection = new LocationPostCorrection(10);
 
     //if true, the first location sent by the GPSTracker has been dropped
-    boolean firstLocationDropped;
+    int firstLocationDropped;
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity{
 
         tourManager = new TourManager(this, deviceID);
 
-        firstLocationDropped = false;
+        firstLocationDropped = -2;
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
         setTitleBackgroundColor();
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity{
         //Startet eine neue Tour im TourManager
         tourManager.StartNewTour();
 
-        firstLocationDropped = false;
+        firstLocationDropped = -2;
 
         gps = new GPSTracker(MainActivity.this)
         {
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity{
                 String s = "new Position   Lat: " + location.getLatitude() + "   Long: " + location.getLongitude();
                 Log.i("Main", s);
 
-                if (firstLocationDropped) {
+                if (firstLocationDropped < 0) {
                     // die neue Position wird an den Tourmanager [bergeben
                     tourManager.AddWayPoint(/*locationPostCorrection.getSmoothenedLocation*/(location));
                  /*   if(pgGPSWait.isShowing())
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity{
                     UpdateView();
                 }
                 else
-                    firstLocationDropped = true;
+                    firstLocationDropped += 1;
             }
 
         };
@@ -334,6 +334,17 @@ public class MainActivity extends AppCompatActivity{
                 parentView.setBackgroundColor(Color.rgb(255,0,0));
             }
         }
+    }
+
+    public void LogSystemData(String prefix)
+    {
+        String tourID = tourManager.GetTour().getTourID();
+        int tourManagerEntries = tourManager.GetTour().GetWayPoints().size();
+        int entries = DBManager.getInstance().doRequest().selectAllPositions().size();
+        int entriesNotSent = DBManager.getInstance().doRequest().selectAllPositionsNotSent().size();
+        //int entriesTour = DBManager.getInstance().doRequest().selectAllPositionsFromTour(tourID).size();
+        Log.i("**********" + prefix + " System", String.format("TM: %d entries   DB: %d/%d entries sent.",
+                tourManagerEntries, entriesNotSent, entries));
     }
 }
 

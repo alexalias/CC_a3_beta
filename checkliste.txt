@@ -1,0 +1,45 @@
+Checkliste						        Status		getestet                    Kommentar
+
+Main
+----
+OnPause/OnResume                        ?           manueller test von Ralf     es wird jedesmal versucht sich neu einzuloggen (alle paar Sekunden) -> Endlosschleife
+
+
+
+Tour
+----
+Initialisieren				        	ok			UnitTests
+Position hinzufügen			        	ok			UnitTests
+Umwandeln in JSONObject		        	ok			UnitTests
+
+
+
+TourManager
+-----------
+Initialisieren					        ok			UnitTests
+Position hinzufügen				        ok			UnitTests
+Strecke berechnen				        ok			UnitTests
+Durchschnittsgeschwindigkeit	        ok			UnitTests
+aktuelle Geschwindigkeit                ?           manueller Test              bei niedrigen Geschwindigkeiten falsche Werte
+Daten senden                            ok          manueller Test von Ralf
+Senden nur bei WLAN			        	ok			manueller Test von Ralf
+Erkennen Änderung WLAN-Status           --
+
+
+
+DBManager
+---------
+Positionen in DB speichern	        	ok			manueller Test von Ralf
+Positionen in DB updaten	        	ok			manueller Test von Ralf
+Positionen aus DB auslesen	        	ok			manueller Test von Ralf
+Positionen aus DB löschen	        	?
+
+
+
+RequestManager
+--------------
+Einloggen						        ok			manueller Test von Ralf
+Daten aus DB versenden nach Einloggen 	--			                            Daten werden versendet, aber DB nicht aktualisiert
+Registrieren			        		ok			manueller Test von Ralf
+Einloggen nach Registrieren             ok          manueller Test von Ralf
+Daten senden			        		ok			manueller Test von Ralf

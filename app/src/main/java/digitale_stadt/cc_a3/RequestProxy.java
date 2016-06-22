@@ -74,9 +74,30 @@ public class RequestProxy {
                                 sharedPrefs.edit().putString("auth_token", token).commit();
 
                                 // Nicht versendete Touren aus der Datenbank versenden
+                                Tour tour;
+                                String tourID;
+                                int counter;
                                 ArrayList<Position> list = DBManager.getInstance().doRequest().selectAllPositionsNotSent();
-                                Tour tour = new Tour(list.get(0).getTourID(), list);
-                                RequestManager.getInstance().doRequest().SendTourData(token, tour);
+
+                                //creates a tour for each tourID in the list and sends it to the server
+                                while (!list.isEmpty())
+                                {
+                                    //initialize tour with the tourID of the first Position in the list
+                                    tourID = list.get(0).getTourID();
+                                    tour = new Tour(tourID, new ArrayList<Position>());
+
+                                    // move all elements with same tourID from the list to the tour
+                                    counter = 0;
+                                    while (counter < list.size()) {
+                                        // moves an element to the tour or increases the counter
+                                        if (list.get(counter).getTourID().equals(tourID))
+                                            tour.AddWayPoint(list.remove(0));
+                                        else
+                                            counter++;
+                                    }
+
+                                    RequestManager.getInstance().doRequest().SendTourData(token, tour);
+                                }
                             }
                             catch (Exception e) {}
                         }
@@ -238,10 +259,8 @@ public class RequestProxy {
 
 
 
-    public void SendTourData(String auth_token, Tour tour) { SendJSONString(auth_token, tour.toJSON().toString(), data_url); }
-    public void SendTourData(String auth_token, Tour tour, String url) { SendJSONString(auth_token, tour.toJSON().toString(), url); }
-
-    public void SendJSONString (final String auth_token, final String data, final String data_url)
+    public void SendTourData(String auth_token, Tour tour) { SendTourData(auth_token, tour, data_url); }
+    public void SendTourData(final String auth_token, final Tour tour, final String url)
     {
         Log.i("RequestProxy", "Send Tour Data");
         final StringRequest postRequest = new StringRequest(Request.Method.POST, data_url, new Response.Listener<String>() {
@@ -251,23 +270,14 @@ public class RequestProxy {
                 if (!response.equals(server_data_transmission_token_not_valid))
                 {
                     Log.i("SendTourData", "Data transmitted: " + response);
-//                    try {
-//                        // retrieve position data
-//                        if (postRequest != null)
-//                        JSONObject myJson = new JSONObject(postRequest.getHeaders());
-//                        for
-//                        String token = myJson.optString("auth_token");
-//                        sharedPrefs.edit().putString("auth_token", token).commit();
-//
-//                        // UI update
-//                        ((MainActivity)mContext).UpdateUsername();
-//
-//                        // Nicht versendete Touren aus der Datenbank versenden
-//                        ArrayList<Position> list = DBManager.getInstance().doRequest().selectAllPositionsNotSent();
-//                        Tour tour = new Tour(list.get(0).getTourID(), list);
-//                        RequestManager.getInstance().doRequest().SendTourData(token, tour);
-//                    }
-//                    catch (Exception e) {}
+                    try {
+                        ((MainActivity)mContext).LogSystemData("vor  req: ");
+                        for (Position pos : tour.GetWayPoints())
+                            DBManager.getInstance().doRequest().updatePositionSentStatus(pos.getTourID(), pos.getId(), 1);
+
+                        ((MainActivity)mContext).LogSystemData("nach req: ");
+                     }
+                    catch (Exception e) {}
                 }
                 else
                 {
@@ -289,7 +299,7 @@ public class RequestProxy {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("auth_token", auth_token);
-                params.put("data", data);
+                params.put("data", tour.toJSON().toString());
                 return params;
             }
         };

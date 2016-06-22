@@ -38,12 +38,12 @@ public class DBHelper extends SQLiteOpenHelper {
         void onComplete(boolean success, T result);
     }
 
-    private static abstract class DatabaseAsyncTask<T> extends AsyncTask<Void, Void, T> {
+    private static abstract class updatePositionSentStatusAsync<T> extends AsyncTask<Void, Void, T> {
 
         private DatabaseHandler<T> handler;
         private RuntimeException error;
 
-        public DatabaseAsyncTask(DatabaseHandler<T> handler) {
+        public updatePositionSentStatusAsync(DatabaseHandler<T> handler) {
             this.handler = handler;
         }
 
@@ -107,7 +107,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void insertPositionAsync(final Position position, DatabaseHandler<Void> handler) {
-        new DatabaseAsyncTask<Void>(handler) {
+        new updatePositionSentStatusAsync<Void>(handler) {
             @Override
             protected Void executeMethod() {
                 insertPosition(position);
@@ -144,7 +144,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void selectPositionAsync(DatabaseHandler<Position> handler) {
-        new DatabaseAsyncTask<Position>(handler) {
+        new updatePositionSentStatusAsync<Position>(handler) {
             @Override
             protected Position executeMethod() {
                 return selectPosition();
@@ -162,7 +162,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void selectAllPositionsNotSentAsync(DatabaseHandler<Void> handler) {
-        new DatabaseAsyncTask<Void>(handler) {
+        new updatePositionSentStatusAsync<Void>(handler) {
             @Override
             protected Void executeMethod() {
                 selectAllPositionsNotSent();
@@ -180,7 +180,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void selectAllPositionsAsync(DatabaseHandler<Void> handler) {
-        new DatabaseAsyncTask<Void>(handler) {
+        new updatePositionSentStatusAsync<Void>(handler) {
             @Override
             protected Void executeMethod() {
                 selectAllPositions();
@@ -190,16 +190,16 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Gibt eine Liste aller Positionsobjekte der gegebenen Tour zurück,
-    public ArrayList<Position> selectAllPositionsFromTour(int tourID) {
+    public ArrayList<Position> selectAllPositionsFromTour(String tourID) {
 
         Cursor cursor = db.rawQuery("SELECT * FROM positions WHERE trackId = " + tourID + " ORDER BY id", null);
 
         return EvaluateCursor(cursor);
     }
 
-    public void selectAllPositionsFromTourAsync(final int tourID, DatabaseHandler<ArrayList<Position>> handler) {
+    public void selectAllPositionsFromTourAsync(final String tourID, DatabaseHandler<ArrayList<Position>> handler) {
 
-        new DatabaseAsyncTask<ArrayList<Position>>(handler) {
+        new updatePositionSentStatusAsync<ArrayList<Position>>(handler) {
             @Override
             protected ArrayList<Position> executeMethod() {
                 return selectAllPositionsFromTour(tourID);
@@ -209,19 +209,19 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Gibt eine Liste aller Positionsobjekte der gegebenen Tour zurück,
-    public ArrayList<Position> updatePosition(String tourID, int posID) {
+    public ArrayList<Position> updatePositionSentStatus(String tourID, long posID, int status) {
 
         Cursor cursor = db.rawQuery("UPDATE positions SET sent = 1 WHERE trackId = '" + tourID + "' AND posId = " + posID, null);
 
         return EvaluateCursor(cursor);
     }
 
-    public void updatePositionAsync(final String tourID, final int posID, DatabaseHandler<ArrayList<Position>> handler) {
+    public void updatePositionAsync(final String tourID, final long posID, final int status, DatabaseHandler<ArrayList<Position>> handler) {
 
-        new DatabaseAsyncTask<ArrayList<Position>>(handler) {
+        new updatePositionSentStatusAsync<ArrayList<Position>>(handler) {
             @Override
             protected ArrayList<Position> executeMethod() {
-                return updatePosition(tourID, posID);
+                return updatePositionSentStatus(tourID, posID, status);
                 //return null;
             }
         }.execute();
@@ -234,7 +234,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void deletePositionAsync(final long id, DatabaseHandler<Void> handler) {
-        new DatabaseAsyncTask<Void>(handler) {
+        new updatePositionSentStatusAsync<Void>(handler) {
             @Override
             protected Void executeMethod() {
                 deletePosition(id);
@@ -251,7 +251,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void deleteDatabaseAsync(DatabaseHandler<Void> handler) {
-        new DatabaseAsyncTask<Void>(handler) {
+        new updatePositionSentStatusAsync<Void>(handler) {
             @Override
             protected Void executeMethod() {
                 deleteDatabase();

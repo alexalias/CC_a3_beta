@@ -51,29 +51,6 @@ public class Tour {
         }
     }
 
-    public Tour (JSONObject json)
-    {
-        try {
-            this.tourID = json.optString(json_id_tourID);
-
-            this.WayPoints = new ArrayList<>();
-            this.tourComplete = false;
-            JSONArray array = json.optJSONArray(json_id_WayPoints);
-            JSONObject object;
-            Position position;
-            for (int i = 0; i < array.length(); i++) {
-                object = array.getJSONObject(i);
-                position = new Position(object);
-                position.setTourID(tourID);
-                this.WayPoints.add(position);
-            }
-        }
-        catch (Exception e)
-        {
-
-        }
-    }
-
     public String getTourID() {
         return tourID;
     }

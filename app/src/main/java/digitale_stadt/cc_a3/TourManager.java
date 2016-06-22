@@ -131,6 +131,7 @@ public class TourManager {
             lastLocation = location;
 
             // the waypoint is added to the tour
+            DBManager.getInstance().doRequest().insertPosition(position);
             tour.AddWayPoint(position);
             counter++;
 
@@ -140,16 +141,19 @@ public class TourManager {
             String auth_token = sharedPrefs.getString("auth_token", "");
             boolean connected = !auth_token.equals("");
             if (connected && (WiFiAvailable() || LiveUploadChecked())) {
+                Log.i("Status", "***********" + connected + "***" + WiFiAvailable() + "***" + LiveUploadChecked());
                 //check if number of wayPoints is enough to send data
-                if ((tour.GetWayPoints().size() >= queueLength) || (tour.GetTourComplete())) {
-                    // send/save data and clear waypoint list in tour
+                Log.i("Status2", "*******"  + tour.GetWayPoints().size() + "***" + tour.GetTourComplete());
+                if (tour.GetWayPoints().size() >= queueLength) {
+                    // send data and clear waypoint list in tour
                     Tour t = ClearWayPoints();
-                    for (Position p : t.GetWayPoints()) {
-                        DBManager.getInstance().doRequest().insertPosition(p);
-                    }
+                    ((MainActivity)context).LogSystemData("vor  send: ");
                     RequestManager.getInstance().doRequest().SendTourData(auth_token, t);
+                    ((MainActivity)context).LogSystemData("nach send: ");
                 }
             }
+            else
+                ((MainActivity)context).LogSystemData("ohne send: ");
         }
     }
 
