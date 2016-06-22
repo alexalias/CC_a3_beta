@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity{
 
         tourManager = new TourManager(this, deviceID);
 
-        firstLocationDropped = -2;
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
         setTitleBackgroundColor();
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity{
         //Startet eine neue Tour im TourManager
         tourManager.StartNewTour();
 
-        firstLocationDropped = -2;
+        firstLocationDropped = -;
 
         gps = new GPSTracker(MainActivity.this)
         {
@@ -161,7 +160,7 @@ public class MainActivity extends AppCompatActivity{
                 String s = "new Position   Lat: " + location.getLatitude() + "   Long: " + location.getLongitude();
                 Log.i("Main", s);
 
-                if (firstLocationDropped < 0) {
+                if (firstLocationDropped >= 0) {
                     // die neue Position wird an den Tourmanager [bergeben
                     tourManager.AddWayPoint(/*locationPostCorrection.getSmoothenedLocation*/(location));
                  /*   if(pgGPSWait.isShowing())
