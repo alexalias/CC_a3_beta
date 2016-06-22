@@ -164,8 +164,8 @@ public class MainActivity extends AppCompatActivity{
                 if (firstLocationDropped) {
                     // die neue Position wird an den Tourmanager [bergeben
                     tourManager.AddWayPoint(/*locationPostCorrection.getSmoothenedLocation*/(location));
-                    if(pgGPSWait.isShowing())
-                        pgGPSWait.dismiss();
+                 /*   if(pgGPSWait.isShowing())
+                        pgGPSWait.dismiss();*/
                     UpdateView();
                 }
                 else
@@ -173,12 +173,12 @@ public class MainActivity extends AppCompatActivity{
             }
 
         };
-
+/*
         if(isGPSEnabled && (gps.getLocation() == null)){
             pgGPSWait.show(this, "", "Warte auf GPS Empfang");
             Log.i("PG is showing: ", pgGPSWait.isShowing()+"");
         }
-
+*/
         UpdateView();
         // check if GPS enabled
         if(gps.canGetLocation()){
@@ -231,6 +231,7 @@ public class MainActivity extends AppCompatActivity{
 
         if (gps != null)
             gps.stopUsingGPS();
+
     }
 
     public void UpdateUsername()
@@ -279,6 +280,16 @@ public class MainActivity extends AppCompatActivity{
         }
         return super.onOptionsItemSelected(item);
     }
+/*
+    @Override
+    protected void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }*/
 
     public boolean displayLoginActivity()
     {

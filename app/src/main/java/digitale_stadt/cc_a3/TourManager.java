@@ -39,6 +39,7 @@ public class TourManager {
     double distance_m_all;      //the distance travelled so far
     long duration_ms_filtered;  //the time travelled so far, without stops
     double distance_m_filtered; //the distance travelled so far, without stops
+    double speed;               //actual speed
 
     Context context;
 
@@ -66,6 +67,7 @@ public class TourManager {
         duration_ms_all = 0L;
         distance_m_filtered = 0;
         distance_m_all = 0;
+        speed = 0.0;
     }
 
     // sets the id of the last wayPoint to -1
@@ -107,6 +109,7 @@ public class TourManager {
 
             double lat = location.getLatitude();
             double lon = location.getLongitude();
+            speed = (location.getSpeed() * 3600)/1000;
 
             //calculate distance to last waypoint
             float distance = location.distanceTo(lastLocation);
@@ -123,6 +126,7 @@ public class TourManager {
             //update all data
             distance_m_all += distance;
             duration_ms_all = duration;
+            Log.i("Distance: ", distance_m_all + "");
 
             lastLocation = location;
 
@@ -184,6 +188,7 @@ public class TourManager {
                 return distance_m_filtered / 1000f;
             else
                 return distance_m_all / 1000f;
+
     }
 
     // returns the average speed in km/h
@@ -200,7 +205,9 @@ public class TourManager {
         }
 
         if (duration_ms != 0)
-            return (distance_m * 3600) / ((double) duration_ms);
+            //return (distance_m * 3600) / ((double) duration_ms);
+        {Log.i("Speed: ", speed + "");
+        return speed;}
         else
             return 0;
     }
