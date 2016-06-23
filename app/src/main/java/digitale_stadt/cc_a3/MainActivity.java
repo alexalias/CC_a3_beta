@@ -74,9 +74,6 @@ public class MainActivity extends AppCompatActivity{
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        textInfo = (TextView) findViewById(R.id.textInfo);
-
         strecke = (TextView) findViewById(R.id.streckeAnzeige);
         dauer = (TextView) findViewById(R.id.dauerAnzeige);
         speed = (TextView) findViewById(R.id.speedAnzeige);

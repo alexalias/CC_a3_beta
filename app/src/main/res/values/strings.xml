@@ -4,10 +4,13 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Einstellungen</string>
-    <string name="stop_tracking">Stop Tracking</string>
-    <string name="start_tracking">Start Tracking</string>
     <string name="insert">Insert</string>
     <string name="show">Show</string>
+
+    <!-- main Activity -->
+    <string name="stop_tracking">Stop Tracking</string>
+    <string name="start_tracking">Start Tracking</string>
+    <string name="main_header"><u>Aktuelle Fahrt:</u></string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Keine Daten</string>

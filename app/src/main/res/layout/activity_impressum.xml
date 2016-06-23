@@ -15,15 +15,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ein gemeinnütziges Projekt des Fachbereichs Informatik, Universität Hamburg.\n"
+        android:text="Ein Projekt des Fachbereichs Informatik, Universität Hamburg."
         />
 
-    <TextView
+   <!-- <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Unterstützt durch: Workplace Solutions GmbH (Hamburg), HiTec e.V. (Hamburg), Beemo GmbH (Münster), BikeCityGuide Apps GmbH (Graz).\n"
         />
-
+-->
     <TextView
         android:id="@+id/text_impressum"
         android:layout_width="wrap_content"
