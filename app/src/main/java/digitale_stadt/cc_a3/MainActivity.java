@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity{
         //Startet eine neue Tour im TourManager
         tourManager.StartNewTour();
 
-        firstLocationDropped = -;
+        firstLocationDropped = -3;
 
         gps = new GPSTracker(MainActivity.this)
         {
