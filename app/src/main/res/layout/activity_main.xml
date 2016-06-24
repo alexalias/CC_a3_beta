@@ -22,7 +22,9 @@
         android:text="Sie sind nicht eingeloggt!"
         android:id="@+id/text_welcome"
         android:textSize="18dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
 
     <ImageView
         android:id="@+id/image"
@@ -34,36 +36,28 @@
         android:layout_below="@id/text_welcome"
         android:contentDescription="CycleYourCity-Hamburg Logo" />
 
-<!--    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textInfo"
-        android:layout_below="@id/image"
-        android:text="@string/main_header"
-        android:textSize="18dp"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"
-        />-->
         <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textDauer"
-        android:layout_below="@id/image"
-        android:text="Dauer:"
-        android:textSize="18dp"
-        android:layout_marginBottom="20dp"
-        />
+            android:id="@+id/textDauer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dauer:"
+            android:textSize="30dp"
+            android:layout_below="@+id/image"
+            android:layout_marginBottom="15dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
 
     <TextView
+        android:id="@+id/dauerAnzeige"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="30dp"
-        android:id="@+id/dauerAnzeige"
-        android:layout_below="@id/image"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="10dp"
-        android:hint="00:00:00 h" />
+        android:layout_alignRight="@+id/textDauer"
+        android:layout_below="@id/image"
+        android:layout_marginBottom="15dp"
+        android:hint="00:00:00 h"
+        android:textSize="30dp"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -71,8 +65,8 @@
         android:id="@+id/textStrecke"
         android:layout_below="@id/dauerAnzeige"
         android:text="Distanz:"
-        android:textSize="18dp"
-        android:layout_marginBottom="20dp"
+        android:textSize="30dp"
+        android:layout_marginBottom="15dp"
 
         />
 
@@ -82,38 +76,40 @@
         android:textStyle="bold"
         android:textSize="30dp"
         android:id="@+id/streckeAnzeige"
-        android:layout_below="@id/dauerAnzeige"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="10dp"
-
-        android:hint="0 km" />
+        android:hint="0 km"
+        android:layout_below="@+id/dauerAnzeige"
+        android:layout_alignLeft="@+id/dauerAnzeige"
+        android:layout_alignStart="@+id/dauerAnzeige"
+        android:layout_marginBottom="15dp" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/debugEditTex"
         android:layout_below="@+id/streckeAnzeige"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textSpeed"
         android:layout_below="@id/streckeAnzeige"
-        android:text="Geschwindigkeit:"
-        android:textSize="18dp"
-        android:layout_marginBottom="30dp"
+        android:text="Geschw.:"
+        android:textSize="30dp"
+        android:layout_marginBottom="15dp"
         />
 
     <TextView
+        android:id="@+id/speedAnzeige"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
+        android:hint="0,0 km/h"
         android:textSize="30dp"
-        android:id="@+id/speedAnzeige"
-        android:layout_below="@id/streckeAnzeige"
-        android:layout_alignParentRight="true"
-        android:hint="0,0 km/h" />
+        android:textStyle="bold"
+        android:layout_alignTop="@+id/debugEditTex"
+        android:layout_alignLeft="@+id/streckeAnzeige"
+        android:layout_alignStart="@+id/streckeAnzeige"/>
 
 
     <ToggleButton

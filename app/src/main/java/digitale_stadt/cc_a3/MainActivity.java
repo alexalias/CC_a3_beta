@@ -197,14 +197,14 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void UpdateView() {
-        speed.setText(String.format("%.3f km/h", tourManager.GetAvgSpeed_kmh()));
+        speed.setText(String.format("%.1f km/h", tourManager.GetAvgSpeed_kmh()));
 
         Date t1 = new Date(tourManager.GetDuration_ms() - TimeZone.getDefault().getDSTSavings());
         DateFormat df = new SimpleDateFormat("HH:mm:ss");
         String s = df.format(t1);
         dauer.setText(String.format("%s h", s));
 
-        strecke.setText(String.format("%.3f km", tourManager.GetDistance_km()));
+        strecke.setText(String.format("%.2f km", tourManager.GetDistance_km()));
     }
 
     public void UpdateDebugInfo(String string)
