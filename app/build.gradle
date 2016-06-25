@@ -47,6 +47,7 @@ dependencies {
     //ArcGIS
     compile 'com.esri.arcgis.android:arcgis-android:10.2.7'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile 'com.google.android.gms:play-services-location:8.1.0'
 
     // Required -- JUnit 4 framework
     testCompile 'junit:junit:4.12'
