@@ -32,9 +32,12 @@ public class RequestProxy {
 
     private RequestQueue mRequestQueue;
 
-    final String login_url = "https://api.cyc.jmakro.de:4040/get_auth_token.php";
-    final String register_url = "https://api.cyc.jmakro.de:4040/register_user.php";
-    final String data_url = "https://api.cyc.jmakro.de:4040/log_coordinates.php";
+    //final String login_url = "https://api.cyc.jmakro.de:4040/get_auth_token.php";
+    //final String register_url = "https://api.cyc.jmakro.de:4040/register_user.php";
+    //final String data_url = "https://api.cyc.jmakro.de:4040/log_coordinates.php";
+    final String login_url = "https://cychh.informatik.uni-hamburg.de:443/get_auth_token.php";
+    final String register_url = "https://cychh.informatik.uni-hamburg.de:443/register_user.php";
+    final String data_url = "https://cychh.informatik.uni-hamburg.de:443/log_coordinates.php";
 
     final String server_login_failed = "wrong credentials";
     final String server_register_success_pre = "Registration successfull: Account ";
@@ -262,7 +265,7 @@ public class RequestProxy {
     public void SendTourData(String auth_token, Tour tour) { SendTourData(auth_token, tour, data_url); }
     public void SendTourData(final String auth_token, final Tour tour, final String url)
     {
-        Log.i("RequestProxy", "Send Tour Data");
+        Log.i("RequestProxy", "Send Tour Data: " + tour.toJSON().toString());
         final StringRequest postRequest = new StringRequest(Request.Method.POST, data_url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -272,9 +275,9 @@ public class RequestProxy {
                     Log.i("SendTourData", "Data transmitted: " + response);
                     try {
                         ((MainActivity)mContext).LogSystemData("vor  req: ");
-                        for (Position pos : tour.GetWayPoints())
+                        for (Position pos : tour.GetWayPoints()) {
                             DBManager.getInstance().doRequest().updatePositionSentStatus(pos.getTourID(), pos.getId(), 1);
-
+                                }
                         ((MainActivity)mContext).LogSystemData("nach req: ");
                      }
                     catch (Exception e) {}
@@ -283,7 +286,6 @@ public class RequestProxy {
                 {
                     Log.i("SendTourData", "Login error: resetting token " + response);
                     sharedPrefs.edit().putString("auth_token", "").commit();
-                    //save data to DB
                 }
             }
         },
@@ -291,7 +293,6 @@ public class RequestProxy {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.i("SendData Error.Response", error.toString());
-                //save data to DB
             }
         }
         ) {
