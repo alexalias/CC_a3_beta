@@ -16,9 +16,10 @@ public class PositionTest {
     private final double lat = 4.0;
     private final double lon = 5.0;
     private final double ele = 6.0;
-    private final long time = 999999;
+    private final long time = 190729999000L;
 
-    private String jsonString = "{\"lon\":5,\"time\":\"1970-01-01 01:16:39\",\"cmt\":0,\"lat\":4,\"ele\":6}";
+    //private String jsonString = "{\"lon\":5,\"time\":\"1970-01-01 01:16:39\",\"cmt\":0,\"lat\":4,\"ele\":6}";
+    private String jsonString = "{\"lon\":5,\"time\":\"17-01-1976 13-33-19\",\"cmt\":0,\"lat\":4,\"ele\":6}";
 
     @Before
     public void Before()

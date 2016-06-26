@@ -98,7 +98,8 @@ public class Position {
             jsonObject.put(json_id_id, id);
 
             String strCurrentDate = "Wed, 18 Apr 2012 07:55:29 +0000";
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd' 'hh:mm:ss");
+            //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd' 'hh:mm:ss");
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy' 'HH-mm-ss");
             String date = format.format(time);
             jsonObject.put(json_id_time, date);
 

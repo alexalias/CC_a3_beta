@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 public class TourTest {
 
     private Tour m_Tour;
-    private final long time = 999999;
+    private final long time = 190729999000L;
 
     @Before
     public void Before() {
@@ -56,7 +56,7 @@ public class TourTest {
         m_Tour.AddWayPoint(pos);
 
         jsonString = m_Tour.toJSON().toString();
-        compareString = "{\"WayPoints\":[{\"lon\":5,\"time\":\"1970-01-01 01:16:40\",\"cmt\":0,\"lat\":4,\"ele\":6}],\"tourid\":\"ff8c68734c6f0071426e10d9a7b81039\"}";
+        compareString = "{\"WayPoints\":[{\"lon\":5,\"time\":\"17-01-1976 13-33-19\",\"cmt\":0,\"lat\":4,\"ele\":6}],\"tourid\":\"ff8c68734c6f0071426e10d9a7b81039\"}";
         assertEquals(jsonString, compareString);
     }
 }
