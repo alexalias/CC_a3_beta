@@ -79,9 +79,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 "sent INTEGER)");
 
         // add dummy gps positions
-        db.execSQL("INSERT INTO positions (trackId, posId, deviceId, timestamp, latitude, longitude, altitude, sent)" +
-                "VALUES ('1', 1, 100, 1451649018000, 53.551085, 9.993682, 0.0, 0), " +
-                "('1', 2, 100, 1451649019000, 53.551090, 9.993692, 2.0, 0)");
+        /*db.execSQL("INSERT INTO positions (trackId, posId, deviceId, timestamp, latitude, longitude, altitude, sent)" +
+                "VALUES ('1', 1, 100, 1451649018000, 53.551085, 9.993682, 0.0, 1), " +
+                "('1', 2, 100, 1451649019000, 53.551090, 9.993692, 2.0, 1)");*/
     }
 
     @Override
@@ -211,7 +211,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // Gibt eine Liste aller Positionsobjekte der gegebenen Tour zurück,
     public ArrayList<Position> updatePositionSentStatus(String tourID, long posID, int status) {
 
-        Cursor cursor = db.rawQuery("UPDATE positions SET sent = 1 WHERE trackId = '" + tourID + "' AND posId = " + posID, null);
+        Cursor cursor = db.rawQuery("UPDATE positions SET sent = 1 WHERE trackId = " + tourID + " AND posId = " + posID, null);
 
         return EvaluateCursor(cursor);
     }
