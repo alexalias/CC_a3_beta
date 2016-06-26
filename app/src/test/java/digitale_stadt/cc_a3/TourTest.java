@@ -56,7 +56,7 @@ public class TourTest {
         m_Tour.AddWayPoint(pos);
 
         jsonString = m_Tour.toJSON().toString();
-        compareString = "{\"WayPoints\":[{\"lon\":5,\"time\":\"1970-01-01T01:16:40Z\",\"cmt\":0,\"lat\":4,\"ele\":6}],\"tourid\":\"ff8c68734c6f0071426e10d9a7b81039\"}";
+        compareString = "{\"WayPoints\":[{\"lon\":5,\"time\":\"1970-01-01 01:16:40\",\"cmt\":0,\"lat\":4,\"ele\":6}],\"tourid\":\"ff8c68734c6f0071426e10d9a7b81039\"}";
         assertEquals(jsonString, compareString);
     }
 }

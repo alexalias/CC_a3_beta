@@ -113,11 +113,11 @@ public class TourManagerTest {
     public void Before()
     {
         tourManager = new TourManager(AppContextProvider.getAppContext(), "001") {
-            @Override
-            public boolean StartServices() {
-                Log.d("Initialize Services", "");
-                return true;
-            }
+//            @Override
+//            public boolean StartServices() {
+//                Log.d("Initialize Services", "");
+//                return true;
+//            }
 
             @Override
             public boolean SaveTourToDB() {
