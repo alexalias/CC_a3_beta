@@ -15,11 +15,11 @@
         android:showAsAction="always"
         />
 
-    <item
+   <!-- <item
         android:id="@+id/action_impressum"
         android:title="Impressum"
         android:orderInCategory="100"
         android:showAsAction="always"
-        />
+        />-->
 
 </menu>

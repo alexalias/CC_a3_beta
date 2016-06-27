@@ -269,8 +269,8 @@ public class MainActivity extends AppCompatActivity{
         switch (id) {
             case R.id.action_settings:
                 return displaySettingsActivity();
-            case R.id.action_impressum:
-                return displayImpressumActivity();
+            /*case R.id.action_impressum:
+                return displayImpressumActivity();*/
             case R.id.action_login:
                 return displayLoginActivity();
         }
@@ -313,13 +313,13 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
 
-    public boolean displayImpressumActivity()
+    /*public boolean displayImpressumActivity()
     {
         Intent intent;
         intent = new Intent(this, ImpressumActivity.class);
         startActivity(intent);
         return true;
-    }
+    }*/
 
     private void setTitleBackgroundColor() {
         View titleView = getWindow().findViewById(android.R.id.title);
