@@ -1,13 +1,16 @@
 package digitale_stadt.cc_a3;
 
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,15 +27,19 @@ import android.widget.ToggleButton;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.TimeZone;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements Observer{
 
     TextView textInfo;
     TextView speed;
     TextView dauer;
     TextView strecke;
     TextView debug;
+
+    boolean läuft = false;
 
     LocationPostCorrection locationPostCorrection = new LocationPostCorrection(10);
 
@@ -53,10 +60,11 @@ public class MainActivity extends AppCompatActivity{
     //Unsere GPS-Warte-Meldung
     private ProgressDialog pgGPSWait;
 
-    // der TourManager verwaltet alle Informationen zur Tour.
+    // der TourManagerService verwaltet alle Informationen zur Tour.
     // Er bekommt neue Positionen vom GPSTracker übergeben und sorgt für das
     //  verschicken bzw. speichern der Positionen
-    private TourManager tourManager;
+    private TourManagerService tourManagerService;
+    Intent serviceTM;
 
 //    private DBHelper dbHelper;
 //    private Sender sender;
@@ -72,6 +80,33 @@ public class MainActivity extends AppCompatActivity{
         DBManager.getInstance(this);
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
+        // from StartActivity
+        Intent service = new Intent(this, GPSTrackerService.class);
+        this.startService(service);
+
+        serviceTM = new Intent(this, TourManagerService.class);
+
+        // from TourSummaryActivity
+        mConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.d("!?TourSummaryActivity", "Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
+                GPSTrackerService.GpsBinder binder = (GPSTrackerService.GpsBinder) service;
+                gpsService = binder.getService();
+                mBound = true;
+                gpsService.registerListener(MainActivity.this);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d("!?TourSummaryActivity", "Nicht erfolgreich Connected setze mBound false");
+                mBound = false;
+            }
+        };
+
+        // from TourSummaryActivity
+        bindService(service, mConnection, Context.BIND_AUTO_CREATE);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         strecke = (TextView) findViewById(R.id.streckeAnzeige);
@@ -85,7 +120,7 @@ public class MainActivity extends AppCompatActivity{
         isNetworkEnabled = locationManager
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        tourManager = new TourManager(this, deviceID);
+        //tourManagerService = new TourManagerService(this, deviceID);
 
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
@@ -138,37 +173,42 @@ public class MainActivity extends AppCompatActivity{
     private void StartTrackingClicked()
     {
         Log.i("Main", "Tracking gestarted");
+        // from StartActivity
 
-        //Startet eine neue Tour im TourManager
-        tourManager.StartNewTour();
+        this.startService(serviceTM);
+        //Startet eine neue Tour im TourManagerService
+        tourManagerService.StartNewTour();
 
         firstLocationDropped = -3;
 
-        gps = new GPSTracker(MainActivity.this)
-        {
-            @Override
-            // Überschreibt GPSTracker.onLocationChanged mit einer anonymen Methode
-            // Das ist unser LocationListener
-            public void onLocationChanged(Location location)
-            {
-                //Die neue location wird aus dem GPSTracker geholt
-                getLocation();
+        läuft = true;
 
-                String s = "new Position   Lat: " + location.getLatitude() + "   Long: " + location.getLongitude();
-                Log.i("Main", s);
-
-                if (firstLocationDropped >= 0) {
-                    // die neue Position wird an den Tourmanager [bergeben
-                    tourManager.AddWayPoint(/*locationPostCorrection.getSmoothenedLocation*/(location));
-                 /*   if(pgGPSWait.isShowing())
-                        pgGPSWait.dismiss();*/
-                    UpdateView();
-                }
-                else
-                    firstLocationDropped += 1;
-            }
-
-        };
+//        gps = new GPSTracker(MainActivity.this)
+//        {
+//
+//            @Override
+//            // Überschreibt GPSTracker.onLocationChanged mit einer anonymen Methode
+//            // Das ist unser LocationListener
+//            public void onLocationChanged(Location location)
+//            {
+//                //Die neue location wird aus dem GPSTracker geholt
+//                getLocation();
+//
+//                String s = "new Position   Lat: " + location.getLatitude() + "   Long: " + location.getLongitude();
+//                Log.i("Main", s);
+//
+//                if (firstLocationDropped >= 0) {
+//                    // die neue Position wird an den Tourmanager [bergeben
+//                    tourManagerService.AddWayPoint(/*locationPostCorrection.getSmoothenedLocation*/(location));
+//                 /*   if(pgGPSWait.isShowing())
+//                        pgGPSWait.dismiss();*/
+//                    UpdateView();
+//                }
+//                else
+//                    firstLocationDropped += 1;
+//            }
+//
+//        };
 /*
         if(isGPSEnabled && (gps.getLocation() == null)){
             pgGPSWait.show(this, "", "Warte auf GPS Empfang");
@@ -181,12 +221,12 @@ public class MainActivity extends AppCompatActivity{
             //get location and save it as StartLocation
             Location location = gps.getLocation();
 
-            // Setzt im TourManager eine erste position
+            // Setzt im TourManagerService eine erste position
             if (location != null) {
-                tourManager.AddWayPoint(location);
-                Toast toast = Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
-                toast.show();
+                tourManagerService.AddWayPoint(location);
+                //Toast toast = Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG);
+                //toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+                //toast.show();
             }
         }else{
             // can't get location
@@ -197,14 +237,14 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void UpdateView() {
-        speed.setText(String.format("%.1f km/h", tourManager.GetAvgSpeed_kmh()));
+        speed.setText(String.format("%.1f km/h", tourManagerService.GetCurrentSpeed_kmh()));
 
-        Date t1 = new Date(tourManager.GetDuration_ms() - TimeZone.getDefault().getDSTSavings());
+        Date t1 = new Date(tourManagerService.GetDuration_ms() - TimeZone.getDefault().getDSTSavings());
         DateFormat df = new SimpleDateFormat("HH:mm:ss");
         String s = df.format(t1);
         dauer.setText(String.format("%s h", s));
 
-        strecke.setText(String.format("%.2f km", tourManager.GetDistance_km()));
+        strecke.setText(String.format("%.2f km", tourManagerService.GetDistance_km()));
     }
 
     public void UpdateDebugInfo(String string)
@@ -221,9 +261,11 @@ public class MainActivity extends AppCompatActivity{
         toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
 
-        // Beendet die tour im TourManager und speichert sie in die Datenbank
-        tourManager.StopTour();
-        tourManager.SaveTourToDB();
+        läuft = false;
+        this.stopService(serviceTM);
+        // Beendet die tour im TourManagerService und speichert sie in die Datenbank
+        //tourManagerService.StopTour();
+        //tourManagerService.SaveTourToDB();
 
         if (gps != null)
             gps.stopUsingGPS();
@@ -334,14 +376,34 @@ public class MainActivity extends AppCompatActivity{
 
     public void LogSystemData(String prefix)
     {
-        String tourID = tourManager.GetTour().getTourID();
-        int tourManagerEntries = tourManager.GetTour().GetWayPoints().size();
+        String tourID = tourManagerService.GetTour().getTourID();
+        int tourManagerEntries = tourManagerService.GetTour().GetWayPoints().size();
         int entries = DBManager.getInstance().doRequest().selectAllPositions().size();
         int entriesNotSent = DBManager.getInstance().doRequest().selectAllPositionsNotSent().size();
         //int entriesTour = DBManager.getInstance().doRequest().selectAllPositionsFromTour(tourID).size();
         Log.i("**********" + prefix + " System", String.format("TM: %d entries   DB: %d/%d entries sent.",
                 tourManagerEntries, entriesNotSent, entries));
     }
+
+    /**
+     * Observer-Methode wird von außen aufgerufen
+     */
+    @Override
+    public void update(Observable observable, Object data) {
+        Log.i("MainActivity", "neue Location");
+
+        if (läuft)
+        {
+            //Location loc = gpsService.getLastLocation();
+            tourManagerService.AddWayPoint((Location) data);
+            UpdateView();
+        }
+    }
+
+    GPSTrackerService gpsService;
+    boolean mBound = false;
+
+    private ServiceConnection mConnection;
 }
 
 
