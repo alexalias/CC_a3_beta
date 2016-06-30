@@ -66,6 +66,11 @@ public class MainActivity extends AppCompatActivity implements Observer{
     private TourManagerService tourManagerService;
     Intent serviceTM;
 
+    GPSTrackerService gpsService;
+    boolean mBound = false;
+
+    private ServiceConnection mConnection;
+
 //    private DBHelper dbHelper;
 //    private Sender sender;
 
@@ -120,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements Observer{
         isNetworkEnabled = locationManager
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        //tourManagerService = new TourManagerService(this, deviceID);
+        tourManagerService = new TourManagerService(this, deviceID);
 
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
@@ -400,10 +405,6 @@ public class MainActivity extends AppCompatActivity implements Observer{
         }
     }
 
-    GPSTrackerService gpsService;
-    boolean mBound = false;
-
-    private ServiceConnection mConnection;
 }
 
 
