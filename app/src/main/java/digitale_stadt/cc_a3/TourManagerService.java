@@ -1,32 +1,25 @@
 package digitale_stadt.cc_a3;
 
-import android.app.Service;
-import android.bluetooth.BluetoothClass;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Created by Ralf Engelken on 16.05.2016.
  *
- * The TourManagerService manages the GPS-positions.
+ * The TourManager manages the GPS-positions.
  * the tour acts as a queue holding the positions, new positions are added to the queue
  * depending on the transmission-type the data is then sent to the server or saved in the db
  */
-public class TourManagerService extends Service implements Observer {
+public class TourManager {
 
     Tour tour;                  //stores the tour data
     int queueLength;            //number of waypoints in the tour before data is sent
@@ -50,11 +43,7 @@ public class TourManagerService extends Service implements Observer {
 
     Context context;
 
-    Observer listener;          //Observable pattern
-
-    public TourManagerService(){}
-
-    public TourManagerService(Context context, String deviceID)
+    public TourManager(Context context, String deviceID)
     {
         this.context = context;
 
@@ -180,6 +169,14 @@ public class TourManagerService extends Service implements Observer {
         return tour;
     }
 
+    public Location GetStartLocation() {
+        return startLocation;
+    }
+
+    public Location GetLastLocation() {
+        return lastLocation;
+    }
+
     // returns the duration since the tour started in ms
     public long GetDuration_ms()
     {
@@ -198,14 +195,8 @@ public class TourManagerService extends Service implements Observer {
 
     }
 
-    // returns the current speed in km/h
-    public double GetCurrentSpeed_kmh() {
-        Log.i("Speed: ", speed + "");
-        return speed;
-    }
-
     // returns the average speed in km/h
-    public double GetAverageSpeed_kmh() {
+    public double GetAvgSpeed_kmh() {
         double distance_m;
         double duration_ms;
 
@@ -218,9 +209,36 @@ public class TourManagerService extends Service implements Observer {
         }
 
         if (duration_ms != 0)
-            return (distance_m * 3600) / ((double) duration_ms);
+            return (distance_m * 3600) / ((double) duration_ms * 10);
+        //{Log.i("Speed: ", speed + "");
+      //  return speed;}
         else
             return 0;
+    }
+
+    public boolean SaveTourToDB() {
+        try
+        {
+            for (Position pos : tour.GetWayPoints())
+                DBManager.getInstance().doRequest().insertPosition(pos);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    public boolean SendTourToServer() {
+        try
+        {
+            RequestManager.getInstance().doRequest().SendTourData("", tour);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
     }
 
     public boolean WiFiAvailable (){
@@ -236,53 +254,5 @@ public class TourManagerService extends Service implements Observer {
     public boolean LiveUploadChecked(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPrefs.getBoolean("wlan_upload", false);
-    }
-
-    /**
-     * Observer-Methode wird von außen aufgerufen
-     */
-    @Override
-    public void update(Observable observable, Object data) {
-        Log.i("TourManagerService", "neue Location");
-        AddWayPoint((Location) data);
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    /**
-     * Für eigenes Observer-Pattern
-     */
-    public void registerListener(Observer listener)
-    {
-        Log.d("TourManagerService", "setze Listener");
-        this.listener = listener;
-    }
-
-    /**
-     * Benachrichtige Listener
-     */
-    private void notifyListeners(Location location){
-        try {
-            if (listener != null) {
-                Log.d("!?TourManagerService", "Listeners werden upgedatet");
-                listener.update(null, location);
-            }
-        }
-        catch (Exception e)
-        {
-            Log.e("TourManagerService", "TourManagerService konnte UI nicht benachrichtigen");
-        }
-    }
-
-    /**
-     * Listener entfernen
-     */
-    public void deregisterListener(){
-        Log.d("TourManagerService", "Register = null also deregister");
-        this.listener = null;
     }
 }
