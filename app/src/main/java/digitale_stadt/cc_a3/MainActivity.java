@@ -1,7 +1,6 @@
 package digitale_stadt.cc_a3;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -53,10 +52,10 @@ public class MainActivity extends AppCompatActivity{
     //Unsere GPS-Warte-Meldung
     private ProgressDialog pgGPSWait;
 
-    // der TourManager verwaltet alle Informationen zur Tour.
+    // der TourManageService verwaltet alle Informationen zur Tour.
     // Er bekommt neue Positionen vom GPSTracker übergeben und sorgt für das
     //  verschicken bzw. speichern der Positionen
-    private TourManager tourManager;
+    private TourManagerService tourManager;
 
 //    private DBHelper dbHelper;
 //    private Sender sender;
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity{
         isNetworkEnabled = locationManager
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        tourManager = new TourManager(this, deviceID);
+        tourManager = new TourManagerService(this, deviceID);
 
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity{
     {
         Log.i("Main", "Tracking gestarted");
 
-        //Startet eine neue Tour im TourManager
+        //Startet eine neue Tour im TourManageService
         tourManager.StartNewTour();
 
         firstLocationDropped = -1;
@@ -181,7 +180,7 @@ public class MainActivity extends AppCompatActivity{
             //get location and save it as StartLocation
             Location location = gps.getLocation();
 
-            // Setzt im TourManager eine erste position
+            // Setzt im TourManageService eine erste position
             if (location != null) {
                 tourManager.AddWayPoint(location);
             //    Toast toast = Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG);
@@ -221,7 +220,7 @@ public class MainActivity extends AppCompatActivity{
         toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
 
-        // Beendet die tour im TourManager und speichert sie in die Datenbank
+        // Beendet die tour im TourManageService und speichert sie in die Datenbank
         tourManager.StopTour();
         tourManager.SaveTourToDB();
 

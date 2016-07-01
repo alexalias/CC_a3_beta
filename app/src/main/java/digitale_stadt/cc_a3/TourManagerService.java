@@ -15,11 +15,11 @@ import java.util.Date;
 /**
  * Created by Ralf Engelken on 16.05.2016.
  *
- * The TourManager manages the GPS-positions.
+ * The TourManageService manages the GPS-positions.
  * the tour acts as a queue holding the positions, new positions are added to the queue
  * depending on the transmission-type the data is then sent to the server or saved in the db
  */
-public class TourManager {
+public class TourManagerService {
 
     Tour tour;                  //stores the tour data
     int queueLength;            //number of waypoints in the tour before data is sent
@@ -43,7 +43,7 @@ public class TourManager {
 
     Context context;
 
-    public TourManager(Context context, String deviceID)
+    public TourManagerService(Context context, String deviceID)
     {
         this.context = context;
 
