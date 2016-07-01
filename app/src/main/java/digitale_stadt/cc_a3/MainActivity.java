@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewParent;
+import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity{
     //  verschicken bzw. speichern der Positionen
     private TourManagerService tourManager;
 
+    private Chronometer zeitAnzeige;
+
 //    private DBHelper dbHelper;
 //    private Sender sender;
 
@@ -87,6 +91,8 @@ public class MainActivity extends AppCompatActivity{
         tourManager = new TourManagerService(this, deviceID);
 
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+
+        zeitAnzeige = (Chronometer) findViewById(R.id.dauerAnzeige);
 
         setTitleBackgroundColor();
 
@@ -140,6 +146,8 @@ public class MainActivity extends AppCompatActivity{
 
         //Startet eine neue Tour im TourManageService
         tourManager.StartNewTour();
+        zeitAnzeige.setBase(SystemClock.elapsedRealtime());
+        zeitAnzeige.start();
 
         firstLocationDropped = -1;
 
@@ -198,10 +206,12 @@ public class MainActivity extends AppCompatActivity{
     public void UpdateView() {
         speed.setText(String.format("%.1f km/h", tourManager.GetAvgSpeed_kmh()));
 
-        Date t1 = new Date(tourManager.GetDuration_ms() - TimeZone.getDefault().getDSTSavings());
+        /*Date t1 = new Date(tourManager.GetDuration_ms() - TimeZone.getDefault().getDSTSavings());
         DateFormat df = new SimpleDateFormat("HH:mm:ss");
         String s = df.format(t1);
-        dauer.setText(String.format("%s h", s));
+        dauer.setText(String.format("%s h", s));*/
+        //zeitAnzeige.start();
+       // dauer.setText(zeitAnzeige);
 
         strecke.setText(String.format("%.2f km", tourManager.GetDistance_km()));
     }
@@ -223,6 +233,7 @@ public class MainActivity extends AppCompatActivity{
         // Beendet die tour im TourManageService und speichert sie in die Datenbank
         tourManager.StopTour();
         tourManager.SaveTourToDB();
+        zeitAnzeige.stop();
 
         if (gps != null)
             gps.stopUsingGPS();
