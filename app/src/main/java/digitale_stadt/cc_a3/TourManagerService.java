@@ -1,25 +1,32 @@
 package digitale_stadt.cc_a3;
 
+import android.app.Service;
+import android.bluetooth.BluetoothClass;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by Ralf Engelken on 16.05.2016.
  *
- * The TourManageService manages the GPS-positions.
+ * The TourManagerService manages the GPS-positions.
  * the tour acts as a queue holding the positions, new positions are added to the queue
  * depending on the transmission-type the data is then sent to the server or saved in the db
  */
-public class TourManagerService {
+public class TourManagerService extends Service implements Observer {
 
     Tour tour;                  //stores the tour data
     int queueLength;            //number of waypoints in the tour before data is sent
@@ -42,6 +49,10 @@ public class TourManagerService {
     double speed;               //actual speed
 
     Context context;
+
+    Observer listener;          //Observable pattern
+
+    public TourManagerService(){}
 
     public TourManagerService(Context context, String deviceID)
     {
@@ -130,7 +141,7 @@ public class TourManagerService {
 
             lastLocation = location;
 
-            // the waypoint is added to the tour
+            // the waypoint is added to the tour and the DB
             DBManager.getInstance().doRequest().insertPosition(position);
             tour.AddWayPoint(position);
             counter++;
@@ -169,14 +180,6 @@ public class TourManagerService {
         return tour;
     }
 
-    public Location GetStartLocation() {
-        return startLocation;
-    }
-
-    public Location GetLastLocation() {
-        return lastLocation;
-    }
-
     // returns the duration since the tour started in ms
     public long GetDuration_ms()
     {
@@ -188,15 +191,21 @@ public class TourManagerService {
 
     // returns the distance travelled since the tour started in km
     public double GetDistance_km() {
-            if (use_filtered_values)
-                return distance_m_filtered / 1000f;
-            else
-                return distance_m_all / 1000f;
+        if (use_filtered_values)
+            return distance_m_filtered / 1000f;
+        else
+            return distance_m_all / 1000f;
 
     }
 
+    // returns the current speed in km/h
+    public double GetCurrentSpeed_kmh() {
+        Log.i("Speed: ", speed + "");
+        return speed;
+    }
+
     // returns the average speed in km/h
-    public double GetAvgSpeed_kmh() {
+    public double GetAverageSpeed_kmh() {
         double distance_m;
         double duration_ms;
 
@@ -209,36 +218,9 @@ public class TourManagerService {
         }
 
         if (duration_ms != 0)
-            return (distance_m * 3600) / ((double) duration_ms * 10);
-        //{Log.i("Speed: ", speed + "");
-      //  return speed;}
+            return (distance_m * 3600) / ((double) duration_ms);
         else
             return 0;
-    }
-
-    public boolean SaveTourToDB() {
-        try
-        {
-            for (Position pos : tour.GetWayPoints())
-                DBManager.getInstance().doRequest().insertPosition(pos);
-            return true;
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
-    }
-
-    public boolean SendTourToServer() {
-        try
-        {
-            RequestManager.getInstance().doRequest().SendTourData("", tour);
-            return true;
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
     }
 
     public boolean WiFiAvailable (){
@@ -254,5 +236,53 @@ public class TourManagerService {
     public boolean LiveUploadChecked(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPrefs.getBoolean("wlan_upload", false);
+    }
+
+    /**
+     * Observer-Methode wird von außen aufgerufen
+     */
+    @Override
+    public void update(Observable observable, Object data) {
+        Log.i("TourManagerService", "neue Location");
+        AddWayPoint((Location) data);
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    /**
+     * Für eigenes Observer-Pattern
+     */
+    public void registerListener(Observer listener)
+    {
+        Log.d("TourManagerService", "setze Listener");
+        this.listener = listener;
+    }
+
+    /**
+     * Benachrichtige Listener
+     */
+    private void notifyListeners(Location location){
+        try {
+            if (listener != null) {
+                Log.d("!?TourManagerService", "Listeners werden upgedatet");
+                listener.update(null, location);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.e("TourManagerService", "TourManagerService konnte UI nicht benachrichtigen");
+        }
+    }
+
+    /**
+     * Listener entfernen
+     */
+    public void deregisterListener(){
+        Log.d("TourManagerService", "Register = null also deregister");
+        this.listener = null;
     }
 }
