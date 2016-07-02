@@ -274,11 +274,11 @@ public class RequestProxy {
                 {
                     Log.i("SendTourData", "Data transmitted: " + response);
                     try {
-                        ((MainActivity)mContext).LogSystemData("vor  req: ");
+                        ((MainActivity)mContext).LogDBState("vor  req: ");
                         for (Position pos : tour.GetWayPoints()) {
                             DBManager.getInstance().doRequest().updatePositionSentStatus(pos.getTourID(), pos.getId(), 1);
                                 }
-                        ((MainActivity)mContext).LogSystemData("nach req: ");
+                        ((MainActivity)mContext).LogDBState("nach req: ");
                      }
                     catch (Exception e) {}
                 }

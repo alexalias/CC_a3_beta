@@ -1,7 +1,6 @@
 package digitale_stadt.cc_a3;
 
 import android.app.Service;
-import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,9 +12,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -158,13 +154,13 @@ public class TourManagerService extends Service implements Observer {
                 if (tour.GetWayPoints().size() >= queueLength) {
                     // send data and clear waypoint list in tour
                     Tour t = ClearWayPoints();
-                    ((MainActivity)context).LogSystemData("vor  send: ");
+                    ((MainActivity)context).LogDBState("vor  send: ");
                     RequestManager.getInstance().doRequest().SendTourData(auth_token, t);
-                    ((MainActivity)context).LogSystemData("nach send: ");
+                    ((MainActivity)context).LogDBState("nach send: ");
                 }
             }
             else
-                ((MainActivity)context).LogSystemData("ohne send: ");
+                ((MainActivity)context).LogDBState("ohne send: ");
         }
     }
 

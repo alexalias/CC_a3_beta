@@ -26,15 +26,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements Observer {
 
+    // ######### Variable ###################################################
     TextView textInfo;
     TextView speed;
     TextView dauer;
@@ -79,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
 //    private Sender sender;
 
     final String deviceID = "001";
+
+
+
+    // ######### Lifecycle Management #######################################
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,29 +135,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
-
-
         setTitleBackgroundColor();
-
-//        DBHelper Test
-//        DBHelper dbHelper = new DBHelper((Context)this);
-//        Tour t = new Tour("111");
-//        Position pos = new Position(t.getTourID(), 123l, 1, 5.0, 5.0, 5.0);
-//        t.AddWayPoint(pos);
-//        for (Position p : t.GetWayPoints()) {
-//            dbHelper.insertPosition(p);
-//        }
-//        Log.i("ABC", "##############################################");
-//        Log.i("TourID", t.getTourID());
-//        Log.i("Einträge:", String.format("%d", dbHelper.selectAllPositions().size()));
-//        Log.i("ungesendet:", String.format("%d", dbHelper.selectAllPositionsNotSent().size()));
-//        dbHelper.updatePosition(t.getTourID(), (int)t.GetWayPoints().get(0).getId());
-//        Log.i("ungesendet:", String.format("%d", dbHelper.selectAllPositionsNotSent().size()));
-//        Log.i("ABC", ".############################################.");
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         gps = new GPSTracker(this){ };
 
@@ -167,23 +150,146 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 sharedPrefs.getString("userpassword", ""));
     }
 
-    //Eine Sorte Clicklistener für unser start/stop Button
-    public void startTracking(View view){
-        boolean on = ((ToggleButton) view).isChecked();
-        if (on) {
-        //    Toast toast = Toast.makeText(MainActivity.this, "Tracking gestartet", Toast.LENGTH_SHORT);
-         //   toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
-         //   toast.show();
-            StartTrackingClicked();
+    /*
+    @Override
+    protected void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }*/
+
+
+
+    // ######### öffentliche Methoden #######################################
+
+    // Menüleiste
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // Menüleiste
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_settings:
+                return displaySettingsActivity();
+            /*case R.id.action_impressum:
+                return displayImpressumActivity();*/
+            case R.id.action_login:
+                return displayLoginActivity();
         }
-        else {
-            StopTrackingClicked();
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Aktualisiert die Anzeige der Strecke und Geschwindigkeit
+    public void UpdateView() {
+        speed.setText(String.format("%.1f km/h", tourManagerService.GetCurrentSpeed_kmh()));
+        strecke.setText(String.format("%.2f km", tourManagerService.GetDistance_km()));
+    }
+
+    // Aktualisiert die Anzeige des Benutzernamen
+    public void UpdateUsername() {
+        String username;
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        TextView welcome = (TextView) findViewById(R.id.text_welcome);
+
+        String token = sharedPrefs.getString("auth_token", "");
+        boolean anonymous = sharedPrefs.getBoolean("anonymous", false);
+
+        if (!token.equals("")) {
+            if (anonymous == true)
+                username = "Anonymous";
+            else
+                username = sharedPrefs.getString("username", "");
+
+            welcome.setText("Herzlich Willkommen, " + username + "!");
+        }
+        else
+            welcome.setText("Sie sind nicht angemeldet!");
+    }
+
+    // Zeigt die Login-Seite an
+    public boolean displayLoginActivity() {
+        Intent intent;
+
+        intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
+    // Zeigt die Registrierungs-Seite an
+    public boolean displayRegisterActivity() {
+        Intent intent;
+
+        intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
+    // Zeigt die Settings-Seite an
+    public boolean displaySettingsActivity() {
+        Intent intent;
+        intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
+    // Zeigt das Impressum an
+    public boolean displayImpressumActivity() {
+        Intent intent;
+        intent = new Intent(this, ImpressumActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
+    // Fügt den übergebenen Text in das Debug-Fenster ein
+    public void UpdateDebugInfo(String string)
+    {
+        debug.setText(debug.getText() + " " + string);
+    }
+
+    // Loggt den DB-Zustand
+    public void LogDBState(String prefix) {
+        String tourID = tourManagerService.GetTour().getTourID();
+        int tourManagerEntries = tourManagerService.GetTour().GetWayPoints().size();
+        int entries = DBManager.getInstance().doRequest().selectAllPositions().size();
+        int entriesNotSent = DBManager.getInstance().doRequest().selectAllPositionsNotSent().size();
+        //int entriesTour = DBManager.getInstance().doRequest().selectAllPositionsFromTour(tourID).size();
+        Log.i("**********" + prefix + " System", String.format("TM: %d entries   DB: %d/%d entries sent.",
+                tourManagerEntries, entriesNotSent, entries));
+    }
+
+    // Implementiert das Observer-Interface
+    @Override
+    public void update(Observable observable, Object data) {
+        Log.i("MainActivity", "neue Location");
+
+        if(läuft)
+        {
+            //Location loc =gpsService.getLastLocation();
+            tourManagerService.AddWayPoint((Location) data);
+            UpdateView();
         }
     }
 
-// GPS-Funktion wird angeschaltet und die WayPoints einer Tour im ArrayList zwischengespeichert.
-    private void StartTrackingClicked()
-    {
+
+
+    // ######### private Methoden ###########################################
+
+    // GPS-Funktion wird angeschaltet und die WayPoints einer Tour im ArrayList zwischengespeichert.
+    private void StartTracking() {
         Log.i("Main", "Tracking gestarted");
 
         this.startService(serviceTM);
@@ -237,9 +343,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
             // Setzt im TourManageService eine erste position
             if (location != null) {
                 tourManagerService.AddWayPoint(location);
-            //    Toast toast = Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG);
-            //    toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
-            //    toast.show();
+                //    Toast toast = Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG);
+                //    toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+                //    toast.show();
             }
         }else{
             // can't get location
@@ -249,26 +355,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
     }
 
-    public void UpdateView() {
-        speed.setText(String.format("%.1f km/h", tourManagerService.GetCurrentSpeed_kmh()));
-
-        /*Date t1 = new Date(tourManager.GetDuration_ms() - TimeZone.getDefault().getDSTSavings());
-        DateFormat df = new SimpleDateFormat("HH:mm:ss");
-        String s = df.format(t1);
-        dauer.setText(String.format("%s h", s));*/
-
-        strecke.setText(String.format("%.2f km", tourManagerService.GetDistance_km()));
-    }
-
-    public void UpdateDebugInfo(String string)
-    {
-        debug.setText(debug.getText() + " " + string);
-    }
-
-    //Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
-    private void StopTrackingClicked()
-    {
-
+    // Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
+    private void StopTracking() {
         Log.i("Main", "Tracking stopped");
         Toast toast = Toast.makeText(getApplicationContext(), "Tracking gestoppt", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -286,97 +374,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     }
 
-    public void UpdateUsername()
-    {
-        String username;
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        TextView welcome = (TextView) findViewById(R.id.text_welcome);
-
-        String token = sharedPrefs.getString("auth_token", "");
-        boolean anonymous = sharedPrefs.getBoolean("anonymous", false);
-
-        if (!token.equals("")) {
-            if (anonymous == true)
-                username = "Anonymous";
-            else
-                username = sharedPrefs.getString("username", "");
-
-            welcome.setText("Herzlich Willkommen, " + username + "!");
-        }
-        else
-            welcome.setText("Sie sind nicht angemeldet!");
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.action_settings:
-                return displaySettingsActivity();
-            /*case R.id.action_impressum:
-                return displayImpressumActivity();*/
-            case R.id.action_login:
-                return displayLoginActivity();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-/*
-    @Override
-    protected void onResume(){
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }*/
-
-    public boolean displayLoginActivity()
-    {
-        Intent intent;
-
-        intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        return true;
-    }
-
-    public boolean displayRegisterActivity()
-    {
-        Intent intent;
-
-        intent = new Intent(this, RegisterActivity.class);
-        startActivity(intent);
-        return true;
-    }
-
-    public boolean displaySettingsActivity()
-    {
-        Intent intent;
-        intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
-        return true;
-    }
-
-    /*public boolean displayImpressumActivity()
-    {
-        Intent intent;
-        intent = new Intent(this, ImpressumActivity.class);
-        startActivity(intent);
-        return true;
-    }*/
-
+    // Ändert die Hintergrundfarbe der Titelleiste
     private void setTitleBackgroundColor() {
         View titleView = getWindow().findViewById(android.R.id.title);
         if (titleView != null) {
@@ -388,28 +386,23 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
     }
 
-    public void LogSystemData(String prefix)
-    {
-        String tourID = tourManagerService.GetTour().getTourID();
-        int tourManagerEntries = tourManagerService.GetTour().GetWayPoints().size();
-        int entries = DBManager.getInstance().doRequest().selectAllPositions().size();
-        int entriesNotSent = DBManager.getInstance().doRequest().selectAllPositionsNotSent().size();
-        //int entriesTour = DBManager.getInstance().doRequest().selectAllPositionsFromTour(tourID).size();
-        Log.i("**********" + prefix + " System", String.format("TM: %d entries   DB: %d/%d entries sent.",
-                tourManagerEntries, entriesNotSent, entries));
-    }
 
-    @Override
-    public void update(Observable observable, Object data) {
-        Log.i("MainActivity", "neue Location");
 
-        if(läuft)
-        {
-            //Location loc =gpsService.getLastLocation();
-            tourManagerService.AddWayPoint((Location) data);
-            UpdateView();
+    // ######### Event handler ##############################################
+
+    public void TrackingButtonClicked(View view) {
+        boolean on = ((ToggleButton) view).isChecked();
+        if (on) {
+            //    Toast toast = Toast.makeText(MainActivity.this, "Tracking gestartet", Toast.LENGTH_SHORT);
+            //   toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+            //   toast.show();
+            StartTracking();
+        }
+        else {
+            StopTracking();
         }
     }
+
 }
 
 
