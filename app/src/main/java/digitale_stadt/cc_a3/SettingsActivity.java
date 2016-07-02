@@ -15,7 +15,7 @@ public class SettingsActivity extends AppCompatActivity{
     public void onCreate(Bundle savedInstance) {
 
         super.onCreate(savedInstance);
-        setTitle("Einstellungen");
+        setTitle(R.string.title_settingsActivity);
 
         //display the fragment as main content
         getFragmentManager().beginTransaction()

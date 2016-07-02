@@ -21,6 +21,19 @@
     <string name="sharedPrefs_username">username</string>
     <string name="sharedPrefs_userpassword">userpassword</string>
 
+    <!--Register Activity -->
+    <string name="title_registerActivity">Registrieren</string>
+    <string name="sharedPrefs_userpassword_repeat">userpassword2</string>
+    <string name="sharedPrefs_useremail">useremail</string>
+    <string name="toast_missing_input">Es fehlen wichtige Angaben!</string>
+    <string name="toast_passwords_notIdentical">Passwörter stimmen nicht überein!</string>
+    <string name="toast_invalidEmail">Ungültige Emailadresse!</string>
+    <string name="toast_confirmRegistration">Sie sind registriert!</string>
+
+    <!--Settings Activity -->
+    <string name="title_settingsActivity">Einstellungen</string>
+
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Keine Daten</string>
 </resources>

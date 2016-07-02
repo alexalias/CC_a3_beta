@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by alexutza_a on 29.04.2016.
+ * Created by Anne on 29.04.2016.
  * Implements a Position
  */
 public class Position {

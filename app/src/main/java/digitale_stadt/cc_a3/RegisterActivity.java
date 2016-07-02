@@ -54,7 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
         button_register = (Button) findViewById(R.id.register);
 
         //setzt den Titel der Activity
-        setTitle("Registrieren");
+        setTitle(R.string.title_registerActivity);
 
         setContents();
     }
@@ -96,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString("username", s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_username), s.toString()).apply();
             }
         });
 
@@ -111,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString("useremail", s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_useremail), s.toString()).apply();
             }
         });
 
@@ -126,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString("userpassword", s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_userpassword), s.toString()).apply();
             }
         });
 
@@ -141,7 +141,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString("userpassword2", s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_userpassword_repeat), s.toString()).apply();
             }
         });
 
@@ -154,41 +154,42 @@ public class RegisterActivity extends AppCompatActivity {
                         (userpassword.getText().toString().length() == 0) ||
                         (useremail.getText().toString().length() == 0)) {
                     Toast.makeText(getApplicationContext(),
-                            "Es fehlen wichtige Angaben!", Toast.LENGTH_LONG).show();
+                            R.string.toast_missing_input, Toast.LENGTH_LONG).show();
                 } else if (!passwordsAreIdentical()) {
                     Toast.makeText(getApplicationContext(),
-                            "Passwörter stimmen nicht überein!", Toast.LENGTH_LONG).show();
+                            R.string.toast_passwords_notIdentical, Toast.LENGTH_LONG).show();
                 } else if (!Patterns.EMAIL_ADDRESS.matcher(useremail.getText().toString()).matches()) {
                     Toast.makeText(getApplicationContext(),
-                            "Ungültige Emailadresse!", Toast.LENGTH_LONG).show();
+                            R.string.toast_invalidEmail, Toast.LENGTH_LONG).show();
                 } else
                 {
                     RequestManager.getInstance().doRequest().Register(
                             false,
-                            sharedPrefs.getString("username", ""),
-                            sharedPrefs.getString("userpassword", ""),
-                            sharedPrefs.getString("useremail", ""));
+                            sharedPrefs.getString(getString(R.string.sharedPrefs_username), ""),
+                            sharedPrefs.getString(getString(R.string.sharedPrefs_userpassword), ""),
+                            sharedPrefs.getString(getString(R.string.sharedPrefs_useremail), ""));
 
                     //close activity
                     finish();
 
                     Toast.makeText(getApplicationContext(),
-                            "Sie sind registriert!", Toast.LENGTH_LONG).show();
+                            R.string.toast_confirmRegistration, Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
     private void setContents(){
-        if (!sharedPrefs.getBoolean("anonymous", false)) {
-            username.setText(sharedPrefs.getString("username", ""));
-            useremail.setText(sharedPrefs.getString("useremail", ""));
-            userpassword.setText(sharedPrefs.getString("userpassword", ""));
-            userpassword2.setText(sharedPrefs.getString("userpassword2", ""));
+        if (!sharedPrefs.getBoolean(getString(R.string.sharedPrefs_anonymous), false)) {
+            username.setText(sharedPrefs.getString(getString(R.string.sharedPrefs_username), ""));
+            useremail.setText(sharedPrefs.getString(getString(R.string.sharedPrefs_useremail), ""));
+            userpassword.setText(sharedPrefs.getString(getString(R.string.sharedPrefs_userpassword), ""));
+            userpassword2.setText(sharedPrefs.getString(getString(R.string.sharedPrefs_userpassword_repeat), ""));
         }
     }
 
     private boolean passwordsAreIdentical() {
-        return (sharedPrefs.getString("userpassword", "").equals(sharedPrefs.getString("userpassword2", "")));
+        return (sharedPrefs.getString(getString(R.string.sharedPrefs_userpassword), "").
+                equals(sharedPrefs.getString(getString(R.string.sharedPrefs_userpassword_repeat), "")));
     }
 }
