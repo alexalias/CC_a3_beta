@@ -12,6 +12,15 @@
     <string name="start_tracking">Start Tracking</string>
     <string name="main_header"><u>Aktuelle Fahrt:</u></string>
 
+    <!--Impressum Activity -->
+    <string name="title_impressumActivity">Impressum</string>
+
+    <!--Login Activity -->
+    <string name="title_loginActivity">Login</string>
+    <string name="sharedPrefs_anonymous">anonymous</string>
+    <string name="sharedPrefs_username">username</string>
+    <string name="sharedPrefs_userpassword">userpassword</string>
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Keine Daten</string>
 </resources>

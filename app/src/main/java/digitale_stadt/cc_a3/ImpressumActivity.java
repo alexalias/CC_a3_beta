@@ -14,7 +14,7 @@ public class ImpressumActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_impressum);
-        setTitle("Impressum");
+        setTitle(R.string.title_impressumActivity);
     }
 
 }

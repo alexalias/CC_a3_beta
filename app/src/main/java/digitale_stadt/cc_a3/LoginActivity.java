@@ -54,11 +54,11 @@ public class LoginActivity extends AppCompatActivity {
         button_anonymous = (Button) findViewById(R.id.anonymous);
 
         // setze vorhandene Logindaten, falls nicht anonym
-        if (!sharedPrefs.getBoolean("anonymous", false)) {
-            username.setText(sharedPrefs.getString("username", ""));
-            userpassword.setText(sharedPrefs.getString("userpassword", ""));
+        if (!sharedPrefs.getBoolean(getString(R.string.sharedPrefs_anonymous), false)) {
+            username.setText(sharedPrefs.getString(getString(R.string.sharedPrefs_username), ""));
+            userpassword.setText(sharedPrefs.getString(getString(R.string.sharedPrefs_username), ""));
         }
-        setTitle("Login");
+        setTitle(R.string.title_loginActivity);
     }
 
     private void attachListeners() {
@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString("username", s.toString()).commit();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_username), s.toString()).apply();
             }
         });
 
@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString("userpassword", s.toString()).commit();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_userpassword), s.toString()).apply();
             }
         });
 
@@ -111,11 +111,11 @@ public class LoginActivity extends AppCompatActivity {
         button_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sharedPrefs.edit().putBoolean("anonymous", false).commit();
+                sharedPrefs.edit().putBoolean(getString(R.string.sharedPrefs_anonymous), false).apply();
                 RequestManager.getInstance().doRequest().Login(
                         false,
-                        sharedPrefs.getString("username", ""),
-                        sharedPrefs.getString("userpassword", ""));
+                        sharedPrefs.getString(getString(R.string.sharedPrefs_username), ""),
+                        sharedPrefs.getString(getString(R.string.sharedPrefs_userpassword), ""));
                 //close activity
                 finish();
             }

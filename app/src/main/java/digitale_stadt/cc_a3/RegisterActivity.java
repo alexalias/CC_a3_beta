@@ -173,7 +173,7 @@ public class RegisterActivity extends AppCompatActivity {
                     finish();
 
                     Toast.makeText(getApplicationContext(),
-                            "Sie erhalten in Kürze eine Email mit Ihren Login-Daten!", Toast.LENGTH_LONG).show();
+                            "Sie sind registriert!", Toast.LENGTH_LONG).show();
                 }
             }
         });
