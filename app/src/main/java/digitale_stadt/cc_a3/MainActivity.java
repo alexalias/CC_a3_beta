@@ -1,12 +1,16 @@
 package digitale_stadt.cc_a3;
 
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -25,15 +29,19 @@ import android.widget.ToggleButton;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.TimeZone;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements Observer {
 
     TextView textInfo;
     TextView speed;
     TextView dauer;
     TextView strecke;
     TextView debug;
+
+    boolean läuft = false;
 
     LocationPostCorrection locationPostCorrection = new LocationPostCorrection(10);
 
@@ -57,7 +65,13 @@ public class MainActivity extends AppCompatActivity{
     // der TourManageService verwaltet alle Informationen zur Tour.
     // Er bekommt neue Positionen vom GPSTracker übergeben und sorgt für das
     //  verschicken bzw. speichern der Positionen
-    private TourManagerService tourManager;
+    private TourManagerService tourManagerService;
+    Intent serviceTM;
+
+    GPSTrackerService gpsService;
+    boolean mBound = false;
+
+    private ServiceConnection mConnection;
 
     private Chronometer zeitAnzeige;
 
@@ -75,6 +89,33 @@ public class MainActivity extends AppCompatActivity{
         DBManager.getInstance(this);
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
+        //from StartActivity
+        Intent service = new Intent(this, GPSTrackerService.class);
+        this.startService(service);
+
+        serviceTM = new Intent(this, TourManagerService.class);
+
+        // from TourSummaryActivity
+        mConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.d("TourSummaryActivity", "Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
+                GPSTrackerService.GpsBinder binder = (GPSTrackerService.GpsBinder) service;
+                gpsService = binder.getService();
+                mBound = true;
+                gpsService.registerListener(MainActivity.this);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d("TourSummaryActivity", "Nicht erfolgreich connected setze mBound false");
+
+            }
+        };
+
+        // from TourSummaryActivity
+        bindService(service, mConnection, Context.BIND_AUTO_CREATE);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         strecke = (TextView) findViewById(R.id.streckeAnzeige);
@@ -82,17 +123,18 @@ public class MainActivity extends AppCompatActivity{
         speed = (TextView) findViewById(R.id.speedAnzeige);
         debug = (TextView) findViewById(R.id.debugEditTex);
         debug.setText ("");
+        zeitAnzeige = (Chronometer) findViewById(R.id.dauerAnzeige);
 
         isGPSEnabled = locationManager
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkEnabled = locationManager
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        tourManager = new TourManagerService(this, deviceID);
+        tourManagerService = new TourManagerService(this, deviceID);
 
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
-        zeitAnzeige = (Chronometer) findViewById(R.id.dauerAnzeige);
+
 
         setTitleBackgroundColor();
 
@@ -144,14 +186,18 @@ public class MainActivity extends AppCompatActivity{
     {
         Log.i("Main", "Tracking gestarted");
 
+        this.startService(serviceTM);
+
         //Startet eine neue Tour im TourManageService
-        tourManager.StartNewTour();
+        tourManagerService.StartNewTour();
         zeitAnzeige.setBase(SystemClock.elapsedRealtime());
         zeitAnzeige.start();
 
         firstLocationDropped = -1;
 
-        gps = new GPSTracker(MainActivity.this)
+        läuft = true;
+
+       /* gps = new GPSTracker(MainActivity.this)
         {
             @Override
             // Überschreibt GPSTracker.onLocationChanged mit einer anonymen Methode
@@ -166,16 +212,16 @@ public class MainActivity extends AppCompatActivity{
 
                 if (firstLocationDropped >= 0) {
                     // die neue Position wird an den Tourmanager [bergeben
-                    tourManager.AddWayPoint(/*locationPostCorrection.getSmoothenedLocation*/(location));
-                 /*   if(pgGPSWait.isShowing())
-                        pgGPSWait.dismiss();*/
+                    tourManager.AddWayPoint(*//*locationPostCorrection.getSmoothenedLocation*//*(location));
+                 *//*   if(pgGPSWait.isShowing())
+                        pgGPSWait.dismiss();*//*
                     UpdateView();
                 }
                 else
                     firstLocationDropped += 1;
             }
 
-        };
+        };*/
 /*
         if(isGPSEnabled && (gps.getLocation() == null)){
             pgGPSWait.show(this, "", "Warte auf GPS Empfang");
@@ -190,7 +236,7 @@ public class MainActivity extends AppCompatActivity{
 
             // Setzt im TourManageService eine erste position
             if (location != null) {
-                tourManager.AddWayPoint(location);
+                tourManagerService.AddWayPoint(location);
             //    Toast toast = Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG);
             //    toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
             //    toast.show();
@@ -204,16 +250,14 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void UpdateView() {
-        speed.setText(String.format("%.1f km/h", tourManager.GetAvgSpeed_kmh()));
+        speed.setText(String.format("%.1f km/h", tourManagerService.GetCurrentSpeed_kmh()));
 
         /*Date t1 = new Date(tourManager.GetDuration_ms() - TimeZone.getDefault().getDSTSavings());
         DateFormat df = new SimpleDateFormat("HH:mm:ss");
         String s = df.format(t1);
         dauer.setText(String.format("%s h", s));*/
-        //zeitAnzeige.start();
-       // dauer.setText(zeitAnzeige);
 
-        strecke.setText(String.format("%.2f km", tourManager.GetDistance_km()));
+        strecke.setText(String.format("%.2f km", tourManagerService.GetDistance_km()));
     }
 
     public void UpdateDebugInfo(String string)
@@ -230,9 +274,11 @@ public class MainActivity extends AppCompatActivity{
         toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
 
+        läuft = false;
+        this.stopService(serviceTM);
         // Beendet die tour im TourManageService und speichert sie in die Datenbank
-        tourManager.StopTour();
-        tourManager.SaveTourToDB();
+        //tourManagerService.StopTour();
+        //tourManagerService.SaveTourToDB();
         zeitAnzeige.stop();
 
         if (gps != null)
@@ -344,13 +390,25 @@ public class MainActivity extends AppCompatActivity{
 
     public void LogSystemData(String prefix)
     {
-        String tourID = tourManager.GetTour().getTourID();
-        int tourManagerEntries = tourManager.GetTour().GetWayPoints().size();
+        String tourID = tourManagerService.GetTour().getTourID();
+        int tourManagerEntries = tourManagerService.GetTour().GetWayPoints().size();
         int entries = DBManager.getInstance().doRequest().selectAllPositions().size();
         int entriesNotSent = DBManager.getInstance().doRequest().selectAllPositionsNotSent().size();
         //int entriesTour = DBManager.getInstance().doRequest().selectAllPositionsFromTour(tourID).size();
         Log.i("**********" + prefix + " System", String.format("TM: %d entries   DB: %d/%d entries sent.",
                 tourManagerEntries, entriesNotSent, entries));
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        Log.i("MainActivity", "neue Location");
+
+        if(läuft)
+        {
+            //Location loc =gpsService.getLastLocation();
+            tourManagerService.AddWayPoint((Location) data);
+            UpdateView();
+        }
     }
 }
 
