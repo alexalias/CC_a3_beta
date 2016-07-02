@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     // der TourManageService verwaltet alle Informationen zur Tour.
     // Er bekommt neue Positionen vom GPSTracker übergeben und sorgt für das
     //  verschicken bzw. speichern der Positionen
-    Intent serviceTMIntent;
+    //!!!Intent serviceTMIntent;
 
     GPSTrackerService gpsService;
     TourManagerService tmService;
@@ -95,30 +95,56 @@ public class MainActivity extends AppCompatActivity implements Observer {
         Intent service = new Intent(this, GPSTrackerService.class);
         this.startService(service);
 
-        serviceTMIntent = new Intent(this, TourManagerService.class);
+        //serviceTMIntent = new Intent(this, TourManagerService.class);
 
         // from TourSummaryActivity
         gpsConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                Log.d("TourSummaryActivity", "Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
+                Log.i("MainActivity", "GPSTracker erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
                 GPSTrackerService.GpsBinder binder = (GPSTrackerService.GpsBinder) service;
                 gpsService = binder.getService();
                 mBound = true;
                 // change!!
-                //gpsService.registerListener(MainActivity.this);
-                gpsService.registerListener(gpsService);
+                gpsService.registerListener(MainActivity.this);
+                //gpsService.registerListener(gpsService);
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                Log.d("TourSummaryActivity", "Nicht erfolgreich connected setze mBound false");
+                Log.i("MainActivity", "GPSTracker Nicht erfolgreich connected setze mBound false");
 
             }
         };
 
         // from TourSummaryActivity
         bindService(service, gpsConnection, Context.BIND_AUTO_CREATE);
+
+        Intent serviceTMIntent = new Intent(this, TourManagerService.class);
+        this.startService(serviceTMIntent);
+
+        // from TourSummaryActivity
+        tmConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.i("MainActivity", "TourManagerService Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
+                TourManagerService.tmsBinder binder = (TourManagerService.tmsBinder) service;
+                tmService = binder.getService();
+                mBound = true;
+                // change!!
+                //gpsService.registerListener(MainActivity.this);
+                //gpsService.registerListener(tmService);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.i("MainActivity", "TourManagerService Nicht erfolgreich connected setze mBound false");
+
+            }
+        };
+
+        // from TourSummaryActivity
+        bindService(serviceTMIntent, gpsConnection, Context.BIND_AUTO_CREATE);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -293,8 +319,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private void StartTracking() {
         Log.i("Main", "Tracking gestarted");
 
-        this.startService(serviceTMIntent);
-
         //Startet eine neue Tour im TourManageService
         //tourManagerService.StartNewTour();
         zeitAnzeige.setBase(SystemClock.elapsedRealtime());
@@ -304,28 +328,34 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         läuft = true;
 
-        // from TourSummaryActivity
-        tmConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                Log.d("MainActivity", "Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
-                TourManagerService.tmsBinder binder = (TourManagerService.tmsBinder) service;
-                tmService = binder.getService();
-                mBound = true;
-                // change!!
-                //gpsService.registerListener(MainActivity.this);
-                gpsService.registerListener(tmService);
-            }
+        tmService.StartNewTour();
+        gpsService.registerListener(tmService);
 
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                Log.d("TourSummaryActivity", "Nicht erfolgreich connected setze mBound false");
-
-            }
-        };
-
-        // from TourSummaryActivity
-        bindService(serviceTMIntent, gpsConnection, Context.BIND_AUTO_CREATE);
+//!!!        Intent serviceTMIntent = new Intent(this, TourManagerService.class);
+//        this.startService(serviceTMIntent);
+//
+//        // from TourSummaryActivity
+//        tmConnection = new ServiceConnection() {
+//            @Override
+//            public void onServiceConnected(ComponentName name, IBinder service) {
+//                Log.i("MainActivity", "Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
+//                TourManagerService.tmsBinder binder = (TourManagerService.tmsBinder) service;
+//                tmService = binder.getService();
+//                mBound = true;
+//                // change!!
+//                //gpsService.registerListener(MainActivity.this);
+//                gpsService.registerListener(tmService);
+//            }
+//
+//            @Override
+//            public void onServiceDisconnected(ComponentName name) {
+//                Log.i("TourSummaryActivity", "Nicht erfolgreich connected setze mBound false");
+//
+//            }
+//        };
+//
+//        // from TourSummaryActivity
+//        bindService(serviceTMIntent, gpsConnection, Context.BIND_AUTO_CREATE);
 
        /* gps = new GPSTracker(MainActivity.this)
         {
@@ -387,7 +417,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         toast.show();
 
         läuft = false;
-        this.stopService(serviceTMIntent);
+        //!!!this.stopService(serviceTMIntent);
+        gpsService.deregisterListener();
         // Beendet die tour im TourManageService und speichert sie in die Datenbank
         //tourManagerService.StopTour();
         //tourManagerService.SaveTourToDB();

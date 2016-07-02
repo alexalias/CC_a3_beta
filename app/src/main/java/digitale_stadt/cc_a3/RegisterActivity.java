@@ -96,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_username), s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_username), s.toString()).commit();
             }
         });
 
@@ -111,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_useremail), s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_useremail), s.toString()).commit();
             }
         });
 
@@ -126,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_userpassword), s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_userpassword), s.toString()).commit();
             }
         });
 
@@ -141,7 +141,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_userpassword_repeat), s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_userpassword_repeat), s.toString()).commit();
             }
         });
 

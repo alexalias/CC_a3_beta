@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_username), s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_username), s.toString()).commit();
             }
         });
 
@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_userpassword), s.toString()).apply();
+                sharedPrefs.edit().putString(getString(R.string.sharedPrefs_userpassword), s.toString()).commit();
             }
         });
 
@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
         button_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sharedPrefs.edit().putBoolean(getString(R.string.sharedPrefs_anonymous), false).apply();
+                sharedPrefs.edit().putBoolean(getString(R.string.sharedPrefs_anonymous), false).commit();
                 RequestManager.getInstance().doRequest().Login(
                         false,
                         sharedPrefs.getString(getString(R.string.sharedPrefs_username), ""),

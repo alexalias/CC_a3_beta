@@ -71,7 +71,7 @@ public class TourManagerService extends Service implements Observer {
     @Override
     public IBinder onBind(Intent intent) {
 
-        Log.d("!?GPSTrackerService", "bei Binde, erstelle Object und sei der Observer");
+        Log.i("TourManagerService", "bei Binde, erstelle Object und sei der Observer");
 
         return mBinder;
     }
@@ -86,7 +86,7 @@ public class TourManagerService extends Service implements Observer {
     @Override
     public boolean onUnbind(Intent intent) {
 
-        Log.d("!?GPSTrackerService", "Unbinde dich");
+        Log.i("TourManagerService", "Unbinde dich");
         return super.onUnbind(intent);
     }
 
@@ -273,7 +273,7 @@ public class TourManagerService extends Service implements Observer {
      */
     public void registerListener(Observer listener)
     {
-        Log.d("TourManagerService", "setze Listener");
+        Log.i("TourManagerService", "setze Listener");
         this.listener = listener;
     }
 
@@ -283,7 +283,7 @@ public class TourManagerService extends Service implements Observer {
     private void notifyListeners(Location location){
         try {
             if (listener != null) {
-                Log.d("!?TourManagerService", "Listeners werden upgedatet");
+                Log.i("!?TourManagerService", "Listeners werden upgedatet");
                 listener.update(null, location);
             }
         }
@@ -297,12 +297,13 @@ public class TourManagerService extends Service implements Observer {
      * Listener entfernen
      */
     public void deregisterListener(){
-        Log.d("TourManagerService", "Register = null also deregister");
+        Log.i("TourManagerService", "Register = null also deregister");
         this.listener = null;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startid) {
+        Log.i("TourManager", "onStartCommand");
         StartNewTour();
         return 0;
     }
