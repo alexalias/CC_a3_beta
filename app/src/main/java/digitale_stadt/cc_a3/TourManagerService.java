@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -63,6 +64,30 @@ public class TourManagerService extends Service implements Observer {
         distanceTreshold_m = 40.0;
 
         StartNewTour();
+    }
+
+    private final IBinder mBinder = new tmsBinder();
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+
+        Log.d("!?GPSTrackerService", "bei Binde, erstelle Object und sei der Observer");
+
+        return mBinder;
+    }
+
+    public class tmsBinder extends Binder {
+
+        TourManagerService getService() {
+            return TourManagerService.this;
+        }
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+
+        Log.d("!?GPSTrackerService", "Unbinde dich");
+        return super.onUnbind(intent);
     }
 
     // creates a new tour
@@ -243,12 +268,6 @@ public class TourManagerService extends Service implements Observer {
         AddWayPoint((Location) data);
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
     /**
      * Für eigenes Observer-Pattern
      */
@@ -280,5 +299,11 @@ public class TourManagerService extends Service implements Observer {
     public void deregisterListener(){
         Log.d("TourManagerService", "Register = null also deregister");
         this.listener = null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startid) {
+        StartNewTour();
+        return 0;
     }
 }
