@@ -35,7 +35,7 @@ public class GPSTrackerService extends Service implements Observer{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.d("!?GPSTrackerService", "Show die Notification");
+        Log.d("GPSTrackerService", "Show die Notification");
         showNotification("");
         return super.onStartCommand(intent, START_STICKY, startId);
     }
@@ -45,7 +45,7 @@ public class GPSTrackerService extends Service implements Observer{
     @Override
     public IBinder onBind(Intent intent) {
 
-        Log.d("!?GPSTrackerService", "bei Binde, erstelle Object und sei der Observer");
+        Log.d("GPSTrackerService", "bei Binde, erstelle Object und sei der Observer");
         gps = new GPSTrackerObject();
         gps.addObserver(this);
 

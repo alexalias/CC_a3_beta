@@ -49,6 +49,8 @@ public class TourManagerService extends Service implements Observer {
 
     Observer listener;          //Observable pattern
 
+    private final IBinder mBinder = new tmsBinder();
+
     public TourManagerService(){}
 
     public TourManagerService(Context context, String deviceID)
@@ -66,16 +68,6 @@ public class TourManagerService extends Service implements Observer {
         StartNewTour();
     }
 
-    private final IBinder mBinder = new tmsBinder();
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-
-        Log.i("TourManagerService", "bei Binde, erstelle Object und sei der Observer");
-
-        return mBinder;
-    }
-
     public class tmsBinder extends Binder {
 
         TourManagerService getService() {
@@ -84,10 +76,40 @@ public class TourManagerService extends Service implements Observer {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startid) {
+
+        this.queueLength = 1;
+        this.use_filtered_values = false;
+        speedTreshold_kmh = 5.0;
+        distanceTreshold_m = 40.0;
+
+        Log.i("TourManager", "onStartCommand");
+        StartNewTour();
+        return 0;
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+
+        Log.i("TourManagerService", "bei Binde, erstelle Object und sei der Observer");
+        //Brauchen wir hier kein GPSTrackerService aufzurufen?
+        return mBinder;
+    }
+
+
+
+    @Override
     public boolean onUnbind(Intent intent) {
 
         Log.i("TourManagerService", "Unbinde dich");
         return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onDestroy(){
+        //Kann sein, dass wir es nicht brauchen...
+        super.onDestroy();
     }
 
     // creates a new tour
@@ -301,10 +323,5 @@ public class TourManagerService extends Service implements Observer {
         this.listener = null;
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startid) {
-        Log.i("TourManager", "onStartCommand");
-        StartNewTour();
-        return 0;
-    }
+
 }

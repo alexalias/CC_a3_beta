@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 Log.i("MainActivity", "GPSTracker Nicht erfolgreich connected setze mBound false");
-
+                mBound = false;
             }
         };
 
@@ -139,12 +139,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 Log.i("MainActivity", "TourManagerService Nicht erfolgreich connected setze mBound false");
-
+                mBound = false;
             }
         };
 
         // from TourSummaryActivity
-        bindService(serviceTMIntent, gpsConnection, Context.BIND_AUTO_CREATE);
+        bindService(serviceTMIntent, tmConnection, Context.BIND_AUTO_CREATE);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -423,6 +423,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
         //tourManagerService.StopTour();
         //tourManagerService.SaveTourToDB();
         zeitAnzeige.stop();
+
+        Intent intentGPS = new Intent(MainActivity.this, GPSTrackerService.class);
+        stopService(intentGPS);
+
+        Intent intentTMS = new Intent(MainActivity.this, TourManagerService.class);
+        stopService(intentTMS);
 
         if (gps != null)
             gps.stopUsingGPS();
