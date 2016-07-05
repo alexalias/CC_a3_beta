@@ -288,6 +288,7 @@ public class TourManagerService extends Service implements Observer {
     public void update(Observable observable, Object data) {
         Log.i("TourManagerService", "neue Location");
         AddWayPoint((Location) data);
+        notifyListeners((Location) data);
     }
 
     /**
