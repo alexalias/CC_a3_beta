@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("Main", "onCreate");
         //sender = new Sender(this);
         //dbHelper = new DBHelper(this);
 
@@ -168,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void onStart() {
+        Log.i("Main", "onStart");
         super.onStart();
         gps = new GPSTracker(this){ };
 
@@ -176,18 +178,51 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 false,
                 sharedPrefs.getString("username", ""),
                 sharedPrefs.getString("userpassword", ""));
-    }
 
-    /*
-    @Override
-    protected void onResume(){
-        super.onResume();
+        if (tmService != null)
+            tmService.registerListener(MainActivity.this);
     }
 
     @Override
     protected void onPause() {
+        Log.i("Main", "onPause");
         super.onPause();
-    }*/
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i("Main", "onResume");
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i("Main", "onStop");
+        if (tmService != null)
+            tmService.deregisterListener();
+
+        super.onStop();
+        getDelegate().onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i("Main", "onDestroy");
+
+//        Intent intentGPS = new Intent(MainActivity.this, GPSTrackerService.class);
+//        stopService(intentGPS);
+//
+//        Intent intentTMS = new Intent(MainActivity.this, TourManagerService.class);
+//        stopService(intentTMS);
+//
+//        if (gps != null)
+//            gps.stopUsingGPS();
+
+        super.onDestroy();
+        getDelegate().onDestroy();
+    }
+
+
 
 
 
@@ -223,8 +258,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     // Aktualisiert die Anzeige der Strecke und Geschwindigkeit
     public void UpdateView() {
-        speed.setText(String.format("%.1f km/h", serviceTMIntent.GetCurrentSpeed_kmh()));
-        strecke.setText(String.format("%.2f km", serviceTMIntent.GetDistance_km()));
+        speed.setText(String.format("%.1f km/h", tmService.GetCurrentSpeed_kmh()));
+        strecke.setText(String.format("%.2f km", tmService.GetDistance_km()));
     }
 
     // Aktualisiert die Anzeige des Benutzernamen
@@ -329,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         läuft = true;
 
+        tmService.registerListener(MainActivity.this);
         tmService.StartNewTour();
         gpsService.registerListener(tmService);
 
@@ -433,7 +469,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         if (gps != null)
             gps.stopUsingGPS();
-
     }
 
     // Ändert die Hintergrundfarbe der Titelleiste
@@ -462,6 +497,13 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
         else {
             StopTracking();
+        }
+    }
+
+    public void FakeGPS(View view) {
+        if (gpsService != null)
+        {
+            gpsService.update(null, "");
         }
     }
 
