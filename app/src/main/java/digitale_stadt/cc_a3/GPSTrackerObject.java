@@ -32,7 +32,7 @@ public class GPSTrackerObject extends Observable{
         Log.d("GPSTracker", "Bin im GPSTracker und erstelle den manager + location");
 
         //ToDo: Hier ist der Context immer noch NULL !!!
-        manager = (LocationManager) AppContextProvider.getAppContext().getSystemService(Context.LOCATION_SERVICE);
+        manager = (LocationManager) Config.mContext.getSystemService(Context.LOCATION_SERVICE);
 
         nullLocation = new Location("empty");
         nullLocation.setLatitude(0.0);

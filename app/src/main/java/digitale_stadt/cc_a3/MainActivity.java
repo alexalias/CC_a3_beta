@@ -87,9 +87,28 @@ public class MainActivity extends AppCompatActivity implements Observer {
         //sender = new Sender(this);
         //dbHelper = new DBHelper(this);
 
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        strecke = (TextView) findViewById(R.id.streckeAnzeige);
+        dauer = (TextView) findViewById(R.id.dauerAnzeige);
+        speed = (TextView) findViewById(R.id.speedAnzeige);
+        debug = (TextView) findViewById(R.id.debugEditTex);
+        debug.setText ("");
+        zeitAnzeige = (Chronometer) findViewById(R.id.dauerAnzeige);
+
+        pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+
+        setTitleBackgroundColor();
+        Config.mContext = this;
+
         RequestManager.getInstance(this);
         DBManager.getInstance(this);
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+
+        isGPSEnabled = locationManager
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+        isNetworkEnabled = locationManager
+                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         //from StartActivity
         Intent service = new Intent(this, GPSTrackerService.class);
@@ -145,24 +164,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         // from TourSummaryActivity
         bindService(serviceTMIntent, tmConnection, Context.BIND_AUTO_CREATE);
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        strecke = (TextView) findViewById(R.id.streckeAnzeige);
-        dauer = (TextView) findViewById(R.id.dauerAnzeige);
-        speed = (TextView) findViewById(R.id.speedAnzeige);
-        debug = (TextView) findViewById(R.id.debugEditTex);
-        debug.setText ("");
-        zeitAnzeige = (Chronometer) findViewById(R.id.dauerAnzeige);
-
-        isGPSEnabled = locationManager
-                .isProviderEnabled(LocationManager.GPS_PROVIDER);
-        isNetworkEnabled = locationManager
-                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
-
-        setTitleBackgroundColor();
     }
 
     @Override
@@ -222,8 +223,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     // Aktualisiert die Anzeige der Strecke und Geschwindigkeit
     public void UpdateView() {
-        //speed.setText(String.format("%.1f km/h", serviceTMIntent.GetCurrentSpeed_kmh()));
-        //strecke.setText(String.format("%.2f km", serviceTMIntent.GetDistance_km()));
+        speed.setText(String.format("%.1f km/h", serviceTMIntent.GetCurrentSpeed_kmh()));
+        strecke.setText(String.format("%.2f km", serviceTMIntent.GetDistance_km()));
     }
 
     // Aktualisiert die Anzeige des Benutzernamen
