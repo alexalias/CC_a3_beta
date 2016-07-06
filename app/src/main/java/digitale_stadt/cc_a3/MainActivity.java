@@ -182,8 +182,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 return displaySettingsActivity();
             /*case R.id.action_impressum:
                 return displayImpressumActivity();*/
-            case R.id.action_login:
-                return displayLoginActivity();
+            //case R.id.action_login:
+              //  return displayLoginActivity();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public void UpdateUsername() {
         String username;
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        TextView welcome = (TextView) findViewById(R.id.text_welcome);
+        // TextView welcome = (TextView) findViewById(R.id.text_welcome);
 
         String token = sharedPrefs.getString("auth_token", "");
         boolean anonymous = sharedPrefs.getBoolean("anonymous", false);
@@ -215,10 +215,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
             else
                 username = sharedPrefs.getString("username", "");
 
-            welcome.setText("Herzlich Willkommen, " + username + "!");
+            // welcome.setText("Herzlich Willkommen, " + username + "!");
         }
-        else
-            welcome.setText("Sie sind nicht angemeldet!");
+       // else
+            // welcome.setText("Sie sind nicht angemeldet!");
     }
 
     // Zeigt die Login-Seite an
