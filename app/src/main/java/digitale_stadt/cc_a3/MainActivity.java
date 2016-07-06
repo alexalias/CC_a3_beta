@@ -1,8 +1,10 @@
 package digitale_stadt.cc_a3;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     protected LocationManager locationManager;
 
     // GPSTracker class
-    private GPSTracker gps;
+    //private GPSTracker gps;
 
     //Unsere GPS-Warte-Meldung
     private ProgressDialog pgGPSWait;
@@ -110,6 +113,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkEnabled = locationManager
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (!isGPSEnabled) {
+            showSettingsAlert();
+        }
 
         //from StartActivity
         Intent service = new Intent(this, GPSTrackerService.class);
@@ -171,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public void onStart() {
         Log.i("Main", "onStart");
         super.onStart();
-        gps = new GPSTracker(this){ };
+        //gps = new GPSTracker(this){ };
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         RequestManager.getInstance().doRequest().Login(
@@ -427,23 +434,23 @@ public class MainActivity extends AppCompatActivity implements Observer {
 */
         UpdateView();
         // check if GPS enabled
-        if(gps.canGetLocation()){
+//        if(gps.canGetLocation()){
             //get location and save it as StartLocation
-            Location location = gps.getLocation();
+//            Location location = gps.getLocation();
 
             // Setzt im TourManageService eine erste position
-            if (location != null) {
+//            if (location != null) {
                 //tourManagerService.AddWayPoint(location);
                 //    Toast toast = Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG);
                 //    toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
                 //    toast.show();
-            }
-        }else{
+//            }
+//        }else{
             // can't get location
             // GPS or Network is not enabled
             // Ask user to enable GPS/network in settings
-            gps.showSettingsAlert();
-        }
+//            gps.showSettingsAlert();
+//        }
     }
 
     // Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
@@ -467,8 +474,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         Intent intentTMS = new Intent(MainActivity.this, TourManagerService.class);
         stopService(intentTMS);
 
-        if (gps != null)
-            gps.stopUsingGPS();
+//        if (gps != null)
+//            gps.stopUsingGPS();
     }
 
     // Ändert die Hintergrundfarbe der Titelleiste
@@ -506,6 +513,39 @@ public class MainActivity extends AppCompatActivity implements Observer {
             gpsService.update(null, "");
         }
     }
+
+    /**
+     * Function to show settings alert dialog
+     * On pressing Settings button will lauch Settings Options
+     */
+    public void showSettingsAlert() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+        // Setting Dialog Title
+        alertDialog.setTitle("GPS muss aktiviert sein");
+
+        // Setting Dialog Message
+        alertDialog.setMessage("GPS ist nicht aktiviert. Möchten Sie die Einstellungen öffnen?");
+
+        // On pressing Settings button
+        alertDialog.setPositiveButton("Einstellungen", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        });
+
+        // on pressing cancel button
+        alertDialog.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        // Showing Alert Message
+        alertDialog.show();
+    }
+
 
 }
 
