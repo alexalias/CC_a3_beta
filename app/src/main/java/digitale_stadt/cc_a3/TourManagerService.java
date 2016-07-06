@@ -83,7 +83,7 @@ public class TourManagerService extends Service implements Observer {
         speedTreshold_kmh = 5.0;
         distanceTreshold_m = 40.0;
 
-        Log.i("TourManager", "onStartCommand");
+        Log.i("TourManagerService", "onStartCommand");
         StartNewTour();
         return 0;
     }
@@ -92,7 +92,7 @@ public class TourManagerService extends Service implements Observer {
     @Override
     public IBinder onBind(Intent intent) {
 
-        Log.i("TourManagerService", "bei Binde, erstelle Object und sei der Observer");
+        Log.i("TourManagerService", "onBind, erstelle Object und sei der Observer");
         //Brauchen wir hier kein GPSTrackerService aufzurufen?
         return mBinder;
     }
@@ -102,7 +102,7 @@ public class TourManagerService extends Service implements Observer {
     @Override
     public boolean onUnbind(Intent intent) {
 
-        Log.i("TourManagerService", "Unbinde dich");
+        Log.i("TourManagerService", "onUnbind");
         return super.onUnbind(intent);
     }
 
@@ -110,6 +110,11 @@ public class TourManagerService extends Service implements Observer {
     public void onDestroy(){
         //Kann sein, dass wir es nicht brauchen...
         super.onDestroy();
+    }
+
+    public void SetContext(Context context)
+    {
+        this.context = context;
     }
 
     // creates a new tour
@@ -152,6 +157,7 @@ public class TourManagerService extends Service implements Observer {
     // 3. sendDirect = false
     //    the new position is added to the tour
     public void AddWayPoint(Location location) {
+        Log.i("TourManagerService", "addWayPoint");
         if ((tour != null) && (location != null)) {
             Position position = new Position(tour.getTourID(), counter, location);
 
@@ -169,7 +175,7 @@ public class TourManagerService extends Service implements Observer {
             float distance = location.distanceTo(lastLocation);
             long duration = location.getTime() - startTime;
 
-            Log.i("Movement", String.format("dist: %.3f   bearing: %.3f", distance, lastLocation.bearingTo(location)));
+            //Log.i("Movement", String.format("dist: %.3f   bearing: %.3f", distance, lastLocation.bearingTo(location)));
             //update filtered data if distance is higher than treshold
             if ((distance > distanceTreshold_m) || (distance * 3600 / (double)duration > speedTreshold_kmh))
             {
@@ -180,7 +186,7 @@ public class TourManagerService extends Service implements Observer {
             //update all data
             distance_m_all += distance;
             duration_ms_all = duration;
-            Log.i("Distance: ", distance_m_all + "");
+            //Log.i("Distance: ", distance_m_all + "");
 
             lastLocation = location;
 
@@ -226,24 +232,33 @@ public class TourManagerService extends Service implements Observer {
     // returns the duration since the tour started in ms
     public long GetDuration_ms()
     {
+        long duration_ms;
+
         if (use_filtered_values)
-            return duration_ms_filtered;
+            duration_ms = duration_ms_filtered;
         else
-            return duration_ms_all;
+            duration_ms = duration_ms_all;
+
+        Log.i("TourManagerService", "GetDuration_ms: " + duration_ms + " ms");
+        return duration_ms;
     }
 
     // returns the distance travelled since the tour started in km
     public double GetDistance_km() {
-        if (use_filtered_values)
-            return distance_m_filtered / 1000f;
-        else
-            return distance_m_all / 1000f;
+        double distance_km;
 
+        if (use_filtered_values)
+            distance_km = distance_m_filtered / 1000f;
+        else
+            distance_km = distance_m_all / 1000f;
+
+        Log.i("TourManagerService", "GetDistance_kmh: " + distance_km + " km");
+        return distance_km;
     }
 
     // returns the current speed in km/h
     public double GetCurrentSpeed_kmh() {
-        Log.i("Speed: ", speed + "");
+        Log.i("TourManagerService", "GetCurrentSpeed: " + speed + " km/h");
         return speed;
     }
 
@@ -251,6 +266,7 @@ public class TourManagerService extends Service implements Observer {
     public double GetAverageSpeed_kmh() {
         double distance_m;
         double duration_ms;
+        double speed_kmh;
 
         if (use_filtered_values) {
             distance_m = distance_m_filtered;
@@ -261,9 +277,12 @@ public class TourManagerService extends Service implements Observer {
         }
 
         if (duration_ms != 0)
-            return (distance_m * 3600) / ((double) duration_ms);
+            speed_kmh = (distance_m * 3600) / ((double) duration_ms);
         else
-            return 0;
+            speed_kmh = 0;
+
+        Log.i("TourManagerService", "GetCurrentSpeed: " + speed_kmh + " km/h");
+        return speed_kmh;
     }
 
     public boolean WiFiAvailable (){
@@ -286,9 +305,15 @@ public class TourManagerService extends Service implements Observer {
      */
     @Override
     public void update(Observable observable, Object data) {
-        Log.i("TourManagerService", "neue Location");
-        AddWayPoint((Location) data);
-        notifyListeners((Location) data);
+        Log.i("TourManagerService", "update");
+        try {
+            AddWayPoint((Location) data);
+            notifyListeners((Location) data);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new ArrayIndexOutOfBoundsException();
+        }
     }
 
     /**
@@ -296,7 +321,7 @@ public class TourManagerService extends Service implements Observer {
      */
     public void registerListener(Observer listener)
     {
-        Log.i("TourManagerService", "setze Listener");
+        Log.i("TourManagerService", "registerListener");
         this.listener = listener;
     }
 
@@ -306,7 +331,7 @@ public class TourManagerService extends Service implements Observer {
     private void notifyListeners(Location location){
         try {
             if (listener != null) {
-                Log.i("!?TourManagerService", "Listeners werden upgedatet");
+                Log.i("TourManagerService", "notifyListeners");
                 listener.update(null, location);
             }
         }
@@ -320,7 +345,7 @@ public class TourManagerService extends Service implements Observer {
      * Listener entfernen
      */
     public void deregisterListener(){
-        Log.i("TourManagerService", "Register = null also deregister");
+        Log.i("TourManagerService", "deregisterListener");
         this.listener = null;
     }
 

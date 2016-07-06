@@ -468,6 +468,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 Log.i("MainActivity", "TourManagerService Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
                 TourManagerService.tmsBinder binder = (TourManagerService.tmsBinder) service;
                 tmService = binder.getService();
+                tmService.SetContext(MainActivity.this);
                 mTMBound = true;
                 // change!!
                 //gpsService.registerListener(MainActivity.this);

@@ -29,7 +29,7 @@ public class GPSTrackerObject extends Observable{
 
     public GPSTrackerObject() {
 
-        Log.i("GPSTracker", "Bin im GPSTracker und erstelle den manager + location");
+       Log.d("GPSTracker", "Bin im GPSTracker und erstelle den manager + location");
 
         //ToDo: Hier ist der Context immer noch NULL !!!
         manager = (LocationManager) Config.mContext.getSystemService(Context.LOCATION_SERVICE);
@@ -37,12 +37,12 @@ public class GPSTrackerObject extends Observable{
         nullLocation = new Location("empty");
         nullLocation.setLatitude(0.0);
         nullLocation.setLongitude(0.0);
-        Log.i("!?GPSTracker", "locationListener wird gesetzt");
+       Log.d("GPSTrackerObject", "locationListener wird gesetzt");
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 try{
-                    Log.i("!GPSTracker", "Hole neue Location");
+                   Log.d("GPSTrackerObject", "Hole neue Location");
 
                     Location l = new Location("last");
                     l.setLatitude(latLast);
@@ -50,7 +50,7 @@ public class GPSTrackerObject extends Observable{
 
 
                     if(!(l.getLatitude() == nullLocation.getLatitude() && l.getLongitude() == nullLocation.getLongitude())) {
-                        Log.i("!?GPSTracker", "Locations sind unterschiedlich, also berechne die distance drauf");
+                       Log.d("GPSTrackerObject", "Locations sind unterschiedlich, also berechne die distance drauf");
                         fullDistance += location.distanceTo(l);
                     }
 
@@ -81,7 +81,7 @@ public class GPSTrackerObject extends Observable{
         };
 
         try {
-            Log.i("!?GPSTracker", "Manager RequestLocationUpdate wir angemacht mit 3 Sekunden abstand");
+           Log.d("GPSTrackerObject", "Manager RequestLocationUpdate wir angemacht mit 3 Sekunden abstand");
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000L, 0, locationListener);
         }catch (SecurityException e){
 
@@ -91,7 +91,7 @@ public class GPSTrackerObject extends Observable{
 
     private void newPosition()
     {
-        Log.i("!?GPSTracker", "Bin in der newPosition -> sette die Change und notify die Observers");
+       Log.d("GPSTrackerObject", "Bin in der newPosition -> sette die Change und notify die Observers");
         setChanged();
         notifyObservers();
     }
@@ -110,7 +110,7 @@ public class GPSTrackerObject extends Observable{
     {
         try {
             manager.removeUpdates(locationListener);
-            Log.i("!?GPSTracker", "Listener wird destroyt, also removeUpdates");
+           Log.d("GPSTrackerObject", "Listener wird destroyt, also removeUpdates");
         }
         catch (SecurityException e)
         {
