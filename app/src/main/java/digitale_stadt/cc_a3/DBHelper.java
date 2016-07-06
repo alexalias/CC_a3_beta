@@ -88,7 +88,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS positions;");
         onCreate(db);
-        Log.d("DBHelper", "DB Upgrade, old version: " + oldVersion +
+        Log.i("DBHelper", "DB Upgrade, old version: " + oldVersion +
                 ", new version: " + newVersion);
     }
 

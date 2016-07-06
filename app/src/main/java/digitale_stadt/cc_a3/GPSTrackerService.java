@@ -35,7 +35,7 @@ public class GPSTrackerService extends Service implements Observer{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.d("GPSTrackerService", "Show die Notification");
+        Log.i("GPSTrackerService", "Show die Notification");
         showNotification("");
         return super.onStartCommand(intent, START_STICKY, startId);
     }
@@ -45,7 +45,7 @@ public class GPSTrackerService extends Service implements Observer{
     @Override
     public IBinder onBind(Intent intent) {
 
-        Log.d("GPSTrackerService", "bei Binde, erstelle Object und sei der Observer");
+        Log.i("GPSTrackerService", "bei Binde, erstelle Object und sei der Observer");
         gps = new GPSTrackerObject();
         gps.addObserver(this);
 
@@ -55,13 +55,13 @@ public class GPSTrackerService extends Service implements Observer{
     @Override
     public boolean onUnbind(Intent intent) {
 
-        Log.d("!?GPSTrackerService", "Unbinde dich");
+        Log.i("!?GPSTrackerService", "Unbinde dich");
         return super.onUnbind(intent);
     }
 
     @Override
     public void onDestroy() {
-        Log.d("!?GPSTrackerService", "Delete dich als Observer und destroy die Listeners beim observable");
+        Log.i("!?GPSTrackerService", "Delete dich als Observer und destroy die Listeners beim observable");
         gps.deleteObserver(this);
         gps.destroyListener();
 
@@ -70,7 +70,7 @@ public class GPSTrackerService extends Service implements Observer{
 
     @Override
     public void update(Observable observable, Object data) {
-        Log.d("GPSTrackerService", "neue location");
+        Log.i("GPSTrackerService", "neue location");
         //distance = gps.getDistanceDrivenInMeters();
         lastLocation = gps.getLastLocation();
 
@@ -84,7 +84,7 @@ public class GPSTrackerService extends Service implements Observer{
      * Zeigt eine permanente Notification an, solange der Service läuft
      */
     private void showNotification(String text) {
-        Log.d("!?GPSTrackerService", "Showe die Notification, builde die notification");
+        Log.i("!?GPSTrackerService", "Showe die Notification, builde die notification");
         Intent tourView = new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), tourView, 0);
 
@@ -99,7 +99,7 @@ public class GPSTrackerService extends Service implements Observer{
      * Baut die Notification
      */
     private Notification buildNotification(String content, PendingIntent pIntent){
-        Log.d("!?GPSTrackerService", "Builde die notifcation");
+        Log.i("!?GPSTrackerService", "Builde die notifcation");
 //        return new Notification.Builder(this)
 //                .setContentTitle("")
 //                .setContentText(content)
@@ -111,13 +111,13 @@ public class GPSTrackerService extends Service implements Observer{
 
 
     public float getDrivenDistanceInMeters(){
-        Log.d("!?GPSTrackerService", "returne die Distance");
+        Log.i("!?GPSTrackerService", "returne die Distance");
         return distance;
     }
 
     public int getDrivenDistanceInMetersRounded()
     {
-        Log.d("!?GPSTrackerService", "returne die Distance in Meters");
+        Log.i("!?GPSTrackerService", "returne die Distance in Meters");
         return (int) getDrivenDistanceInMeters();
     }
 
@@ -131,7 +131,7 @@ public class GPSTrackerService extends Service implements Observer{
      */
     public String getDrivenDistanceInKilometers()
     {
-        Log.d("!?GPSTrackerService", "returne die Distance in Kilometer");
+        Log.i("!?GPSTrackerService", "returne die Distance in Kilometer");
         return String.format("%.1f", getDrivenDistanceInMeters() / 1000) ;
     }
 
@@ -140,7 +140,7 @@ public class GPSTrackerService extends Service implements Observer{
      */
     public void registerListener(Observer listener)
     {
-        Log.d("GPSTrackerService", "setze Listener");
+        Log.i("GPSTrackerService", "setze Listener");
         this.listener = listener;
     }
 
@@ -150,7 +150,7 @@ public class GPSTrackerService extends Service implements Observer{
     private void notifyListeners(Location location){
         try {
             if (listener != null) {
-                Log.d("!?GPSTrackerService", "Listeners werden upgedatet");
+                Log.i("!?GPSTrackerService", "Listeners werden upgedatet");
                 listener.update(null, location);
             }
         }
@@ -164,7 +164,7 @@ public class GPSTrackerService extends Service implements Observer{
      * Listener entfernen
      */
     public void deregisterListener(){
-        Log.d("GPSTrackerService", "Register = null also deregister");
+        Log.i("GPSTrackerService", "Register = null also deregister");
         this.listener = null;
     }
 }
