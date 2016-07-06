@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -69,7 +68,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     GPSTrackerService gpsService;
     TourManagerService tmService;
-    boolean mBound = false;
+    boolean mGPSBound = false;
+    boolean mTMBound = false;
 
     private ServiceConnection gpsConnection;
     private ServiceConnection tmConnection;
@@ -109,69 +109,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         DBManager.getInstance(this);
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
-        isGPSEnabled = locationManager
-                .isProviderEnabled(LocationManager.GPS_PROVIDER);
-        isNetworkEnabled = locationManager
-                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        if (!isGPSEnabled) {
-            showSettingsAlert();
-        }
-
-        //from StartActivity
-        Intent service = new Intent(this, GPSTrackerService.class);
-        this.startService(service);
-
-        //serviceTMIntent = new Intent(this, TourManagerService.class);
-
-        // from TourSummaryActivity
-        gpsConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                Log.i("MainActivity", "GPSTracker erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
-                GPSTrackerService.GpsBinder binder = (GPSTrackerService.GpsBinder) service;
-                gpsService = binder.getService();
-                mBound = true;
-                // change!!
-                gpsService.registerListener(MainActivity.this);
-                //gpsService.registerListener(gpsService);
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                Log.i("MainActivity", "GPSTracker Nicht erfolgreich connected setze mBound false");
-                mBound = false;
-            }
-        };
-
-        // from TourSummaryActivity
-        bindService(service, gpsConnection, Context.BIND_AUTO_CREATE);
-
-        Intent serviceTMIntent = new Intent(this, TourManagerService.class);
-        this.startService(serviceTMIntent);
-
-        // from TourSummaryActivity
-        tmConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                Log.i("MainActivity", "TourManagerService Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
-                TourManagerService.tmsBinder binder = (TourManagerService.tmsBinder) service;
-                tmService = binder.getService();
-                mBound = true;
-                // change!!
-                //gpsService.registerListener(MainActivity.this);
-                //gpsService.registerListener(tmService);
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                Log.i("MainActivity", "TourManagerService Nicht erfolgreich connected setze mBound false");
-                mBound = false;
-            }
-        };
-
-        // from TourSummaryActivity
-        bindService(serviceTMIntent, tmConnection, Context.BIND_AUTO_CREATE);
+        StartServices();
     }
 
     @Override
@@ -216,24 +154,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
     protected void onDestroy() {
         Log.i("Main", "onDestroy");
 
-//        Intent intentGPS = new Intent(MainActivity.this, GPSTrackerService.class);
-//        stopService(intentGPS);
-//
-//        Intent intentTMS = new Intent(MainActivity.this, TourManagerService.class);
-//        stopService(intentTMS);
-//
-//        if (gps != null)
-//            gps.stopUsingGPS();
+        StopServices();
 
         super.onDestroy();
         getDelegate().onDestroy();
     }
-
-
-
-
-
-    // ######### öffentliche Methoden #######################################
 
     // Menüleiste
     @Override
@@ -262,6 +187,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
+
+    // ######### öffentliche Methoden #######################################
 
     // Aktualisiert die Anzeige der Strecke und Geschwindigkeit
     public void UpdateView() {
@@ -468,11 +399,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         //tourManagerService.SaveTourToDB();
         zeitAnzeige.stop();
 
-        Intent intentGPS = new Intent(MainActivity.this, GPSTrackerService.class);
-        stopService(intentGPS);
-
-        Intent intentTMS = new Intent(MainActivity.this, TourManagerService.class);
-        stopService(intentTMS);
+        //StopServices();
 
 //        if (gps != null)
 //            gps.stopUsingGPS();
@@ -488,6 +415,89 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 parentView.setBackgroundColor(Color.rgb(255,0,0));
             }
         }
+    }
+
+    // Startet den GPS-Service und den TourManager-Service
+    private void StartServices()
+    {
+        isGPSEnabled = locationManager
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+        isNetworkEnabled = locationManager
+                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (!isGPSEnabled) {
+            showSettingsAlert();
+        }
+
+        //from StartActivity
+        Intent service = new Intent(this, GPSTrackerService.class);
+        this.startService(service);
+
+        //serviceTMIntent = new Intent(this, TourManagerService.class);
+
+        // from TourSummaryActivity
+        gpsConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.i("MainActivity", "GPSTracker erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
+                GPSTrackerService.GpsBinder binder = (GPSTrackerService.GpsBinder) service;
+                gpsService = binder.getService();
+                mGPSBound = true;
+                // change!!
+                //gpsService.registerListener(MainActivity.this);
+                //gpsService.registerListener(gpsService);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.i("MainActivity", "GPSTracker Nicht erfolgreich connected setze mBound false");
+                mGPSBound = false;
+            }
+        };
+
+        // from TourSummaryActivity
+        bindService(service, gpsConnection, Context.BIND_AUTO_CREATE);
+
+        Intent serviceTMIntent = new Intent(this, TourManagerService.class);
+        this.startService(serviceTMIntent);
+
+        // from TourSummaryActivity
+        tmConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.i("MainActivity", "TourManagerService Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
+                TourManagerService.tmsBinder binder = (TourManagerService.tmsBinder) service;
+                tmService = binder.getService();
+                mTMBound = true;
+                // change!!
+                //gpsService.registerListener(MainActivity.this);
+                //gpsService.registerListener(tmService);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.i("MainActivity", "TourManagerService Nicht erfolgreich connected setze mBound false");
+                mTMBound = false;
+            }
+        };
+
+        // from TourSummaryActivity
+        bindService(serviceTMIntent, tmConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    // Beendet den GPS-Service und den TourManager-Service
+    private void StopServices()
+    {
+        if (tmService != null)
+            tmService.deregisterListener();
+
+        unbindService(gpsConnection);
+        Intent intentGPS = new Intent(MainActivity.this, GPSTrackerService.class);
+        stopService(intentGPS);
+
+        unbindService(tmConnection);
+        Intent intentTMS = new Intent(MainActivity.this, TourManagerService.class);
+        stopService(intentTMS);
     }
 
 
