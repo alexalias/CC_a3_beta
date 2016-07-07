@@ -310,6 +310,21 @@ public class TourManagerService extends Service implements Observer {
     }
 
     /**
+     * Gibt die aktuellen Tourdaten zurück
+     * @return
+     */
+    public TourData getTourData ()
+    {
+        TourData tourData = new TourData(
+                GetDistance_km(),
+                GetDuration_ms(),
+                GetCurrentSpeed_kmh(),
+                GetAverageSpeed_kmh()
+        );
+        return tourData;
+    }
+
+    /**
      * Observer-Methode wird von außen aufgerufen
      */
     @Override

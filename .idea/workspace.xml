@@ -20,16 +20,10 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="56ddded8-7759-4b12-af44-2fdb40c1310e" name="Default" comment="Daten aus der Tour Manager eingebunden">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CC_a3.iml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/arcgis_android_10_2_7.xml" afterPath="$PROJECT_DIR$/.idea/libraries/arcgis_android_10_2_7.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+    <list default="true" id="56ddded8-7759-4b12-af44-2fdb40c1310e" name="Default" comment="TourData in UpdateView eingebaut">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/MainActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/TourManagerService.java" afterPath="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/TourManagerService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
     </list>
     <ignored path="CC_a3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -57,25 +51,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.0">
-              <caret line="150" column="37" selection-start-line="150" selection-start-column="34" selection-end-line="150" selection-end-column="37" />
+            <state vertical-scroll-proportion="1.09375">
+              <caret line="128" column="9" selection-start-line="128" selection-start-column="9" selection-end-line="128" selection-end-column="9" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#11021#11278#0" expanded="true" />
-                <element signature="e#11277#11278#0" expanded="true" />
+                <element signature="e#11395#11652#0" expanded="true" />
+                <element signature="e#11651#11652#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TourManagerService.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TourManagerService.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/TourManagerService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="2.838384">
-              <caret line="217" column="85" selection-start-line="217" selection-start-column="85" selection-end-line="217" selection-end-column="85" />
+            <state vertical-scroll-proportion="-2.9310346">
+              <caret line="312" column="42" selection-start-line="312" selection-start-column="42" selection-end-line="312" selection-end-column="42" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -1827,8 +1821,8 @@
         <option value="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/TourManager.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/TourData.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/RequestProxy.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/TourManagerService.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -2539,7 +2533,19 @@
       <option name="project" value="LOCAL" />
       <updated>1467895120408</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Senden funktioniert">
+      <created>1467896325135</created>
+      <option name="number" value="00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1467896325135</updated>
+    </task>
+    <task id="LOCAL-00035" summary="TourData in MainActivity eingefügt">
+      <created>1467896761024</created>
+      <option name="number" value="00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1467896761024</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TodoView">
@@ -2560,7 +2566,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32902467" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.73056996" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5699482" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2881745" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
@@ -2603,8 +2609,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Implemented Basic Sender; Added Volley library" />
-    <MESSAGE value="Added Continous GPS Sending&#10;New Button Style" />
     <MESSAGE value="Modified Tour Class to match new interface" />
     <MESSAGE value="test" />
     <MESSAGE value="backup&#10;" />
@@ -2628,7 +2632,9 @@
     <MESSAGE value="Play-Stop Button für veerschiedene Auflösungen hinzugefügt." />
     <MESSAGE value="Daten aus der Tour Manager eingebunden" />
     <MESSAGE value="Anonymer Logoin bei Programmstart; neue Klasse TourData zum Datentransport an MainActivity (wird noch nicht benutzt)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Anonymer Logoin bei Programmstart; neue Klasse TourData zum Datentransport an MainActivity (wird noch nicht benutzt)" />
+    <MESSAGE value="Senden funktioniert" />
+    <MESSAGE value="TourData in MainActivity eingefügt" />
+    <option name="LAST_COMMIT_MESSAGE" value="TourData in MainActivity eingefügt" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -2651,8 +2657,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#11021#11278#0" expanded="true" />
-            <element signature="e#11277#11278#0" expanded="true" />
+            <element signature="e#11395#11652#0" expanded="true" />
+            <element signature="e#11651#11652#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2703,8 +2709,8 @@
           <caret line="282" column="33" selection-start-line="282" selection-start-column="33" selection-end-line="282" selection-end-column="33" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#11021#11278#0" expanded="true" />
-            <element signature="e#11277#11278#0" expanded="true" />
+            <element signature="e#11395#11652#0" expanded="true" />
+            <element signature="e#11651#11652#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2725,8 +2731,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#11021#11278#0" expanded="true" />
-            <element signature="e#11277#11278#0" expanded="true" />
+            <element signature="e#11395#11652#0" expanded="true" />
+            <element signature="e#11651#11652#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2955,24 +2961,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/TourManagerService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.0">
-          <caret line="150" column="37" selection-start-line="150" selection-start-column="34" selection-end-line="150" selection-end-column="37" />
+        <state vertical-scroll-proportion="-2.9310346">
+          <caret line="312" column="42" selection-start-line="312" selection-start-column="42" selection-end-line="312" selection-end-column="42" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#11021#11278#0" expanded="true" />
-            <element signature="e#11277#11278#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/TourManagerService.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/digitale_stadt/cc_a3/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="2.838384">
-          <caret line="217" column="85" selection-start-line="217" selection-start-column="85" selection-end-line="217" selection-end-column="85" />
+        <state vertical-scroll-proportion="1.09375">
+          <caret line="128" column="9" selection-start-line="128" selection-start-column="9" selection-end-line="128" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#11395#11652#0" expanded="true" />
+            <element signature="e#11651#11652#0" expanded="true" />
           </folding>
         </state>
       </provider>

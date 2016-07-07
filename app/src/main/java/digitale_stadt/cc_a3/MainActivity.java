@@ -122,6 +122,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onResume() {
         Log.i("Main", "onResume");
+
+        if (tmService != null) {
+            TourData tourData = tmService.getTourData();
+            UpdateView(tourData);
+        }
         super.onResume();
     }
 
@@ -173,8 +178,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     // Aktualisiert die Anzeige der Strecke und Geschwindigkeit
     public void UpdateView(TourData tourData) {
-        speed.setText(String.format("%.1f km/h", tmService.GetCurrentSpeed_kmh()));
-        strecke.setText(String.format("%.2f km", tmService.GetDistance_km()));
+        //speed.setText(String.format("%.1f km/h", tmService.GetCurrentSpeed_kmh()));
+        //strecke.setText(String.format("%.2f km", tmService.GetDistance_km()));
+        speed.setText(String.format("%.1f km/h", tourData.currentSpeed_kmh));
+        strecke.setText(String.format("%.2f km", tourData.distance_km));
     }
 
     // Zeigt die Settings-Seite an
