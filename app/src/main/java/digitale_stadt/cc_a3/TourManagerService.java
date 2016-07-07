@@ -203,19 +203,22 @@ public class TourManagerService extends Service implements Observer {
             Log.i("TourManagerService", "auth_token: " + auth_token);
             boolean connected = !auth_token.equals("");
             if (connected && (WiFiAvailable() || LiveUploadChecked())) {
-                Log.i("Status", "***********" + connected + "***" + WiFiAvailable() + "***" + LiveUploadChecked());
+                //Log.i("Status", "***********" + connected + "***" + WiFiAvailable() + "***" + LiveUploadChecked());
                 //check if number of wayPoints is enough to send data
-                Log.i("Status2", "*******"  + tour.GetWayPoints().size() + "***" + tour.GetTourComplete());
+                //Log.i("Status2", "*******"  + tour.GetWayPoints().size() + "***" + tour.GetTourComplete());
                 if (tour.GetWayPoints().size() >= queueLength) {
                     // send data and clear waypoint list in tour
                     Tour t = ClearWayPoints();
+                    Log.i("TourManagerService", "Daten werden gesendet: " + t.toJSON().toString());
                     ((MainActivity)context).LogDBState("vor  send: ");
                     RequestManager.getInstance().doRequest().SendTourData(auth_token, t);
                     ((MainActivity)context).LogDBState("nach send: ");
                 }
+                else
+                    Log.i("TourManagerService", "nichts gesendet, da queue nicht voll");
             }
             else {
-                Log.i("TourManagerService", "nichts gesendet");
+                Log.i("TourManagerService", "nichts gesendet, da keine erforderliche Verbindung");
                 ((MainActivity) context).LogDBState("ohne send: ");
             }
         }
