@@ -214,43 +214,13 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 username = "Anonymous";
             else
                 username = sharedPrefs.getString("username", "");
-
-            // welcome.setText("Herzlich Willkommen, " + username + "!");
         }
-       // else
-            // welcome.setText("Sie sind nicht angemeldet!");
-    }
-
-    // Zeigt die Login-Seite an
-    public boolean displayLoginActivity() {
-        Intent intent;
-
-        intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        return true;
-    }
-
-    // Zeigt die Registrierungs-Seite an
-    public boolean displayRegisterActivity() {
-        Intent intent;
-
-        intent = new Intent(this, RegisterActivity.class);
-        startActivity(intent);
-        return true;
     }
 
     // Zeigt die Settings-Seite an
     public boolean displaySettingsActivity() {
         Intent intent;
         intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
-        return true;
-    }
-
-    // Zeigt das Impressum an
-    public boolean displayImpressumActivity() {
-        Intent intent;
-        intent = new Intent(this, ImpressumActivity.class);
         startActivity(intent);
         return true;
     }
@@ -556,8 +526,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
         // Showing Alert Message
         alertDialog.show();
     }
-
-
 }
 
 
