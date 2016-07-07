@@ -29,8 +29,6 @@ public class GPSTrackerObject extends Observable{
 
     public GPSTrackerObject() {
 
-       Log.d("GPSTracker", "Bin im GPSTracker und erstelle den manager + location");
-
         //ToDo: Hier ist der Context immer noch NULL !!!
         manager = (LocationManager) Config.mContext.getSystemService(Context.LOCATION_SERVICE);
 

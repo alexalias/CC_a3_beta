@@ -34,17 +34,12 @@ import java.util.Observer;
 public class MainActivity extends AppCompatActivity implements Observer {
 
     // ######### Variable ###################################################
-    TextView textInfo;
     TextView speed;
-    TextView dauer;
     TextView strecke;
-    TextView debug;
 
     boolean läuft = false;
 
-    LocationPostCorrection locationPostCorrection = new LocationPostCorrection(10);
-
-    //if true, the first location sent by the GPSTracker has been dropped
+    //if true, the first location sent by the GPSTrackerService has been dropped
     int firstLocationDropped;
 
     // flag for GPS status
@@ -55,16 +50,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     protected LocationManager locationManager;
 
-    // GPSTracker class
-    //private GPSTracker gps;
-
     //Unsere GPS-Warte-Meldung
     private ProgressDialog pgGPSWait;
 
     // der TourManageService verwaltet alle Informationen zur Tour.
-    // Er bekommt neue Positionen vom GPSTracker übergeben und sorgt für das
+    // Er bekommt neue Positionen vom GPSTrackerService übergeben und sorgt für das
     //  verschicken bzw. speichern der Positionen
-    //!!!Intent serviceTMIntent;
 
     GPSTrackerService gpsService;
     TourManagerService tmService;
@@ -76,28 +67,18 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     private Chronometer zeitAnzeige;
 
-//    private DBHelper dbHelper;
-//    private Sender sender;
-
     final String deviceID = "001";
-
-
 
     // ######### Lifecycle Management #######################################
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("Main", "onCreate");
-        //sender = new Sender(this);
-        //dbHelper = new DBHelper(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         strecke = (TextView) findViewById(R.id.streckeAnzeige);
-        dauer = (TextView) findViewById(R.id.dauerAnzeige);
         speed = (TextView) findViewById(R.id.speedAnzeige);
-        debug = (TextView) findViewById(R.id.debugEditTex);
-        debug.setText ("");
         zeitAnzeige = (Chronometer) findViewById(R.id.dauerAnzeige);
 
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
@@ -116,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public void onStart() {
         Log.i("Main", "onStart");
         super.onStart();
-        //gps = new GPSTracker(this){ };
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         RequestManager.getInstance().doRequest().Login(
@@ -180,17 +160,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
         switch (id) {
             case R.id.action_settings:
                 return displaySettingsActivity();
-            /*case R.id.action_impressum:
-                return displayImpressumActivity();*/
-            //case R.id.action_login:
-              //  return displayLoginActivity();
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
-
 
     // ######### öffentliche Methoden #######################################
 
@@ -198,23 +170,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public void UpdateView() {
         speed.setText(String.format("%.1f km/h", tmService.GetCurrentSpeed_kmh()));
         strecke.setText(String.format("%.2f km", tmService.GetDistance_km()));
-    }
-
-    // Aktualisiert die Anzeige des Benutzernamen
-    public void UpdateUsername() {
-        String username;
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        // TextView welcome = (TextView) findViewById(R.id.text_welcome);
-
-        String token = sharedPrefs.getString("auth_token", "");
-        boolean anonymous = sharedPrefs.getBoolean("anonymous", false);
-
-        if (!token.equals("")) {
-            if (anonymous == true)
-                username = "Anonymous";
-            else
-                username = sharedPrefs.getString("username", "");
-        }
     }
 
     // Zeigt die Settings-Seite an
@@ -225,21 +180,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
         return true;
     }
 
-    // Fügt den übergebenen Text in das Debug-Fenster ein
-    public void UpdateDebugInfo(String string)
-    {
-        debug.setText(debug.getText() + " " + string);
-    }
-
     // Loggt den DB-Zustand
     public void LogDBState(String prefix) {
-        //String tourID = tourManagerService.GetTour().getTourID();
-        //int tourManagerEntries = tourManagerService.GetTour().GetWayPoints().size();
         int entries = DBManager.getInstance().doRequest().selectAllPositions().size();
         int entriesNotSent = DBManager.getInstance().doRequest().selectAllPositionsNotSent().size();
-        //int entriesTour = DBManager.getInstance().doRequest().selectAllPositionsFromTour(tourID).size();
-        //Log.i("**********" + prefix + " System", String.format("TM: %d entries   DB: %d/%d entries sent.",
-        //        tourManagerEntries, entriesNotSent, entries));
     }
 
     // Implementiert das Observer-Interface
@@ -249,13 +193,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         if(läuft)
         {
-            //Location loc =gpsService.getLastLocation();
-            //tourManagerService.AddWayPoint((Location) data);
             UpdateView();
         }
     }
-
-
 
     // ######### private Methoden ###########################################
 
@@ -276,82 +216,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         tmService.StartNewTour();
         gpsService.registerListener(tmService);
 
-//!!!        Intent serviceTMIntent = new Intent(this, TourManagerService.class);
-//        this.startService(serviceTMIntent);
-//
-//        // from TourSummaryActivity
-//        tmConnection = new ServiceConnection() {
-//            @Override
-//            public void onServiceConnected(ComponentName name, IBinder service) {
-//                Log.i("MainActivity", "Erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
-//                TourManagerService.tmsBinder binder = (TourManagerService.tmsBinder) service;
-//                tmService = binder.getService();
-//                mBound = true;
-//                // change!!
-//                //gpsService.registerListener(MainActivity.this);
-//                gpsService.registerListener(tmService);
-//            }
-//
-//            @Override
-//            public void onServiceDisconnected(ComponentName name) {
-//                Log.i("TourSummaryActivity", "Nicht erfolgreich connected setze mBound false");
-//
-//            }
-//        };
-//
-//        // from TourSummaryActivity
-//        bindService(serviceTMIntent, gpsConnection, Context.BIND_AUTO_CREATE);
-
-       /* gps = new GPSTracker(MainActivity.this)
-        {
-            @Override
-            // Überschreibt GPSTracker.onLocationChanged mit einer anonymen Methode
-            // Das ist unser LocationListener
-            public void onLocationChanged(Location location)
-            {
-                //Die neue location wird aus dem GPSTracker geholt
-                getLocation();
-
-                String s = "new Position   Lat: " + location.getLatitude() + "   Long: " + location.getLongitude();
-                Log.i("Main", s);
-
-                if (firstLocationDropped >= 0) {
-                    // die neue Position wird an den Tourmanager [bergeben
-                    tourManager.AddWayPoint(*//*locationPostCorrection.getSmoothenedLocation*//*(location));
-                 *//*   if(pgGPSWait.isShowing())
-                        pgGPSWait.dismiss();*//*
-                    UpdateView();
-                }
-                else
-                    firstLocationDropped += 1;
-            }
-
-        };*/
-/*
-        if(isGPSEnabled && (gps.getLocation() == null)){
-            pgGPSWait.show(this, "", "Warte auf GPS Empfang");
-            Log.i("PG is showing: ", pgGPSWait.isShowing()+"");
-        }
-*/
         UpdateView();
-        // check if GPS enabled
-//        if(gps.canGetLocation()){
-            //get location and save it as StartLocation
-//            Location location = gps.getLocation();
-
-            // Setzt im TourManageService eine erste position
-//            if (location != null) {
-                //tourManagerService.AddWayPoint(location);
-                //    Toast toast = Toast.makeText(getApplicationContext(), "Ihre StartPosition ist:\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude(), Toast.LENGTH_LONG);
-                //    toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
-                //    toast.show();
-//            }
-//        }else{
-            // can't get location
-            // GPS or Network is not enabled
-            // Ask user to enable GPS/network in settings
-//            gps.showSettingsAlert();
-//        }
     }
 
     // Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
@@ -362,17 +227,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
         toast.show();
 
         läuft = false;
-        //!!!this.stopService(serviceTMIntent);
         gpsService.deregisterListener();
         // Beendet die tour im TourManageService und speichert sie in die Datenbank
-        //tourManagerService.StopTour();
-        //tourManagerService.SaveTourToDB();
         zeitAnzeige.stop();
-
-        //StopServices();
-
-//        if (gps != null)
-//            gps.stopUsingGPS();
     }
 
     // Ändert die Hintergrundfarbe der Titelleiste
@@ -403,24 +260,17 @@ public class MainActivity extends AppCompatActivity implements Observer {
         Intent service = new Intent(this, GPSTrackerService.class);
         this.startService(service);
 
-        //serviceTMIntent = new Intent(this, TourManagerService.class);
-
         // from TourSummaryActivity
         gpsConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                Log.i("MainActivity", "GPSTracker erfolgreich Connected, setze binder, bekomme service und setze binder = true und sei der Listener");
                 GPSTrackerService.GpsBinder binder = (GPSTrackerService.GpsBinder) service;
                 gpsService = binder.getService();
                 mGPSBound = true;
-                // change!!
-                //gpsService.registerListener(MainActivity.this);
-                //gpsService.registerListener(gpsService);
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                Log.i("MainActivity", "GPSTracker Nicht erfolgreich connected setze mBound false");
                 mGPSBound = false;
             }
         };
@@ -440,9 +290,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 tmService = binder.getService();
                 tmService.SetContext(MainActivity.this);
                 mTMBound = true;
-                // change!!
-                //gpsService.registerListener(MainActivity.this);
-                //gpsService.registerListener(tmService);
             }
 
             @Override
@@ -471,27 +318,15 @@ public class MainActivity extends AppCompatActivity implements Observer {
         stopService(intentTMS);
     }
 
-
-
     // ######### Event handler ##############################################
 
     public void TrackingButtonClicked(View view) {
         boolean on = ((ToggleButton) view).isChecked();
         if (on) {
-            //    Toast toast = Toast.makeText(MainActivity.this, "Tracking gestartet", Toast.LENGTH_SHORT);
-            //   toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
-            //   toast.show();
             StartTracking();
         }
         else {
             StopTracking();
-        }
-    }
-
-    public void FakeGPS(View view) {
-        if (gpsService != null)
-        {
-            gpsService.update(null, "");
         }
     }
 
@@ -527,6 +362,3 @@ public class MainActivity extends AppCompatActivity implements Observer {
         alertDialog.show();
     }
 }
-
-
-

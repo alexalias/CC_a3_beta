@@ -104,17 +104,6 @@ public class RequestProxy {
                             }
                             catch (Exception e) {}
                         }
-                        else
-                        {
-                            Log.i("Login Response", "Login rejected: " + response);
-                            // delete token and open login screen
-                            sharedPrefs.edit().putString("auth_token", "").commit();
-                            if (retry == true)
-                                ((MainActivity)mContext).displayLoginActivity();
-                        }
-
-                        // UI update
-                        ((MainActivity)mContext).UpdateUsername();
                     }
                 },
                 new Response.ErrorListener() {
@@ -123,11 +112,6 @@ public class RequestProxy {
                         Log.i("Login Error: ", error.toString());
                         // delete token and open login screen
                         sharedPrefs.edit().putString("auth_token", "").commit();
-                        if (retry == true)
-                            ((MainActivity)mContext).displayLoginActivity();
-
-                        // UI update
-                        ((MainActivity)mContext).UpdateUsername();
                     }
                 }
         ) {
@@ -167,9 +151,6 @@ public class RequestProxy {
                         {
                             Log.i("Register Response", "Registration failed: " + response);
                             sharedPrefs.edit().putString("auth_token", "").commit();
-                            // open register activity
-                            if (retry == true)
-                                ((MainActivity)mContext).displayRegisterActivity();
                         }
                     }
                 },
@@ -178,9 +159,6 @@ public class RequestProxy {
                     public void onErrorResponse(VolleyError error) {
                         Log.i("Register Error: ", error.toString());
                         sharedPrefs.edit().putString("auth_token", "").commit();
-                        // open register activity
-                        if (retry == true)
-                            ((MainActivity)mContext).displayRegisterActivity();
                     }
                 }
         ) {
@@ -232,8 +210,6 @@ public class RequestProxy {
                             Log.i("Login Response", "Login rejected: " + response);
                             // delete token and open login screen
                             sharedPrefs.edit().putString("auth_token", "").commit();
-                            if (retry == true)
-                                ((MainActivity)mContext).displayLoginActivity();
                         }
                     }
                 },
