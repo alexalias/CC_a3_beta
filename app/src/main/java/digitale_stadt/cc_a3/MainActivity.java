@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     // ######### öffentliche Methoden #######################################
 
     // Aktualisiert die Anzeige der Strecke und Geschwindigkeit
-    public void UpdateView() {
+    public void UpdateView(TourData tourData) {
         speed.setText(String.format("%.1f km/h", tmService.GetCurrentSpeed_kmh()));
         strecke.setText(String.format("%.2f km", tmService.GetDistance_km()));
     }
@@ -197,10 +197,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
     @Override
     public void update(Observable observable, Object data) {
         Log.i("MainActivity", "neue Location");
+        TourData tourData = (TourData) data;
 
         if(läuft)
         {
-            UpdateView();
+            UpdateView(tourData);
         }
     }
 
@@ -223,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         tmService.StartNewTour();
         gpsService.registerListener(tmService);
 
-        UpdateView();
+        UpdateView(new TourData());
     }
 
     // Beendet die Tour. Das Tracking wird ausgeschaltet und die übrigen Daten versendet bzw. gespeichert.
