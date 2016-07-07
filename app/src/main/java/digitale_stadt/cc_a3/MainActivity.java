@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         pgGPSWait = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
-        setTitleBackgroundColor();
         Config.mContext = this;
 
         RequestManager.getInstance(this);
@@ -230,18 +229,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
         gpsService.deregisterListener();
         // Beendet die tour im TourManageService und speichert sie in die Datenbank
         zeitAnzeige.stop();
-    }
-
-    // Ändert die Hintergrundfarbe der Titelleiste
-    private void setTitleBackgroundColor() {
-        View titleView = getWindow().findViewById(android.R.id.title);
-        if (titleView != null) {
-            ViewParent parent = titleView.getParent();
-            if (parent != null && (parent instanceof View)) {
-                View parentView = (View)parent;
-                parentView.setBackgroundColor(Color.rgb(255,0,0));
-            }
-        }
     }
 
     // Startet den GPS-Service und den TourManager-Service
