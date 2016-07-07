@@ -157,8 +157,9 @@ public class TourManagerService extends Service implements Observer {
     // 3. sendDirect = false
     //    the new position is added to the tour
     public void AddWayPoint(Location location) {
-        Log.i("TourManagerService", "addWayPoint");
+        Log.i("TourManagerService", "AddWayPoint");
         if ((tour != null) && (location != null)) {
+            Log.i("TourManagerService", "location ok");
             Position position = new Position(tour.getTourID(), counter, location);
 
             if (counter == 0) {
@@ -199,6 +200,7 @@ public class TourManagerService extends Service implements Observer {
             // if WLAN is available or not neccessary, send data
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             String auth_token = sharedPrefs.getString("auth_token", "");
+            Log.i("TourManagerService", "auth_token: " + auth_token);
             boolean connected = !auth_token.equals("");
             if (connected && (WiFiAvailable() || LiveUploadChecked())) {
                 Log.i("Status", "***********" + connected + "***" + WiFiAvailable() + "***" + LiveUploadChecked());
@@ -212,9 +214,13 @@ public class TourManagerService extends Service implements Observer {
                     ((MainActivity)context).LogDBState("nach send: ");
                 }
             }
-            else
-                ((MainActivity)context).LogDBState("ohne send: ");
+            else {
+                Log.i("TourManagerService", "nichts gesendet");
+                ((MainActivity) context).LogDBState("ohne send: ");
+            }
         }
+        else
+            Log.i("TourManagerService", "invalid location");
     }
 
     public void SetQueueLength(int queueLength) {
@@ -281,7 +287,7 @@ public class TourManagerService extends Service implements Observer {
         else
             speed_kmh = 0;
 
-        Log.i("TourManagerService", "GetCurrentSpeed: " + speed_kmh + " km/h");
+        Log.i("TourManagerService", "GetAverageSpeed: " + speed_kmh + " km/h");
         return speed_kmh;
     }
 
@@ -308,7 +314,13 @@ public class TourManagerService extends Service implements Observer {
         Log.i("TourManagerService", "update");
         try {
             AddWayPoint((Location) data);
-            notifyListeners((Location) data);
+            TourData tourData = new TourData(
+                    GetDistance_km(),
+                    GetDuration_ms(),
+                    GetCurrentSpeed_kmh(),
+                    GetAverageSpeed_kmh()
+            );
+            notifyListeners(tourData);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -328,11 +340,11 @@ public class TourManagerService extends Service implements Observer {
     /**
      * Benachrichtige Listener
      */
-    private void notifyListeners(Location location){
+    private void notifyListeners(TourData tourData){
         try {
             if (listener != null) {
                 Log.i("TourManagerService", "notifyListeners");
-                listener.update(null, location);
+                listener.update(null, tourData);
             }
         }
         catch (Exception e)

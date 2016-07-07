@@ -59,10 +59,10 @@ public class RequestProxy {
     }
 
     public void Login(final boolean retry, final String username, final String password) { Login(retry, username, password, login_url); }
-    public void Login(final boolean retry, final String username, final String password, final String login_url)
+    public void Login(final boolean retry, final String username, final String password, final String url)
     {
         Log.i("RequestProxy", "Connecting with " + username + " / " + password);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -131,10 +131,10 @@ public class RequestProxy {
     }
 
     public void Register(final boolean retry, final String username, final String password, final String email) { Register(retry, username, password, email, register_url);  }
-    public void Register(final boolean retry, final String username, final String password, final String email, final String login_url)
+    public void Register(final boolean retry, final String username, final String password, final String email, final String url)
     {
         Log.i("RequestProxy", "Register with " + username + " / " + password);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, login_url,
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -178,10 +178,10 @@ public class RequestProxy {
     }
 
     public void Register_Anonymous(final boolean retry) { Register_Anonymous(retry, register_url); }
-    public void Register_Anonymous(final boolean retry, final String register_url)
+    public void Register_Anonymous(final boolean retry, final String url)
     {
         Log.i("RequestProxy", "Register Anonymous");
-        StringRequest postRequest = new StringRequest(Request.Method.POST, register_url,
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -242,13 +242,13 @@ public class RequestProxy {
     public void SendTourData(final String auth_token, final Tour tour, final String url)
     {
         Log.i("RequestProxy", "Send Tour Data: " + tour.toJSON().toString());
-        final StringRequest postRequest = new StringRequest(Request.Method.POST, data_url, new Response.Listener<String>() {
+        final StringRequest postRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 // check if transmission was successfull
                 if (!response.equals(server_data_transmission_token_not_valid))
                 {
-                    Log.i("SendTourData", "Data transmitted: " + response);
+                    Log.i("SendTourData", "Data transmitted: " + tour.toJSON().toString() + " - " +  response);
                     try {
                         ((MainActivity)mContext).LogDBState("vor  req: ");
                         for (Position pos : tour.GetWayPoints()) {

@@ -98,10 +98,16 @@ public class MainActivity extends AppCompatActivity implements Observer {
         super.onStart();
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        RequestManager.getInstance().doRequest().Login(
+        String token = sharedPrefs.getString("auth_token", "");
+        if (token.equals(""))
+            RequestManager.getInstance().doRequest().Register_Anonymous(false);
+        else
+        {
+            RequestManager.getInstance().doRequest().Login(
                 false,
                 sharedPrefs.getString("username", ""),
                 sharedPrefs.getString("userpassword", ""));
+        }
 
         if (tmService != null)
             tmService.registerListener(MainActivity.this);
@@ -183,6 +189,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public void LogDBState(String prefix) {
         int entries = DBManager.getInstance().doRequest().selectAllPositions().size();
         int entriesNotSent = DBManager.getInstance().doRequest().selectAllPositionsNotSent().size();
+
+        Log.i("Main", "DB: " + entriesNotSent + "/" + entries + " not sent.");
     }
 
     // Implementiert das Observer-Interface
